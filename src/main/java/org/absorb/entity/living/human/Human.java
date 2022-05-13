@@ -1,0 +1,36 @@
+package org.absorb.entity.living.human;
+
+import net.kyori.adventure.text.Component;
+import org.absorb.entity.EntityTypes;
+import org.absorb.entity.living.AbstractLivingEntity;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
+
+public class Human extends AbstractLivingEntity {
+
+    private @NotNull Gamemode gamemode = Gamemodes.CREATIVE;
+    private @Nullable Component tabDisplayName;
+
+    public Human() {
+        super(EntityTypes.HUMAN);
+    }
+
+    public Optional<Component> getTabName() {
+        return Optional.ofNullable(this.tabDisplayName);
+    }
+
+    public void setTabDisplayName(@Nullable Component component) {
+        this.tabDisplayName = component;
+    }
+
+    public @NotNull Gamemode getGamemode() {
+        return this.gamemode;
+    }
+
+    public void setGamemode(@NotNull Gamemode mode) {
+        this.gamemode = mode;
+    }
+
+}

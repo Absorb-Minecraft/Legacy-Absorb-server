@@ -1,0 +1,40 @@
+package org.absorb.world.area;
+
+import org.absorb.entity.WorldEntity;
+import org.absorb.utils.colllection.ConnectedCollection;
+import org.absorb.world.AbsorbWorld;
+import org.jetbrains.annotations.NotNull;
+import org.spongepowered.math.vector.Vector2i;
+import org.spongepowered.math.vector.Vector3i;
+
+import java.util.Collection;
+import java.util.SortedSet;
+
+public interface AbsorbChunk {
+
+    @NotNull Vector2i getPosition();
+
+    @NotNull SortedSet<ChunkPart> getParts();
+
+    ChunkPart generatePartWithLevel(int level);
+
+    ChunkPart generatePartWithHeight(int height);
+
+    @NotNull Vector3i getHighestPoint(int x, int z);
+
+    @NotNull AbsorbWorld getWorld();
+
+    @NotNull Area getArea();
+
+    default @NotNull ChunkPart getPartWithLevel(int level) {
+        return this.getParts().stream().filter(part -> part.getLevel()==level).findAny().orElseGet(() -> this.generatePartWithLevel(level));
+    }
+
+    default @NotNull ChunkPart getPartWithBlockHeight(int height) {
+        return this.getParts().stream().filter(part -> part.getMinimumBlockHeight() <= height).filter(part -> part.getMaximumBlockHeight() > height).findAny().orElseGet(() -> this.generatePartWithHeight(height));
+    }
+
+    default ConnectedCollection<WorldEntity> getEntities() {
+        return new ConnectedCollection<>(this.getParts().parallelStream().map(ChunkPart::getEntities).toArray(Collection[]::new));
+    }
+}
