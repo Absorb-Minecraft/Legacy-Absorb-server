@@ -7,7 +7,6 @@ import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
@@ -33,15 +32,10 @@ public class OutgoingLoginSuccessfulPacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(Client stream) {
+    public ByteBuffer toBytes(Client stream) {
         ByteBuffer uuidBuffer = Serializers.UUID.write(this.uuid);
         ByteBuffer nameBuffer = Serializers.STRING.write(this.username);
-        ByteBuffer ret = SerializerUtils.createPacket(ID, uuidBuffer, nameBuffer);
-        try {
-            stream.write(ret);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return SerializerUtils.createPacket(ID, uuidBuffer, nameBuffer);
     }
 
     @Override

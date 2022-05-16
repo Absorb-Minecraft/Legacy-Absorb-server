@@ -33,7 +33,7 @@ public class HandshakeProcess implements NetProcess<IncomingHandshakePacket> {
         if (packet.getMcNetworkId()!=MCVersion.CURRENT.protocolVersion()) {
             Component message =
                     Component.text("Unsupported version. This server is running " + MCVersion.CURRENT.name()).decorate(TextDecoration.BOLD).color(NamedTextColor.RED);
-            new OutgoingCloseConnectionPacketBuilder().setUsingPlay(false).setMessage(message).build().sendAsync(info);
+            new OutgoingCloseConnectionPacketBuilder().setUsingPlay(false).setMessage(message).build().writeToAsync(info);
         }
     }
 }

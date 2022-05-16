@@ -5,10 +5,8 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.absorb.entity.living.human.tab.PlayerTab;
 import org.absorb.entity.living.human.tab.PlayerTabProperty;
 import org.absorb.net.Client;
-import org.absorb.net.data.Serializer;
 import org.absorb.net.data.SerializerUtils;
 import org.absorb.net.data.Serializers;
-import org.absorb.net.data.string.FixedSizeStringSerializer;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.play.entity.player.tab.OutgoingPlayerTabUpdatePacket;
@@ -17,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
@@ -39,7 +38,7 @@ public class OutgoingPlayerTabUpdateAddPlayerPacket implements OutgoingPlayerTab
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         ByteArrayOutputStream baOs = new ByteArrayOutputStream();
         try {
             ByteBuffer actionBuffer = Serializers.VAR_INTEGER.write(0);
@@ -48,38 +47,41 @@ public class OutgoingPlayerTabUpdateAddPlayerPacket implements OutgoingPlayerTab
             baOs.write(actionBuffer.array());
             baOs.write(tabSize.array());
 
-            System.out.println("Action: 0");
-            System.out.println("Tab Size: " + this.tabs.size());
+            System.out.println("Action: 0 {" + Arrays.toString(actionBuffer.array()) + "}{" + actionBuffer.array().length + "}");
+            System.out.println("Tab Size: " + this.tabs.size() + "{" + Arrays.toString(tabSize.array()) + "}{" + tabSize.array().length + "}");
             for (PlayerTab tab : this.tabs) {
                 ByteBuffer uuidBuffer = Serializers.UUID.write(tab.getUuid());
+                ByteBuffer nameBuffer = Serializers.STRING.write(tab.getName());
                 ByteBuffer propertiesSize = Serializers.VAR_INTEGER.write(tab.getProperties().size());
 
                 baOs.write(uuidBuffer.array());
+                baOs.write(nameBuffer.array());
                 baOs.write(propertiesSize.array());
 
-                System.out.println("UUID: " + tab.getUuid());
-                System.out.println("Properties Size: " + tab.getProperties().size());
+                System.out.println("UUID: " + tab.getUuid() + "{" + Arrays.toString(uuidBuffer.array()) + "}{" + uuidBuffer.array().length + "}");
+                System.out.println("Name: " + tab.getName() + "{" + Arrays.toString(nameBuffer.array()) + "}{" + nameBuffer.array().length + "}");
+                System.out.println("Properties Size: " + tab.getProperties().size() + "{" + Arrays.toString(propertiesSize.array()) + "}{" + propertiesSize.array().length + "}");
                 for (PlayerTabProperty property : tab.getProperties()) {
-                    Serializer<String> fixedString = new FixedSizeStringSerializer(32767);
                     Optional<String> opSign = property.getSignature();
 
 
-                    ByteBuffer nameBuffer = fixedString.write(property.getName());
-                    ByteBuffer valueBuffer = fixedString.write(property.getValue());
+                    ByteBuffer propNameBuffer = Serializers.STRING.write(property.getName());
+                    ByteBuffer valueBuffer = Serializers.STRING.write(property.getValue());
                     ByteBuffer signPresentBuffer = Serializers.BOOLEAN.write(opSign.isPresent());
 
-                    baOs.write(nameBuffer.array());
+                    baOs.write(propNameBuffer.array());
                     baOs.write(valueBuffer.array());
                     baOs.write(signPresentBuffer.array());
 
-                    System.out.println("Name: " + property.getName());
-                    System.out.println("Value: " + property.getValue());
-                    System.out.println("is sign present: " + opSign.isPresent());
+                    System.out.println("Name: " + property.getName() + "{" + Arrays.toString(propNameBuffer.array()) + "}");
+                    System.out.println("Value: " + property.getValue() + "{" + Arrays.toString(valueBuffer.array()) + "}");
+                    System.out.println("is sign present: " + opSign.isPresent() + "{" + Arrays.toString(signPresentBuffer.array()) +
+                            "}");
                     if (opSign.isPresent()) {
-                        ByteBuffer signBuffer = fixedString.write(opSign.get());
+                        ByteBuffer signBuffer = Serializers.STRING.write(opSign.get());
                         baOs.write(signBuffer.array());
 
-                        System.out.println("Sign: " + opSign.get());
+                        System.out.println("Sign: " + opSign.get() + "{" + Arrays.toString(signBuffer.array()) + "}");
                     }
                 }
                 Optional<Component> opDisplayName = tab.getDisplayName();
@@ -92,20 +94,19 @@ public class OutgoingPlayerTabUpdateAddPlayerPacket implements OutgoingPlayerTab
                 baOs.write(pingBuffer.array());
                 baOs.write(displayNamePresent.array());
 
-                System.out.println("Gamemode: " + tab.getGameMode().getNetworkId());
-                System.out.println("Ping: " + tab.getPing());
-                System.out.println("DisplayName Present: " + opDisplayName.isPresent());
+                System.out.println("Gamemode: " + tab.getGameMode().getNetworkId() + "{" + Arrays.toString(gamemodeBuffer.array()) + "}{" + gamemodeBuffer.array().length + "}");
+                System.out.println("Ping: " + tab.getPing() + "{" + Arrays.toString(pingBuffer.array()) + "}{" + pingBuffer.array().length + "}");
+                System.out.println("DisplayName Present: " + opDisplayName.isPresent() + "{" + Arrays.toString(displayNamePresent.array()) + "}{" + displayNamePresent.array().length + "}");
                 if (opDisplayName.isPresent()) {
                     ByteBuffer displayNameBuffer = Serializers.CHAT.write(opDisplayName.get());
 
                     baOs.write(displayNameBuffer.array());
 
-                    System.out.println("DisplayName: " + GsonComponentSerializer.gson().serialize(opDisplayName.get()));
+                    System.out.println("DisplayName: " + GsonComponentSerializer.gson().serialize(opDisplayName.get()) + "{" + Arrays.toString(displayNameBuffer.array()) + "}");
                 }
             }
             baOs.flush();
-            ByteBuffer ret = SerializerUtils.createPacket(this.getId(), ByteBuffer.wrap(baOs.toByteArray()));
-            stream.write(ret);
+            return SerializerUtils.createPacket(this.getId(), ByteBuffer.wrap(baOs.toByteArray()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -2,6 +2,7 @@ package org.absorb.net.packet.play.entity.player.tab.ping;
 
 import org.absorb.entity.living.human.Gamemode;
 import org.absorb.net.Client;
+import org.absorb.net.data.SerializerUtils;
 import org.absorb.net.data.Serializers;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,7 +30,7 @@ public class OutgoingPlayerTabUpdatePingPacket implements OutgoingPlayerTabUpdat
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         ByteArrayOutputStream baOs = new ByteArrayOutputStream();
         try {
             baOs.write(Serializers.VAR_INTEGER.write(2).array());
@@ -37,6 +39,8 @@ public class OutgoingPlayerTabUpdatePingPacket implements OutgoingPlayerTabUpdat
                 baOs.write(Serializers.UUID.write(entry.getKey()).array());
                 baOs.write(Serializers.VAR_INTEGER.write(entry.getValue().getNetworkId()).array());
             }
+            baOs.flush();
+            return SerializerUtils.createPacket(ID, ByteBuffer.wrap(baOs.toByteArray()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

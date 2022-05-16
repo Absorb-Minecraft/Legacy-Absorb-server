@@ -16,7 +16,7 @@ public class IncomingClientSettingsProcessor implements NetProcess<IncomingClien
         connection.setViewDistance(packet.getViewDistance());
 
 
-        new OutgoingSwapHotbarPacketBuilder().setNewSlot(connection.getInventory().getHotbar().getSelected()).build().sendAsync(connection);
+        new OutgoingSwapHotbarPacketBuilder().setNewSlot(connection.getInventory().getHotbar().getSelected()).build().writeToAsync(connection);
         System.out.println("Set slot");
     }
 }

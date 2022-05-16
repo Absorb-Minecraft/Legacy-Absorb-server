@@ -8,10 +8,9 @@ import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class CloseConnectionPacket implements OutgoingPacket {
+public class OutgoingCloseConnectionPacket implements OutgoingPacket {
 
     public static final int PLAY_ID = 0x1B;
     public static final int LOGIN_ID = 0x00;
@@ -19,7 +18,7 @@ public class CloseConnectionPacket implements OutgoingPacket {
     private final @NotNull Component message;
     private final boolean usePlay;
 
-    public CloseConnectionPacket(OutgoingCloseConnectionPacketBuilder builder) {
+    public OutgoingCloseConnectionPacket(OutgoingCloseConnectionPacketBuilder builder) {
         this.message = builder.getMessage();
         this.usePlay = builder.isUsingPlay();
 
@@ -30,14 +29,9 @@ public class CloseConnectionPacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(Client info) {
-        try {
-            ByteBuffer dataBytes = Serializers.CHAT.write(this.message);
-            ByteBuffer returnBytes = SerializerUtils.createPacket(this.getId(), dataBytes);
-            info.write(returnBytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public ByteBuffer toBytes(Client info) {
+        ByteBuffer dataBytes = Serializers.CHAT.write(this.message);
+        return SerializerUtils.createPacket(this.getId(), dataBytes);
     }
 
     @Override

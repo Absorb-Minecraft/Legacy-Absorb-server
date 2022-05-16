@@ -12,7 +12,6 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.jackson.FieldValueSeparatorStyle;
 import org.spongepowered.configurate.jackson.JacksonConfigurationLoader;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class StatusResponsePacket implements OutgoingPacket {
@@ -55,7 +54,7 @@ public class StatusResponsePacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(Client stream) {
+    public ByteBuffer toBytes(Client stream) {
         JacksonConfigurationLoader loader = JacksonConfigurationLoader.builder().build();
         ConfigurationNode node = loader.createNode();
         try {
@@ -68,14 +67,9 @@ public class StatusResponsePacket implements OutgoingPacket {
             String json =
                     JacksonConfigurationLoader.builder().fieldValueSeparatorStyle(FieldValueSeparatorStyle.NO_SPACE).indent(0).buildAndSaveString(node);
             ByteBuffer bytes = Serializers.STRING.write(json);
-            ByteBuffer bytesToSend = SerializerUtils.createPacket(StatusResponsePacket.ID, bytes);
-            try {
-                stream.write(bytesToSend);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            return SerializerUtils.createPacket(StatusResponsePacket.ID, bytes);
         } catch (ConfigurateException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

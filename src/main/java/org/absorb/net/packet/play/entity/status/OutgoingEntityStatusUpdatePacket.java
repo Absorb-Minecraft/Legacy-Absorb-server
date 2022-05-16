@@ -10,7 +10,6 @@ import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class OutgoingEntityStatusUpdatePacket implements OutgoingPacket {
@@ -49,13 +48,9 @@ public class OutgoingEntityStatusUpdatePacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         ByteBuffer entityId = Serializers.INTEGER.write(this.entityId);
         ByteBuffer effect = Serializers.BYTE.write(this.effect.getStatusCode());
-        try {
-            stream.write(SerializerUtils.createPacket(ID, entityId, effect));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return SerializerUtils.createPacket(ID, entityId, effect);
     }
 }

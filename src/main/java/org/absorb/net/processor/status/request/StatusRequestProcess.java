@@ -5,10 +5,12 @@ import org.absorb.net.packet.status.request.IncomingStatusRequestPacket;
 import org.absorb.net.packet.status.response.StatusResponsePacketBuilder;
 import org.absorb.net.processor.NetProcess;
 
+import java.io.IOException;
+
 public class StatusRequestProcess implements NetProcess<IncomingStatusRequestPacket> {
 
     @Override
-    public void onProcess(Client info, IncomingStatusRequestPacket packet) {
-        new StatusResponsePacketBuilder().build().sendAsync(info);
+    public void onProcess(Client info, IncomingStatusRequestPacket packet) throws IOException {
+        new StatusResponsePacketBuilder().build().writeTo(info);
     }
 }

@@ -1,4 +1,4 @@
-package org.absorb.net.packet;
+package org.absorb.net.packet.play.join;
 
 import me.nullicorn.nedit.NBTReader;
 import me.nullicorn.nedit.type.NBTCompound;
@@ -7,7 +7,7 @@ import org.absorb.Main;
 import org.absorb.files.nbt.compound.NBTCompoundBuilder;
 import org.absorb.files.nbt.compound.NBTCompoundEntry;
 import org.absorb.files.nbt.compound.NBTCompoundKeys;
-import org.absorb.net.packet.org.absorb.test.utils.CollectionUtils;
+import org.absorb.test.utils.CollectionUtils;
 import org.absorb.register.RegistryManager;
 import org.absorb.world.biome.Biome;
 import org.absorb.world.type.PlayerWorldTypeView;

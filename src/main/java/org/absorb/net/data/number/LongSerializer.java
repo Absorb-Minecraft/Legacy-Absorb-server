@@ -8,15 +8,8 @@ import java.nio.ByteBuffer;
 public class LongSerializer implements Serializer<Long> {
     @Override
     public NetEntryData<Long> read(int position, ByteBuffer bytes) {
-        byte[] bArray = new byte[Long.BYTES];
-        for (int A = 0; A < bArray.length; A++) {
-            bArray[A] = bytes.get(A);
-        }
-        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-        buffer.put(bArray);
-        buffer.flip();
-        return new NetEntryData<>(position, position + bArray.length, buffer.getLong());
-
+        long value = bytes.getLong(position);
+        return new NetEntryData<>(position, position + Long.BYTES, value);
     }
 
     @Override

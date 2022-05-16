@@ -10,7 +10,6 @@ import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class OutgoingSpawnPositionPacket implements OutgoingPacket {
@@ -42,14 +41,9 @@ public class OutgoingSpawnPositionPacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         ByteBuffer pos = Serializers.POSITION.write(this.location);
         ByteBuffer angle = Serializers.FLOAT.write(this.angle);
-        ByteBuffer ret = SerializerUtils.createPacket(ID, pos, angle);
-        try {
-            stream.write(ret);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return SerializerUtils.createPacket(ID, pos, angle);
     }
 }

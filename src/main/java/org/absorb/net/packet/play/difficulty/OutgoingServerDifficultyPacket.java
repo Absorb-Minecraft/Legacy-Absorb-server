@@ -10,7 +10,6 @@ import org.absorb.net.packet.PacketState;
 import org.absorb.world.Difficulty;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class OutgoingServerDifficultyPacket implements OutgoingPacket {
@@ -49,15 +48,10 @@ public class OutgoingServerDifficultyPacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         ByteBuffer diff = Serializers.BYTE.write(this.difficulty.getNetworkId());
         ByteBuffer locked = Serializers.BOOLEAN.write(this.locked);
 
-        ByteBuffer ret = SerializerUtils.createPacket(ID, diff, locked);
-        try {
-            stream.write(ret);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return SerializerUtils.createPacket(ID, diff, locked);
     }
 }

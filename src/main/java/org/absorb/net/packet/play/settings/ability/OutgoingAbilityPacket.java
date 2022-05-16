@@ -52,7 +52,7 @@ public class OutgoingAbilityPacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         int total = 0;
         if (this.isInvulnerable) {
             total++;
@@ -69,12 +69,7 @@ public class OutgoingAbilityPacket implements OutgoingPacket {
         ByteBuffer abilities = Serializers.BYTE.write((byte) total);
         ByteBuffer flyingSpeed = Serializers.FLOAT.write(this.flyingSpeed);
         ByteBuffer fov = Serializers.FLOAT.write(this.fieldOfView);
-        ByteBuffer ret = SerializerUtils.createPacket(ID, abilities, flyingSpeed, fov);
-        try {
-            stream.write(ret);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return SerializerUtils.createPacket(ID, abilities, flyingSpeed, fov);
 
     }
 }

@@ -6,6 +6,9 @@ import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.login.handshake.IncomingHandshakePacketBuilder;
 import org.absorb.net.packet.login.pre.IncomingPreLoginPacketBuilder;
+import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayerMovementPacketBuilder;
+import org.absorb.net.packet.play.entity.player.teleport.confirm.IncomingTeleportConfirmPacketBuilder;
+import org.absorb.net.packet.play.recipe.craft.IncomingRecipeRequestPacketBuilder;
 import org.absorb.net.packet.play.settings.client.IncomingClientSettingsPacketBuilder;
 import org.absorb.net.packet.status.ping.IncomingPingPacketBuilder;
 import org.absorb.net.packet.status.request.IncomingStatusRequestPacketBuilder;
@@ -33,7 +36,12 @@ public class NetManager {
 
     public void registerIncomingPacketBuilder(IncomingPacketBuilder<? extends IncomingPacket> builder) {
         Optional<Map.Entry<Integer, PacketState>> opKey =
-                this.packetBuilders.keySet().stream().filter(entry -> entry.getValue()==builder.getState() && entry.getKey()==builder.getId()).findAny();
+                this
+                        .packetBuilders
+                        .keySet()
+                        .stream()
+                        .filter(entry -> entry.getValue()==builder.getState() && entry.getKey()==builder.getId())
+                        .findAny();
         if (opKey.isPresent()) {
             this.packetBuilders.replace(opKey.get(), builder::copy);
             return;
@@ -47,6 +55,9 @@ public class NetManager {
         this.registerIncomingPacketBuilder(new IncomingStatusRequestPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingPingPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingClientSettingsPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingTeleportConfirmPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingRecipeRequestPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingPlayerMovementPacketBuilder());
     }
 
     public NetHandler getHandler() {
@@ -67,7 +78,14 @@ public class NetManager {
 
     public Optional<IncomingPacketBuilder<? extends IncomingPacket>> getIncomingPacketBuilder(int networkId,
                                                                                               PacketState state) {
-        return this.packetBuilders.entrySet().stream().filter(entry -> entry.getKey().getKey()==networkId).filter(entry -> entry.getKey().getValue()==state).findAny().map(entry -> entry.getValue().get());
+        return this
+                .packetBuilders
+                .entrySet()
+                .parallelStream()
+                .filter(entry -> entry.getKey().getKey()==networkId)
+                .filter(entry -> entry.getKey().getValue()==state)
+                .findAny()
+                .map(entry -> entry.getValue().get());
     }
 
     public void unregister(Client info) {

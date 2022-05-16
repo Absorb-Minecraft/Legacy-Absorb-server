@@ -7,7 +7,6 @@ import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class OutgoingPongPacket implements OutgoingPacket {
@@ -21,15 +20,8 @@ public class OutgoingPongPacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(Client stream) {
-        ByteBuffer bytes = Serializers.LONG.write(this.payload);
-        ByteBuffer result = SerializerUtils.createPacket(ID, bytes);
-        try {
-
-            stream.write(result);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public ByteBuffer toBytes(Client stream) {
+        return SerializerUtils.createPacket(ID, Serializers.LONG.write(this.payload));
     }
 
     @Override

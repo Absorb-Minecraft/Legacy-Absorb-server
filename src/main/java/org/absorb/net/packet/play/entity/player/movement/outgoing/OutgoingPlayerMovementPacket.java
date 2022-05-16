@@ -1,4 +1,4 @@
-package org.absorb.net.packet.play.entity.player.movement;
+package org.absorb.net.packet.play.entity.player.movement.outgoing;
 
 import org.absorb.net.Client;
 import org.absorb.net.data.SerializerUtils;
@@ -9,7 +9,6 @@ import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class OutgoingPlayerMovementPacket implements OutgoingPacket {
@@ -83,7 +82,7 @@ public class OutgoingPlayerMovementPacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         ByteBuffer x = Serializers.DOUBLE.write(this.x);
         ByteBuffer y = Serializers.DOUBLE.write(this.y);
         ByteBuffer z = Serializers.DOUBLE.write(this.z);
@@ -92,10 +91,6 @@ public class OutgoingPlayerMovementPacket implements OutgoingPacket {
         ByteBuffer flags = Serializers.BYTE.write(this.flag);
         ByteBuffer teleportId = Serializers.VAR_INTEGER.write(this.teleportId);
         ByteBuffer dismount = Serializers.BOOLEAN.write(this.dismount);
-        try {
-            stream.write(SerializerUtils.createPacket(ID, x, y, z, yaw, pitch, flags, teleportId, dismount));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return SerializerUtils.createPacket(ID, x, y, z, yaw, pitch, flags, teleportId, dismount);
     }
 }

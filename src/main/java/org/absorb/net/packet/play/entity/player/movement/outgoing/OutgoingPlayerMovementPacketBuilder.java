@@ -1,4 +1,4 @@
-package org.absorb.net.packet.play.entity.player.movement;
+package org.absorb.net.packet.play.entity.player.movement.outgoing;
 
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;

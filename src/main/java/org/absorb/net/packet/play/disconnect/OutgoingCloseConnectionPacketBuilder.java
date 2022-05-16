@@ -6,7 +6,7 @@ import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
 
-public class OutgoingCloseConnectionPacketBuilder implements OutgoingPacketBuilder<CloseConnectionPacket> {
+public class OutgoingCloseConnectionPacketBuilder implements OutgoingPacketBuilder<OutgoingCloseConnectionPacket> {
 
     private Component message;
     private boolean usePlay;
@@ -34,27 +34,27 @@ public class OutgoingCloseConnectionPacketBuilder implements OutgoingPacketBuild
     }
 
     @Override
-    public @NotNull CloseConnectionPacket build() {
-        return new CloseConnectionPacket(this);
+    public @NotNull OutgoingCloseConnectionPacket build() {
+        return new OutgoingCloseConnectionPacket(this);
     }
 
     @Override
-    public @NotNull PacketBuilder<CloseConnectionPacket> reset() {
+    public @NotNull PacketBuilder<OutgoingCloseConnectionPacket> reset() {
         this.message = null;
         return this;
     }
 
     @Override
-    public @NotNull PacketBuilder<CloseConnectionPacket> copy() {
+    public @NotNull PacketBuilder<OutgoingCloseConnectionPacket> copy() {
         return new OutgoingCloseConnectionPacketBuilder().setMessage(this.message);
     }
 
     @Override
     public int getId() {
         if (usePlay) {
-            return CloseConnectionPacket.PLAY_ID;
+            return OutgoingCloseConnectionPacket.PLAY_ID;
         }
-        return CloseConnectionPacket.LOGIN_ID;
+        return OutgoingCloseConnectionPacket.LOGIN_ID;
     }
 
     @Override

@@ -16,7 +16,6 @@ import org.absorb.world.area.ChunkPart;
 import org.absorb.world.area.ChunkSection;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -65,7 +64,7 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         ByteBuffer chunkX = Serializers.INTEGER.write(this.chunk.getChunk().getPosition().x());
         ByteBuffer chunkY = Serializers.INTEGER.write(this.chunk.getChunk().getPosition().y());
         NBTCompoundEntry<Long[], Long[]> worldSurface = NBTCompoundKeys.WORLD_SURFACE.withValue(new Long[0]);
@@ -106,15 +105,11 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
         ByteBuffer skyLightArraysLength = Serializers.VAR_INTEGER.write(0); //TODO -> work this one out
         ByteBuffer blockLightArraysLength = Serializers.VAR_INTEGER.write(0); //TODO -> work this one out
 
-        ByteBuffer ret = SerializerUtils.createPacket(ID, chunkX, chunkY, heightMapBuffer, chunkSectionsSizeBuffer, chunkSectionsBuffer,
+        return SerializerUtils.createPacket(ID, chunkX, chunkY, heightMapBuffer, chunkSectionsSizeBuffer,
+                chunkSectionsBuffer,
                 tileEntityCount,
                 trustEdge, skyLights, blockLight, emptySkylight, emptyBlockLight, skyLightArraysLength,
                 blockLightArraysLength);
-        try {
-            stream.write(ret);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
     }
 }

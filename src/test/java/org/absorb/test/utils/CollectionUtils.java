@@ -1,4 +1,4 @@
-package org.absorb.net.packet.org.absorb.test.utils;
+package org.absorb.test.utils;
 
 import java.util.Collection;
 import java.util.Comparator;

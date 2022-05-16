@@ -4,6 +4,7 @@ import me.nullicorn.nedit.NBTOutputStream;
 import org.absorb.AbsorbManagers;
 import org.absorb.inventory.recipe.Recipe;
 import org.absorb.net.Client;
+import org.absorb.net.data.SerializerUtils;
 import org.absorb.net.data.Serializers;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.OutgoingPacketBuilder;
@@ -45,19 +46,21 @@ public class OutgoingRegisterRecipePacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         Collection<Registry<? extends Recipe>> recipes = AbsorbManagers.getRegistryManager().getRecipes();
         try {
             ByteArrayOutputStream baOs = new ByteArrayOutputStream();
+
+
             NBTOutputStream nbtOs = new NBTOutputStream(baOs, false);
             nbtOs.write(Serializers.VAR_INTEGER.write(recipes.size()).array());
             for (Registry<? extends Recipe> registry : recipes) {
                 Recipe recipe = registry.get();
                 nbtOs.write(recipe.write().array());
             }
-            stream.write(ByteBuffer.wrap(baOs.toByteArray()));
+            return SerializerUtils.createPacket(ID, ByteBuffer.wrap(baOs.toByteArray()));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

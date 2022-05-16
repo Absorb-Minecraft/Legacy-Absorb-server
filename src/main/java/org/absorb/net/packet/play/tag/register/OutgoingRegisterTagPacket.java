@@ -1,6 +1,7 @@
 package org.absorb.net.packet.play.tag.register;
 
 import org.absorb.net.Client;
+import org.absorb.net.data.SerializerUtils;
 import org.absorb.net.data.Serializers;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.OutgoingPacketBuilder;
@@ -46,7 +47,7 @@ public class OutgoingRegisterTagPacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         ByteArrayOutputStream baOs = new ByteArrayOutputStream();
         ByteBuffer tagsLength = Serializers.VAR_INTEGER.write(this.tags.size());
         try {
@@ -58,9 +59,9 @@ public class OutgoingRegisterTagPacket implements OutgoingPacket {
                     baOs.write(Serializers.VAR_INTEGER.write(netId.getNetworkId()).array());
                 }
             }
-            stream.write(ByteBuffer.wrap(baOs.toByteArray()));
+            return SerializerUtils.createPacket(ID, ByteBuffer.wrap(baOs.toByteArray()));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
     }

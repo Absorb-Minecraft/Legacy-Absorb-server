@@ -16,6 +16,7 @@ public class Serializers {
     public static final ShortDefinedStringSerializer SHORT_STRING = new ShortDefinedStringSerializer();
     public static final ShortSerializer SHORT = new ShortSerializer();
     public static final LongSerializer LONG = new LongSerializer();
+    public static final UnsignedLongSerializer UNSIGNED_LONG = new UnsignedLongSerializer();
     public static final IntegerSerializer INTEGER = new IntegerSerializer();
     public static final DoubleSerializer DOUBLE = new DoubleSerializer();
     public static final UnsignedShortSerializer UNSIGNED_SHORT = new UnsignedShortSerializer();
@@ -30,8 +31,4 @@ public class Serializers {
     public static final ResourceKeySerializer RESOURCE_KEY = new ResourceKeySerializer();
     public static final SlotSerializer SLOT = new SlotSerializer();
     public static final PositionSerializer POSITION = new PositionSerializer();
-
-    public static FixedSizeStringSerializer fixedSizeString(int size) {
-        return new FixedSizeStringSerializer(size);
-    }
 }

@@ -1,5 +1,6 @@
 package org.absorb.net.processor.login.pre;
 
+import net.kyori.adventure.text.Component;
 import org.absorb.AbsorbManagers;
 import org.absorb.entity.WorldEntity;
 import org.absorb.entity.living.human.Gamemodes;
@@ -7,8 +8,12 @@ import org.absorb.entity.living.human.Human;
 import org.absorb.entity.living.human.effects.HumanEffects;
 import org.absorb.entity.living.human.tab.PlayerTab;
 import org.absorb.net.Client;
+import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.login.post.OutgoingLoginSuccessfulPacketBuilder;
 import org.absorb.net.packet.login.pre.IncomingPreLoginPacket;
+import org.absorb.net.packet.play.difficulty.OutgoingServerDifficultyPacketBuilder;
+import org.absorb.net.packet.play.entity.player.compass.OutgoingSpawnPositionPacketBuilder;
+import org.absorb.net.packet.play.entity.player.movement.outgoing.OutgoingPlayerMovementPacketBuilder;
 import org.absorb.net.packet.play.entity.player.tab.add.OutgoingPlayerTabUpdateAddPlayerPacketBuilder;
 import org.absorb.net.packet.play.join.OutgoingJoinPacketBuilder;
 import org.absorb.net.processor.NetProcess;
@@ -17,6 +22,7 @@ import org.absorb.world.area.AbsorbChunk;
 import org.absorb.world.type.PlayerWorldTypeView;
 import org.spongepowered.math.vector.Vector3d;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.UUID;
@@ -25,10 +31,15 @@ import java.util.stream.Collectors;
 
 public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
     @Override
-    public void onProcess(Client info, IncomingPreLoginPacket packet) {
+    public void onProcess(Client info, IncomingPreLoginPacket packet) throws IOException {
         info.setUsername(packet.getUsername());
         String name = packet.getUsername();
+        if (name.isBlank()) {
+            info.disconnect(Component.text("Invalid username"));
+            return;
+        }
         UUID uuid = UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
+        System.out.println("Created UUID based upon '" + name + "'");
         info.setUuid(uuid);
 
         AbsorbWorld world = AbsorbManagers.getWorldManager().defaultWorld();
@@ -40,7 +51,8 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
         WorldEntity worldHuman = world.spawnEntity(playerEntity, spawnAt);
         info.setEntity(worldHuman);
 
-        new OutgoingLoginSuccessfulPacketBuilder().setName(name).setUuid(uuid).build().send(info);
+        info.setState(PacketState.PLAY);
+        new OutgoingLoginSuccessfulPacketBuilder().setName(name).setUuid(uuid).build().writeTo(info);
 
         new OutgoingJoinPacketBuilder()
                 .setCurrentWorldType(new PlayerWorldTypeView(world.getWorldData().getType()))
@@ -51,10 +63,10 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
                 .setWorldTypes(AbsorbManagers.getRegistryManager().getWorldTypes().stream().map(Supplier::get).map(PlayerWorldTypeView::new).collect(Collectors.toUnmodifiableSet()))
                 .setBiomes(AbsorbManagers.getRegistryManager().getBiomes().stream().map(Supplier::get).collect(Collectors.toUnmodifiableSet()))
                 .build()
-                .send(info);
+                .writeTo(info);
 
-        /*new OutgoingServerDifficultyPacketBuilder().setDifficulty(world.getWorldData().getDifficulty()).setLocked
-        (true).build().sendAsync(info);*/
+        new OutgoingServerDifficultyPacketBuilder().setDifficulty(world.getWorldData().getDifficulty()).setLocked
+                (true).build().writeTo(info);
 
         /*new OutgoingAbilityPacketBuilder()
                 .setFlyingAllowed(true)
@@ -91,7 +103,9 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
             new OutgoingEntityStatusUpdatePacketBuilder().setEffect(effect).setEntityId(worldHuman.getInstanceId()).build().send(info);
         }*/
 
-        //new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).build().send(info);
+        int id = info.newTeleportId();
+        info.registerTeleportId(id);
+        new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).setTeleportId(id).build().writeTo(info);
 
         Set<PlayerTab> tabs =
                 AbsorbManagers
@@ -102,18 +116,20 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
                         .map(Client::createTab)
                         .collect(Collectors.toSet());
 
-        new OutgoingPlayerTabUpdateAddPlayerPacketBuilder().addTabs(tabs).build().send(info);
+        new OutgoingPlayerTabUpdateAddPlayerPacketBuilder().addTabs(tabs).build().writeTo(info);
 
-        /*new OutgoingSpawnPositionPacketBuilder().setAngle(0).setLocation(world.getWorldData().getCompassPoint())
-        .build().send(info);
-
-        new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).build().send(info);*/
+        new OutgoingSpawnPositionPacketBuilder().setAngle(0).setLocation(world.getWorldData().getCompassPoint())
+                .build().writeTo(info);
 
         /*ChunkPart part = chunk.getPartWithBlockHeight(2);
         Set<ChunkSection> set = Set.of(part.asSection());
 
         new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(set)
         .build().send(info);*/
+
+        id = info.newTeleportId();
+        info.registerTeleportId(id);
+        new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).setTeleportId(id).build().writeTo(info);
 
         System.out.println("Next");
     }

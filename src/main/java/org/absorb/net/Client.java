@@ -1,6 +1,7 @@
 package org.absorb.net;
 
 import net.kyori.adventure.text.Component;
+import org.absorb.AbsorbManagers;
 import org.absorb.entity.WorldEntity;
 import org.absorb.entity.living.human.ChatMode;
 import org.absorb.entity.living.human.Gamemode;
@@ -10,6 +11,7 @@ import org.absorb.entity.living.human.tab.PlayerTab;
 import org.absorb.entity.living.human.tab.PlayerTabBuilder;
 import org.absorb.inventory.entity.player.PlayerInventory;
 import org.absorb.net.packet.PacketState;
+import org.absorb.net.packet.play.disconnect.OutgoingCloseConnectionPacketBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,10 +20,8 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.LinkedTransferQueue;
 
 public class Client {
 
@@ -38,12 +38,32 @@ public class Client {
     private boolean colouredChatMessages;
     private boolean hiddenToList;
     private int lastKnownPing;
+    private final Collection<Integer> teleportIds = new LinkedTransferQueue<>();
 
     private static final int NETTY_MAX_CAP = 2000;
 
     public Client(@NotNull Socket socket) throws IOException {
         this.lastPacketSent = LocalDateTime.now();
         this.socket = socket;
+    }
+
+    public Collection<Integer> getTeleportIds() {
+        return Collections.unmodifiableCollection(this.teleportIds);
+    }
+
+    public int newTeleportId() {
+        return this.teleportIds.stream().mapToInt((f) -> f).sum();
+    }
+
+    public void registerTeleportId(int id) {
+        this.teleportIds.add(id);
+    }
+
+    public void confirmTeleport(int id) {
+        if (!this.teleportIds.remove(id)) {
+            throw new IllegalStateException("Teleport id of '" + id + "' could not be confirmed: known ids to be " +
+                    "confirmed: " + this.teleportIds);
+        }
     }
 
     public @NotNull WorldEntity getEntity() {
@@ -62,7 +82,7 @@ public class Client {
             throw new RuntimeException("Username has no value, something is out of order");
         }
         Gamemode mode = Gamemodes.CREATIVE;
-        Component displayName = Component.text(this.username);
+        Component displayName = null;
         WorldEntity entity = this.getEntity();
         if (entity.getEntity() instanceof Human human) {
             mode = human.getGamemode();
@@ -175,11 +195,6 @@ public class Client {
     }
 
     public void write(ByteBuffer buffer) throws IOException {
-        StackTraceElement trace = Thread.currentThread().getStackTrace()[2];
-        String[] className = trace.getClassName().split("\\.");
-        System.out.println("Writing: " + Arrays.toString(buffer.array()));
-        System.out.println("\t> " + new String(buffer.array()));
-        System.out.println("\t>>" + className[className.length - 1]);
         if (buffer.limit() <= NETTY_MAX_CAP) {
             this.socket.getOutputStream().write(buffer.array());
             this.socket.getOutputStream().flush();
@@ -217,6 +232,14 @@ public class Client {
 
     public void setUsername(@NotNull String username) {
         this.username = username;
+    }
+
+    public void disconnect() {
+        AbsorbManagers.getNetManager().unregister(this);
+    }
+
+    public void disconnect(@NotNull Component component) {
+        new OutgoingCloseConnectionPacketBuilder().setUsingPlay(this.state==PacketState.PLAY).setMessage(component).build().writeToAsync(this);
     }
 
 

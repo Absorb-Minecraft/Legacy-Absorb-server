@@ -138,7 +138,7 @@ public class OutgoingJoinPacket implements OutgoingPacket {
     }
 
     @Override
-    public void send(@NotNull Client stream) {
+    public ByteBuffer toBytes(@NotNull Client stream) {
         ByteBuffer playerEntityId = Serializers.INTEGER.write(this.entityId);
         ByteBuffer hardcore = Serializers.BOOLEAN.write(this.isHardcore);
         ByteBuffer gamemode = Serializers.BYTE.write((byte) this.gameMode.getNetworkId());
@@ -202,12 +202,10 @@ public class OutgoingJoinPacket implements OutgoingPacket {
             nbtOs.write(isDebugWorld.array());
             nbtOs.write(isFlat.array());
             os.flush();
-            ByteBuffer buffer = SerializerUtils.createPacket(ID, ByteBuffer.wrap(os.toByteArray()));
-            stream.write(buffer);
+            return SerializerUtils.createPacket(ID, ByteBuffer.wrap(os.toByteArray()));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
     }
 
     @Override
