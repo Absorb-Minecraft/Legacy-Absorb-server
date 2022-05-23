@@ -25,7 +25,7 @@ public class WorldEntity {
         this.instanceId = builder.getInstanceId();
     }
 
-    public int getInstanceId(){
+    public int getInstanceId() {
         return this.instanceId;
     }
 
@@ -45,7 +45,11 @@ public class WorldEntity {
         return this.position;
     }
 
-    public AbsorbWorld getWorld() {
+    public void setPosition(@NotNull Vector3d position) {
+        this.position = position;
+    }
+
+    public @NotNull AbsorbWorld getWorld() {
         return this.world;
     }
 }

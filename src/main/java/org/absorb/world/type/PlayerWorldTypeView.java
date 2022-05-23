@@ -39,16 +39,12 @@ public class PlayerWorldTypeView implements NBTCompoundGroupable {
         return this;
     }
 
-    @Override
-    public NBTCompound toNBT() {
+    public NBTCompound toTypeNBT() {
         Set<NBTCompoundEntry<?, ?>> values = new HashSet<>();
-        Set<NBTCompoundEntry<?, ?>> ret = new HashSet<>();
-        ret.add(NBTCompoundKeys.NAME.withValue(this.type.getResourceKey()));
-        ret.add(NBTCompoundKeys.ID.withValue(this.type.getNetworkId()));
         values.add(NBTCompoundKeys.PIGLIN_SAFE.withValue(this.type.willBecomeZombifiedPiglins()));
         values.add(NBTCompoundKeys.NATURAL.withValue(this.type.isNatural()));
         values.add(NBTCompoundKeys.AMBIENT_LIGHT.withValue(this.type.getAmbientLightLevel()));
-        if(this.playerTime == null && this.type.getFixedTime().isPresent()){
+        if (this.playerTime==null && this.type.getFixedTime().isPresent()) {
             values.add(NBTCompoundKeys.FIXED_TIME.withValue(this.type.getFixedTime().get()));
         }
         if (this.playerTime!=null) {
@@ -67,7 +63,18 @@ public class PlayerWorldTypeView implements NBTCompoundGroupable {
         values.add(NBTCompoundKeys.ULTRAWARM.withValue(this.type.isUltraWarm()));
         values.add(NBTCompoundKeys.HAS_CEILING.withValue(this.type.isLavaSpreadingQuickly()));
 
-        NBTCompound group = new NBTCompoundBuilder().addAll(values).build();
+        return new NBTCompoundBuilder().addAll(values).build();
+
+    }
+
+    @Override
+    public NBTCompound toNBT() {
+        Set<NBTCompoundEntry<?, ?>> ret = new HashSet<>();
+        ret.add(NBTCompoundKeys.NAME.withValue(this.type.getResourceKey()));
+        ret.add(NBTCompoundKeys.ID.withValue(this.type.getNetworkId()));
+
+
+        NBTCompound group = this.toTypeNBT();
         ret.add(NBTCompoundKeys.ELEMENT.withValue(group));
         return new NBTCompoundBuilder().addAll(ret).build();
     }

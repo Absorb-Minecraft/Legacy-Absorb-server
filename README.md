@@ -1,4 +1,4 @@
-#Absorb
+# Absorb
 
 ## What is it?
 Absorb is a reimplementation of the Minecraft server which is designed to take advantage of modern day hardware such 

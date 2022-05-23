@@ -51,7 +51,12 @@ public class AbsorbWorld {
                 .setInstanceId(this.getEntities().size() + 1)
                 .build();
         AbsorbChunk chunk =
-                this.chunks.parallelStream().filter(chunkStream -> chunkStream.getArea().includes(spawnAt)).findFirst().orElseThrow(() -> new IllegalStateException("Chunk has not loaded"));
+                this
+                        .chunks
+                        .parallelStream()
+                        .filter(chunkStream -> chunkStream.getArea().includes(spawnAt))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("Chunk has not loaded"));
         ChunkPart part = chunk.getPartWithBlockHeight((int) spawnAt.y());
         part.registerEntity(worldEntity);
         return worldEntity;

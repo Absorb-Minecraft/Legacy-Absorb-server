@@ -3,13 +3,23 @@ package org.absorb.net.packet.status.ping;
 import org.absorb.net.data.Serializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 public class IncomingPingPacketBuilder implements IncomingPacketBuilder<IncomingPingPacket> {
 
     private long payload;
+    private boolean usePlay;
+
+    public boolean isUsePlay() {
+        return this.usePlay;
+    }
+
+    public IncomingPingPacketBuilder setUsePlay(boolean usePlay) {
+        this.usePlay = usePlay;
+        return this;
+    }
 
     public long getPayload() {
         return this.payload;
@@ -27,19 +37,19 @@ public class IncomingPingPacketBuilder implements IncomingPacketBuilder<Incoming
     }
 
     @Override
-    public IncomingPingPacket build() {
+    public @NotNull IncomingPingPacket build() {
         return new IncomingPingPacket(this);
     }
 
     @Override
-    public IncomingPingPacketBuilder reset() {
+    public @NotNull IncomingPingPacketBuilder reset() {
         this.payload = 0;
         return this;
     }
 
     @Override
-    public IncomingPingPacketBuilder copy() {
-        return new IncomingPingPacketBuilder().setPayload(this.getPayload());
+    public @NotNull IncomingPingPacketBuilder copy() {
+        return new IncomingPingPacketBuilder().setPayload(this.getPayload()).setUsePlay(this.usePlay);
     }
 
     @Override
@@ -48,7 +58,10 @@ public class IncomingPingPacketBuilder implements IncomingPacketBuilder<Incoming
     }
 
     @Override
-    public PacketState getState() {
+    public @NotNull PacketState getState() {
+        if (this.usePlay) {
+            return PacketState.PLAY;
+        }
         return PacketState.STATUS;
     }
 }

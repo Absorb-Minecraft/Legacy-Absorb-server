@@ -90,7 +90,23 @@ public class NBTCompoundKeys {
             new NBTCompoundKey.NamedEnum<>("grass_color_modifier", EnumSet.allOf(GrassModifier.class));
     public static final NBTCompoundKey.Type<NBTCompound> BIOME_EFFECTS =
             new NBTCompoundKey.Type<>(TagType.COMPOUND, "effects");
-
+    public static final NBTCompoundKey.Type<Integer> MIN_DELAY = new NBTCompoundKey.Type<>(TagType.INT,
+            "min_delay");
+    public static final NBTCompoundKey.Type<Integer> MAX_DELAY = new NBTCompoundKey.Type<>(TagType.INT, "max_delay");
+    public static final NBTCompoundKey.Boolean REPLACE_CURRENT_MUSIC = new NBTCompoundKey.Boolean(
+            "replace_current_music");
+    public static final NBTCompoundKey.Type<NBTCompound> MUSIC = new NBTCompoundKey.Type<>(TagType.COMPOUND, "music");
+    public static final NBTCompoundKey.Resource AMBIENT_SOUND = new NBTCompoundKey.Resource("ambient_sound");
+    public static final NBTCompoundKey.Type<Double> TICK_CHANCE = new NBTCompoundKey.Type<>(TagType.DOUBLE,
+            "tick_chance");
+    public static final NBTCompoundKey.Type<NBTCompound> ADDITIONS_SOUND = new NBTCompoundKey.Type<>(TagType.COMPOUND
+            , "additions_sound");
+    public static final NBTCompoundKey.Type<NBTCompound> OPTIONS = new NBTCompoundKey.Type<>(TagType.COMPOUND,
+            "options");
+    public static final NBTCompoundKey.Type<Float> PROBABILITY = new NBTCompoundKey.Type<>(TagType.FLOAT,
+            "probability");
+    public static final NBTCompoundKey.Type<NBTCompound> PARTICLE = new NBTCompoundKey.Type<>(TagType.COMPOUND,
+            "particle");
     public static final Set<NBTCompoundKey<?, ?>> KEYS;
 
     static {

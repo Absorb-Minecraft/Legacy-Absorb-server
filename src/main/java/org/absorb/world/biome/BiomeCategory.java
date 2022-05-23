@@ -18,5 +18,6 @@ public enum BiomeCategory {
     JUNGLE,
     MESA,
     SAVANNA,
-    NONE
+    NONE,
+    MOUNTAIN, UNDERGROUND;
 }

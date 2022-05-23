@@ -72,9 +72,9 @@ public class StatusResponsePacketBuilder implements OutgoingPacketBuilder<Status
     @Override
     public @NotNull PacketBuilder<StatusResponsePacket> reset() {
         this.currentPlayers = 0;
-        this.maxPlayers = 20;
-        this.description = Component.text("A Minecraft server");
-        this.versionName = "Paper " + MCVersion.CURRENT.name();
+        this.maxPlayers = 1;
+        this.description = Component.text("A reimplementation of the minecraft server");
+        this.versionName = "Absorb " + MCVersion.CURRENT.name();
         this.versionProtocol = MCVersion.CURRENT.protocolVersion();
         return this;
     }

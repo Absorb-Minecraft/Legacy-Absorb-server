@@ -7,6 +7,16 @@ import org.absorb.net.packet.PacketState;
 public class OutgoingPongPacketBuilder implements OutgoingPacketBuilder<OutgoingPongPacket> {
 
     private long payload;
+    private boolean usePlay;
+
+    public boolean isUsePlay() {
+        return this.usePlay;
+    }
+
+    public OutgoingPongPacketBuilder setUsePlay(boolean usePlay) {
+        this.usePlay = usePlay;
+        return this;
+    }
 
     public long getPayload() {
         return this.payload;

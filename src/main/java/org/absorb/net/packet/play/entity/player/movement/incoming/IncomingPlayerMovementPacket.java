@@ -7,6 +7,7 @@ import org.absorb.net.packet.PacketState;
 import org.absorb.net.processor.NetProcess;
 import org.absorb.net.processor.play.entity.player.movement.PlayerMovementProcessor;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.math.vector.Vector3d;
 
 public class IncomingPlayerMovementPacket implements IncomingPacket {
 
@@ -17,7 +18,7 @@ public class IncomingPlayerMovementPacket implements IncomingPacket {
     private final double z;
     private final float yaw;
     private final float pitch;
-    private final boolean isOnGrond;
+    private final boolean isOnGround;
 
     public IncomingPlayerMovementPacket(@NotNull IncomingPlayerMovementPacketBuilder packet) {
         this.x = packet.getX();
@@ -25,7 +26,7 @@ public class IncomingPlayerMovementPacket implements IncomingPacket {
         this.z = packet.getZ();
         this.yaw = packet.getYaw();
         this.pitch = packet.getPitch();
-        this.isOnGrond = packet.isOnGround();
+        this.isOnGround = packet.isOnGround();
     }
 
     public double getX() {
@@ -40,6 +41,10 @@ public class IncomingPlayerMovementPacket implements IncomingPacket {
         return this.z;
     }
 
+    public Vector3d getPosition() {
+        return new Vector3d(this.getX(), this.getY(), this.getZ());
+    }
+
     public float getYaw() {
         return this.yaw;
     }
@@ -49,7 +54,7 @@ public class IncomingPlayerMovementPacket implements IncomingPacket {
     }
 
     public boolean isOnGround() {
-        return this.isOnGrond;
+        return this.isOnGround;
     }
 
     @Override
@@ -69,6 +74,6 @@ public class IncomingPlayerMovementPacket implements IncomingPacket {
 
     @Override
     public @NotNull PacketBuilder<? extends Packet> toBuilder() {
-        return new IncomingPlayerMovementPacketBuilder().setPitch(this.pitch).setYaw(this.yaw).setX(this.x).setY(this.y).setZ(this.z).setOnGround(this.isOnGrond);
+        return new IncomingPlayerMovementPacketBuilder().setPitch(this.pitch).setYaw(this.yaw).setX(this.x).setY(this.y).setZ(this.z).setOnGround(this.isOnGround);
     }
 }

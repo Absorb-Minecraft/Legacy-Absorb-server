@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 
 public class OutgoingCloseConnectionPacket implements OutgoingPacket {
 
-    public static final int PLAY_ID = 0x1B;
+    public static final int PLAY_ID = 0x1A;
     public static final int LOGIN_ID = 0x00;
 
     private final @NotNull Component message;

@@ -2,6 +2,7 @@ package org.absorb.world.biome;
 
 import me.nullicorn.nedit.type.NBTCompound;
 import org.absorb.files.nbt.compound.NBTCompoundKeys;
+import org.absorb.particle.Particle;
 import org.absorb.register.AbsorbKey;
 import org.absorb.utils.Builder;
 import org.absorb.world.biome.properties.BiomeProperties;
@@ -10,8 +11,6 @@ import org.absorb.world.biome.properties.TemperatureModifier;
 import org.absorb.world.biome.sound.BiomeSound;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.awt.*;
 
 public class BiomeBuilder implements Builder<Biome> {
 
@@ -26,9 +25,89 @@ public class BiomeBuilder implements Builder<Biome> {
     private TemperatureModifier modifier;
     private int networkId;
     private Double offset;
-    private BiomeSound sound;
+    private BiomeSound moodSound;
+    private BiomeSound musicSound;
+    private Integer musicMinimumDelay;
+    private Integer musicMaximumDelay;
+    private Boolean replaceCurrentMusic;
     private Integer tickDelay;
     private Integer blockSearchExtent;
+    private Double additionTickChance;
+    private BiomeSound additionsSound;
+    private BiomeSound ambientSound;
+    private Particle particle;
+
+    public Particle getParticle() {
+        return this.particle;
+    }
+
+    public BiomeBuilder setParticle(Particle particle) {
+        this.particle = particle;
+        return this;
+    }
+
+    public Double getAdditionTickChance() {
+        return this.additionTickChance;
+    }
+
+    public BiomeBuilder setAdditionTickChance(Double additionTickChance) {
+        this.additionTickChance = additionTickChance;
+        return this;
+    }
+
+    public BiomeSound getAdditionsSound() {
+        return this.additionsSound;
+    }
+
+    public BiomeBuilder setAdditionsSound(BiomeSound additionsSound) {
+        this.additionsSound = additionsSound;
+        return this;
+    }
+
+    public BiomeSound getAmbientSound() {
+        return this.ambientSound;
+    }
+
+    public BiomeBuilder setAmbientSound(BiomeSound ambientSound) {
+        this.ambientSound = ambientSound;
+        return this;
+    }
+
+    public BiomeSound getMusicSound() {
+        return this.musicSound;
+    }
+
+    public BiomeBuilder setMusicSound(BiomeSound musicSound) {
+        this.musicSound = musicSound;
+        return this;
+    }
+
+    public Integer getMusicMinimumDelay() {
+        return this.musicMinimumDelay;
+    }
+
+    public BiomeBuilder setMusicMinimumDelay(Integer musicMinimumDelay) {
+        this.musicMinimumDelay = musicMinimumDelay;
+        return this;
+    }
+
+    public Integer getMusicMaximumDelay() {
+        return this.musicMaximumDelay;
+    }
+
+    public BiomeBuilder setMusicMaximumDelay(Integer musicMaximumDelay) {
+        this.musicMaximumDelay = musicMaximumDelay;
+        return this;
+    }
+
+    public Boolean getReplaceCurrentMusic() {
+        return this.replaceCurrentMusic;
+    }
+
+    public BiomeBuilder setReplaceCurrentMusic(Boolean replaceCurrentMusic) {
+        this.replaceCurrentMusic = replaceCurrentMusic;
+        return this;
+    }
 
     public Integer getTickDelay() {
         return this.tickDelay;
@@ -48,12 +127,12 @@ public class BiomeBuilder implements Builder<Biome> {
         return this;
     }
 
-    public BiomeSound getSound() {
-        return this.sound;
+    public BiomeSound getMoodSound() {
+        return this.moodSound;
     }
 
-    public BiomeBuilder setSound(BiomeSound sound) {
-        this.sound = sound;
+    public BiomeBuilder setMoodSound(BiomeSound moodSound) {
+        this.moodSound = moodSound;
         return this;
     }
 
@@ -157,12 +236,12 @@ public class BiomeBuilder implements Builder<Biome> {
     }
 
     @Override
-    public Biome build() {
+    public @NotNull Biome build() {
         return new Biome(this);
     }
 
     @Override
-    public Builder<Biome> reset() {
+    public @NotNull Builder<Biome> reset() {
         this.category = null;
         this.defaultProperties = null;
         this.depth = 0;
@@ -175,7 +254,7 @@ public class BiomeBuilder implements Builder<Biome> {
     }
 
     @Override
-    public Builder<Biome> copy() {
+    public @NotNull Builder<Biome> copy() {
         return new BiomeBuilder()
                 .setCategory(this.category)
                 .setDefaultProperties(this.defaultProperties)

@@ -14,10 +14,12 @@ import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.play.disconnect.OutgoingCloseConnectionPacketBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.math.vector.Vector3d;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -39,12 +41,33 @@ public class Client {
     private boolean hiddenToList;
     private int lastKnownPing;
     private final Collection<Integer> teleportIds = new LinkedTransferQueue<>();
+    private PlayingState playingState = PlayingState.AWAITING;
+    private @Nullable Vector3d lastPosition;
 
-    private static final int NETTY_MAX_CAP = 2000;
+    private static final int NETTY_MAX_CAP = 1500;
+
 
     public Client(@NotNull Socket socket) throws IOException {
         this.lastPacketSent = LocalDateTime.now();
         this.socket = socket;
+    }
+
+    public @NotNull Vector3d getLocation() {
+        return this.lastPosition==null ? new Vector3d(0, 0, 0):this.lastPosition;
+    }
+
+    public void setLocation(@NotNull Vector3d location) {
+        this.lastPosition = location;
+        this.getEntity().setPosition(location);
+    }
+
+    public PlayingState getPlayingState() {
+        return this.playingState;
+    }
+
+    public Client setPlayingState(PlayingState playingState) {
+        this.playingState = playingState;
+        return this;
     }
 
     public Collection<Integer> getTeleportIds() {
@@ -195,23 +218,27 @@ public class Client {
     }
 
     public void write(ByteBuffer buffer) throws IOException {
-        if (buffer.limit() <= NETTY_MAX_CAP) {
-            this.socket.getOutputStream().write(buffer.array());
-            this.socket.getOutputStream().flush();
-            return;
-        }
-        int index = 0;
-        byte[] array = buffer.array();
-        while (index >= array.length) {
-            byte[] reduced;
-            if (array.length > (index + NETTY_MAX_CAP)) {
-                reduced = Arrays.copyOfRange(array, index, array.length);
-            } else {
-                reduced = Arrays.copyOfRange(array, index, index + NETTY_MAX_CAP);
+        try {
+            if (buffer.limit() <= NETTY_MAX_CAP) {
+                this.socket.getOutputStream().write(buffer.array());
+                this.socket.getOutputStream().flush();
+                return;
             }
-            this.socket.getOutputStream().write(reduced);
-            this.socket.getOutputStream().flush();
-            index = index + reduced.length;
+            int index = 0;
+            byte[] array = buffer.array();
+            while (index < array.length) {
+                byte[] reduced;
+                if (array.length < (index + NETTY_MAX_CAP)) {
+                    reduced = Arrays.copyOfRange(array, index, array.length);
+                } else {
+                    reduced = Arrays.copyOfRange(array, index, index + NETTY_MAX_CAP);
+                }
+                this.socket.getOutputStream().write(reduced);
+                this.socket.getOutputStream().flush();
+                index = index + reduced.length;
+            }
+        }catch (SocketException ignored){
+
         }
     }
 

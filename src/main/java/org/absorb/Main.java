@@ -18,10 +18,6 @@ import java.net.ServerSocket;
 
 public class Main {
 
-    private static AbsorbWorld createTestWorld() {
-        return new AbsorbWorldBuilder().setWorldData(new AbsorbWorldData()).setBlockMin(new Vector3i(0, 0, 0)).setBlockMax(new Vector3i(16 * 20, 255, 16 * 20)).build();
-    }
-
     public static void init() throws IOException {
         ServerProperties properties = new ServerProperties();
         AbsorbWorld world =
@@ -33,30 +29,18 @@ public class Main {
                                 .setSeed(0)
                                 .setKey(new AbsorbKey(Identifiable.MINECRAFT_HOST, "temp")))
                         .build();
-
-
-        //ServerSocket socket = new ServerSocket(properties.getPort(), 0, properties.getIpAddress());
-
+        RegistryManager registryManager = new RegistryManager();
+        AbsorbWorldManager worldManager = new AbsorbWorldManager(world);
+        System.out.println("Loaded world: " + world.getWorldData().getKey().asFormatted());
 
         ServerSocket socket = new ServerSocket(properties.getPort());
 
         NetHandler handler = new NetHandler(socket);
         NetManager netManager = new NetManager(handler);
-        RegistryManager registryManager = new RegistryManager();
 
-        AbsorbWorldManager worldManager = new AbsorbWorldManager(world);
-
-
-        //Guice.createInjector(new SpongeInjector());
         AbsorbManagers.instance = new AbsorbManagers(netManager, registryManager, worldManager);
 
-        /*WorldManager worldManager = Sponge.server().worldManager();
-        if(worldManager instanceof AbsorbWorldManager manager){
-            AbsorbWorld world = createTestWorld();
-            manager.setDefaultWorld(world);
-        }*/
-
-
+        System.out.println("Ready to accept players");
         handler.start();
     }
 

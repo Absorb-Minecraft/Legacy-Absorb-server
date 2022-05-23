@@ -16,17 +16,17 @@ import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketState;
 import org.absorb.register.AbsorbKey;
+import org.absorb.utils.AsJson;
 import org.absorb.world.biome.Biome;
 import org.absorb.world.type.PlayerWorldTypeView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.configurate.ConfigurateException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class OutgoingJoinPacket implements OutgoingPacket {
@@ -47,13 +47,13 @@ public class OutgoingJoinPacket implements OutgoingPacket {
     private final boolean isFlatWorld;
     private final @NotNull Collection<PlayerWorldTypeView> worldTypes;
     private final @NotNull PlayerWorldTypeView currentWorldType;
-    private final @NotNull Collection<Biome> biomes;
+    private final @NotNull SortedSet<Biome> biomes = new TreeSet<>(Comparator.comparing(Biome::getNetworkId));
 
 
     public OutgoingJoinPacket(@NotNull OutgoingJoinPacketBuilder builder) {
         this.blockViewDistance = builder.getBlockViewDistance();
         this.currentWorldType = builder.getCurrentWorldType();
-        this.biomes = builder.getBiomes();
+        this.biomes.addAll(builder.getBiomes());
         this.entityId = builder.getEntityId();
         this.entityViewDistance = builder.getEntityViewDistance();
         this.gameMode = builder.getGameMode();
@@ -181,7 +181,6 @@ public class OutgoingJoinPacket implements OutgoingPacket {
         ByteBuffer isDebugWorld = Serializers.BOOLEAN.write(this.isDebugWorld);
         ByteBuffer isFlat = Serializers.BOOLEAN.write(this.isFlatWorld);
 
-
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             NBTOutputStream nbtOs = new NBTOutputStream(os, false);
@@ -191,7 +190,7 @@ public class OutgoingJoinPacket implements OutgoingPacket {
             nbtOs.write(previousGamemode.array());
             nbtOs.write(worldTypeIds.array());
             nbtOs.writeFully(biomeCodec);
-            nbtOs.writeFully(this.currentWorldType.toNBT());
+            nbtOs.writeFully(this.currentWorldType.toTypeNBT());
             nbtOs.write(mainWorldTypeId.array());
             nbtOs.write(seed.array());
             nbtOs.write(maxPlayers.array());

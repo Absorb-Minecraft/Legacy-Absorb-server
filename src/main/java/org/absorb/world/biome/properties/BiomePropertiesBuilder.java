@@ -9,8 +9,8 @@ public class BiomePropertiesBuilder implements Builder<BiomeProperties> {
     private int waterFogColour;
     private int fogColour;
     private int waterColour;
-    private int foliageColour;
-    private int grassColour;
+    private Integer foliageColour;
+    private Integer grassColour;
     private GrassModifier grassColourModifier;
 
     public BiomeWeather getWeather() {
@@ -58,7 +58,7 @@ public class BiomePropertiesBuilder implements Builder<BiomeProperties> {
         return this;
     }
 
-    public int getFoliageColour() {
+    public Integer getFoliageColour() {
         return this.foliageColour;
     }
 
@@ -67,7 +67,7 @@ public class BiomePropertiesBuilder implements Builder<BiomeProperties> {
         return this;
     }
 
-    public int getGrassColour() {
+    public Integer getGrassColour() {
         return this.grassColour;
     }
 
@@ -94,6 +94,7 @@ public class BiomePropertiesBuilder implements Builder<BiomeProperties> {
     public Builder<BiomeProperties> reset() {
         this.grassColourModifier = null;
         this.weather = null;
+        this.grassColour = null;
         return this;
     }
 

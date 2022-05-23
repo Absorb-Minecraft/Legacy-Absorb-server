@@ -58,7 +58,6 @@ public class CollectionUtils {
             }
             if (incomingValue==null) {
                 throw new IllegalArgumentException("Expected: '" + expectedValue + "\nIncoming: 'null'");
-
             }
             if (expectedValue instanceof Map<?, ?> expectedMap) {
                 if (incomingValue instanceof Map<?, ?> incomingMap) {
@@ -85,7 +84,7 @@ public class CollectionUtils {
     public static void match(Map<?, ?> expected, Map<?, ?> incoming) throws IllegalArgumentException {
         for (Map.Entry<?, ?> entry : expected.entrySet()) {
             if (!incoming.containsKey(entry.getKey())) {
-                throw new IllegalArgumentException("Could not find key of '" + entry.getKey() + "'");
+                throw new IllegalArgumentException("Could not find key of '" + entry.getKey() + "' in " + incoming.entrySet());
             }
             Object value = incoming.get(entry.getKey());
             if (entry.getValue() instanceof Collection<?> collection) {
@@ -105,7 +104,13 @@ public class CollectionUtils {
                     throw new IllegalArgumentException("The value of '" + entry.getKey() + "' was excepted to be a " +
                             "Map, however was a " + value.getClass().getName());
                 }
-                match(map, result);
+                try {
+                    match(map, result);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Exception on key " + entry.getKey() + " -> map matching\nMap " +
+                            "found in list with " + expected.entrySet(),
+                            e);
+                }
                 continue;
             }
             if (!entry.getValue().equals(value)) {

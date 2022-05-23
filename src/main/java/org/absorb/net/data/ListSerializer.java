@@ -30,11 +30,11 @@ public class ListSerializer<T> implements Serializer<List<T>> {
         ByteBuffer ret = Serializers.VAR_INTEGER.write(value.size());
         for (T entry : value) {
             ByteBuffer entryBuffer = this.serializer.write(entry);
-            byte[] array = entryBuffer.array();
             ByteBuffer temp = ByteBuffer.allocate(entryBuffer.limit() + ret.limit());
-            temp.put(ret);
-            temp.put(array); //some reason it doesnt work when you put the entryBuffer, so thats why the array is
-            // extracted before hand and that is added
+            temp.put(ret.array());
+            temp.put(entryBuffer.array());
+            /*some reason it doesnt work when you put the entryBuffer, so thats why the array is
+            extracted before hand and that is added*/
             ret = temp;
         }
         return ret;

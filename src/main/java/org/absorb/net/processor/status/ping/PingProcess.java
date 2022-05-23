@@ -11,6 +11,9 @@ import java.io.IOException;
 public class PingProcess implements NetProcess<IncomingPingPacket> {
     @Override
     public void onProcess(Client info, IncomingPingPacket packet) throws IOException {
+        if(packet.isUsePlay()){
+            return;
+        }
         new OutgoingPongPacketBuilder().setPayload(packet.getPayload()).build().writeTo(info);
         AbsorbManagers.getNetManager().unregister(info);
     }

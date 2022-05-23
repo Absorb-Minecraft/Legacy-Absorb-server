@@ -55,7 +55,6 @@ public class NetHandler {
         }
 
         private boolean processPacket() throws IOException {
-            System.out.println("Reading: " + Arrays.toString(this.data));
             ByteBuffer data = ByteBuffer.wrap(this.data);
             NetEntryData<Integer> lengthEntry = Serializers.VAR_INTEGER.read(0, data);
             NetEntryData<Integer> packetId =
@@ -66,7 +65,8 @@ public class NetHandler {
                             netInfo.getState());
             if (builder.isEmpty()) {
                 System.err.println("User found to have sent a unknown packet, potentionally cheating. " +
-                        "Kicking to be safe(Id: " + packetId.value() + " State: " + netInfo.getState().name() +
+                        "Kicking to be safe(Id: " + packetId.value() + "(" + Integer.toHexString(packetId.value()) +
+                        ")" + " State: " + netInfo.getState().name() +
                         ")");
                 netInfo.getSocket().close();
                 return false;
@@ -74,7 +74,9 @@ public class NetHandler {
             byte[] packetData = Arrays.copyOfRange(this.data, packetId.endingPosition(), this.data.length);
 
             org.absorb.net.packet.IncomingPacket packet = builder.get().from(ByteBuffer.wrap(packetData)).build();
+            //if (packet.getId()!=IncomingBasicPlayerMovementPacket.ID) {
             System.out.println("\t>>" + packet.getClass().getSimpleName());
+            //}
             packet.getProcess().onProcess(this.netInfo, packet);
             return true;
         }
