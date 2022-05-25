@@ -16,6 +16,7 @@ import org.absorb.utils.AsJson;
 import org.absorb.world.area.ChunkPart;
 import org.absorb.world.area.ChunkSection;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.configurate.ConfigurateException;
 
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -80,7 +81,11 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
         NBTCompound rootHeightMapCompound = new NBTCompound();
         rootHeightMapCompound.put("", heightMapCompound);
         ByteBuffer heightMapBuffer = Serializers.NBT_COMPOUND_ENTRIES.write(rootHeightMapCompound);
-        System.out.println("\tHeightMap: " + AsJson.asTypedJson(rootHeightMapCompound));
+        try {
+            System.out.println("\tHeightMap: " + AsJson.asJson(rootHeightMapCompound));
+        } catch (ConfigurateException e) {
+            e.printStackTrace();
+        }
 
         List<ByteBuffer> chunkSections = this.blockData.stream().map(ChunkSection::write).toList();
         int chunkSectionsSize = chunkSections.parallelStream().mapToInt(sect -> sect.array().length).sum();

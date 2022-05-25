@@ -1,5 +1,6 @@
 package org.absorb;
 
+import org.absorb.event.EventManager;
 import org.absorb.net.NetManager;
 import org.absorb.register.RegistryManager;
 import org.absorb.world.AbsorbWorldManager;
@@ -11,12 +12,18 @@ public class AbsorbManagers {
     private final NetManager netManager;
     private final RegistryManager registryManager;
     private final AbsorbWorldManager worldManager;
+    private final EventManager eventManager;
 
     public AbsorbManagers(NetManager netManager, RegistryManager registryManager,
-                          AbsorbWorldManager worldManager) {
+                          AbsorbWorldManager worldManager, EventManager eventManager) {
         this.netManager = netManager;
         this.registryManager = registryManager;
         this.worldManager = worldManager;
+        this.eventManager = eventManager;
+    }
+    
+    public static EventManager getEventManager() {
+        return instance.eventManager;
     }
 
     public static AbsorbWorldManager getWorldManager() {

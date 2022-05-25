@@ -54,8 +54,8 @@ public class IncomingClientSettingsProcessor implements NetProcess<IncomingClien
         ChunkPart part = chunk.getPartWithBlockHeight(2);
         Set<ChunkSection> set = Set.of(part.asSection());
 
-        new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(set)
-        .build().writeToAsync(connection);
+        /*new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(set)
+        .build().writeToAsync(connection);*/
 
         connection.setPlayingState(PlayingState.LOGIN_PRE_DATA);
 

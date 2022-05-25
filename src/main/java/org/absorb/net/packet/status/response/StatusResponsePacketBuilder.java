@@ -1,6 +1,8 @@
 package org.absorb.net.packet.status.response;
 
 import net.kyori.adventure.text.Component;
+import org.absorb.AbsorbManagers;
+import org.absorb.event.events.connection.ping.ClientPingEvent;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
@@ -14,10 +16,6 @@ public class StatusResponsePacketBuilder implements OutgoingPacketBuilder<Status
     private Component description;
     private int maxPlayers;
     private int currentPlayers;
-
-    public StatusResponsePacketBuilder() {
-        reset();
-    }
 
     public String getVersionName() {
         return this.versionName;
@@ -71,11 +69,11 @@ public class StatusResponsePacketBuilder implements OutgoingPacketBuilder<Status
 
     @Override
     public @NotNull PacketBuilder<StatusResponsePacket> reset() {
-        this.currentPlayers = 0;
-        this.maxPlayers = 1;
+        this.currentPlayers = AbsorbManagers.getNetManager().getClients().size();
+        this.maxPlayers = this.currentPlayers + 1;
         this.description = Component.text("A reimplementation of the minecraft server");
         this.versionName = "Absorb " + MCVersion.CURRENT.name();
-        this.versionProtocol = MCVersion.CURRENT.protocolVersion();
+        this.versionProtocol = 0;
         return this;
     }
 
@@ -92,5 +90,14 @@ public class StatusResponsePacketBuilder implements OutgoingPacketBuilder<Status
     @Override
     public @NotNull PacketState getState() {
         return PacketState.STATUS;
+    }
+
+    public StatusResponsePacketBuilder from(@NotNull ClientPingEvent event) {
+        this.currentPlayers = event.getCurrentPlayers();
+        this.maxPlayers = event.getMaxPlayers();
+        this.versionProtocol = event.getProtocolVersion();
+        this.versionName = event.getNamedVersion();
+        this.description = event.getDescription();
+        return this;
     }
 }

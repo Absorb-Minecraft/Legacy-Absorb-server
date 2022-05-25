@@ -1,9 +1,7 @@
 package org.absorb.net.processor.play.entity.player.movement;
 
-import net.kyori.adventure.text.Component;
 import org.absorb.net.Client;
 import org.absorb.net.PlayingState;
-import org.absorb.net.packet.play.disconnect.OutgoingCloseConnectionPacketBuilder;
 import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayerMovementPacket;
 import org.absorb.net.packet.play.entity.player.movement.outgoing.OutgoingPlayerMovementPacketBuilder;
 import org.absorb.net.processor.NetProcess;
@@ -37,11 +35,11 @@ public class PlayerMovementProcessor implements NetProcess<IncomingPlayerMovemen
         Vector3d next = packet.getPosition();
         double distance = previous.distanceSquared(next);
         if (distance > 100) {
-            new OutgoingCloseConnectionPacketBuilder()
+            /*new OutgoingCloseConnectionPacketBuilder()
                     .setUsingPlay(true)
                     .setMessage(Component.text("moved to quickly: " + distance))
                     .build()
-                    .writeToAsync(connection);
+                    .writeToAsync(connection);*/
             return;
         }
         connection.setLocation(packet.getPosition());

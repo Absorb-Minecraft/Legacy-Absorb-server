@@ -12,8 +12,8 @@ public final class SerializerUtils {
         ByteBuffer buffer = ByteBuffer.allocate(0);
         for (ByteBuffer value : collection) {
             ByteBuffer temp = ByteBuffer.allocate(buffer.limit() + value.limit());
-            temp.put(buffer);
-            temp.put(value);
+            temp.put(buffer.array());
+            temp.put(value.array());
             buffer = temp;
         }
         return buffer;

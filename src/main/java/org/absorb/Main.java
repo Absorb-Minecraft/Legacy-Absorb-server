@@ -1,5 +1,6 @@
 package org.absorb;
 
+import org.absorb.event.EventManager;
 import org.absorb.files.ServerProperties;
 import org.absorb.net.NetManager;
 import org.absorb.net.handler.NetHandler;
@@ -32,13 +33,14 @@ public class Main {
         RegistryManager registryManager = new RegistryManager();
         AbsorbWorldManager worldManager = new AbsorbWorldManager(world);
         System.out.println("Loaded world: " + world.getWorldData().getKey().asFormatted());
+        EventManager eventManager = new EventManager();
 
         ServerSocket socket = new ServerSocket(properties.getPort());
 
         NetHandler handler = new NetHandler(socket);
         NetManager netManager = new NetManager(handler);
 
-        AbsorbManagers.instance = new AbsorbManagers(netManager, registryManager, worldManager);
+        AbsorbManagers.instance = new AbsorbManagers(netManager, registryManager, worldManager, eventManager);
 
         System.out.println("Ready to accept players");
         handler.start();
