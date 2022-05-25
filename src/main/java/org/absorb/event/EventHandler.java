@@ -86,7 +86,7 @@ public class EventHandler<E extends Event> {
         });
     }
 
-    public @NotNull E call(@NotNull EventTriggerType type, @NotNull E event) throws InvocationTargetException,
+    public @NotNull E call(@NotNull EventTriggerType<?> type, @NotNull E event) throws InvocationTargetException,
             IllegalAccessException {
         if (Arrays.stream(this.excludeWhen).anyMatch(trigger -> trigger.isInstance(type))) {
             throw new IllegalArgumentException("Cannot fire event with trigger type of " + type);
@@ -99,6 +99,13 @@ public class EventHandler<E extends Event> {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
+
+        for (Map.Entry<WithData, Object> entry : with.entrySet()) {
+            if (!entry.getKey().type().isInstance(entry.getValue())) {
+                throw new IllegalArgumentException("The EventHandler (" + this.eventHandler.getName() + ") has been " +
+                        "attempted to be invoked with a event that does not have the correct @With values. With: " + entry.getKey().name() + " ValueType: " + entry.getValue().getClass().getName());
+            }
+        }
 
         Object[] parameters = new Object[with.size() + 1];
         Object[] withParameters =
@@ -148,7 +155,7 @@ public class EventHandler<E extends Event> {
                     throw new IllegalArgumentException("Method name found in with (" + methodName + ") on event " +
                             "handler (" + method.getName() + ") does not relate to a none parameter method found in " + eventType.getName(), e);
                 }
-                Class<?> returnType = withMethod.getReturnType();
+                Class<?> returnType = parameter.getType();
                 handler.with.add(new WithData(i, methodName, returnType));
                 continue;
             }
