@@ -27,9 +27,9 @@ jobs:
     - name: Create Test Reports
       if: always() && (steps.test.outcome == 'failure')
       uses: actions/upload-artifact@v2
-            with:
-              name: "TestReport"
-              path: "target/surefire-reports/*.xml"
+      with:
+        name: "TestReport"
+        path: "target/surefire-reports/*.xml"
 
   build:
     name: Compiling code
