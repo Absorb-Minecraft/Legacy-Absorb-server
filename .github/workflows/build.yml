@@ -12,7 +12,7 @@ on:
 jobs:
   test:
     name: Running Tests
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
