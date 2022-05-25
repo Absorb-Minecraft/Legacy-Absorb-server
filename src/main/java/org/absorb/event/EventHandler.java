@@ -126,7 +126,7 @@ public class EventHandler<E extends Event> {
             throw new IllegalArgumentException("Provided method (" + method.getName() + ") does not contain a event");
         }
         Class<?> parameterEvent = parameters[0].getType();
-        if (!parameterEvent.isAssignableFrom(Event.class)) {
+        if (!Event.class.isAssignableFrom(parameterEvent)) {
             throw new IllegalArgumentException("Provided method (" + method.getName() + ") does not contain a event " +
                     "as its first parameter");
         }
