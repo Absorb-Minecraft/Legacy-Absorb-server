@@ -19,7 +19,7 @@ import org.mockito.Mockito;
 import java.time.LocalTime;
 import java.util.Collections;
 
-public class EventTests {
+public class EventTest {
 
     private EventManager manager;
     private EventCause willCause = new EventCause(Collections.emptyList());
@@ -113,7 +113,7 @@ public class EventTests {
 
         @OnEvent
         public void testEventFired(TestEvent event) {
-            EventTests.this.data = event.getData();
+            EventTest.this.data = event.getData();
         }
     }
 
@@ -121,7 +121,7 @@ public class EventTests {
 
         @OnEvent(hasModifications = false)
         public void testWithEventFired(TestWithEvent event, @With(methodName = "getData") Double data) {
-            EventTests.this.data = data;
+            EventTest.this.data = data;
         }
 
     }

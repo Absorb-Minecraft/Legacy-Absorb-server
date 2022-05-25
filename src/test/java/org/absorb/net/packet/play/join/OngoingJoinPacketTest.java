@@ -23,10 +23,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OngoingJoinPacketTests {
+public class OngoingJoinPacketTest {
 
     @Test
-    public void biomeCodec() {
+    public void testBiomeCodec() {
         NBTCompound expectedCompound;
         try {
             expectedCompound = NBTReader.read(Main.class.getResourceAsStream("/1.18.2_dim_codec.nbt"));
@@ -65,7 +65,7 @@ public class OngoingJoinPacketTests {
     }
 
     @Test
-    public void biomeCodecExtra() {
+    public void testBiomeCodecExtra() {
         NBTCompound expectedCompound;
         try {
             expectedCompound = NBTReader.read(Main.class.getResourceAsStream("/1.18.2_dim_codec.nbt"));
@@ -97,13 +97,6 @@ public class OngoingJoinPacketTests {
                         .addAll(NBTCompoundKeys.DIMENSION_TYPE.withValue(worldTypeCompoundGroup),
                                 NBTCompoundKeys.WORLD_GEN_BIOME.withValue(biomesCompoundGroup))
                         .build();
-
-        try {
-            System.out.println(AsJson.asJson(biomeCodec));
-        } catch (ConfigurateException e) {
-            e.printStackTrace();
-        }
-
 
         //TEST
         CollectionUtils.match(biomeCodec, expectedCompound);

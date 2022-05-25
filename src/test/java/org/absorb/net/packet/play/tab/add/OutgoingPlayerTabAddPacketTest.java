@@ -22,7 +22,7 @@ import java.util.UUID;
 public class OutgoingPlayerTabAddPacketTest {
 
     @Test
-    public void canReadWritten() {
+    public void testCanReadWritten() {
         UUID uuid = UUID.randomUUID();
         String name = "Test";
         int ping = 100;
@@ -58,19 +58,12 @@ public class OutgoingPlayerTabAddPacketTest {
         NetEntryData<Boolean> hasDisplayNameBuffer = Serializers.BOOLEAN.read(pingBuffer.endingPosition(), buffer);
 
         //assertion
-        //bytes are correct
-        System.out.println("Read UUID: " + Arrays.toString(Arrays.copyOfRange(buffer.array(), uuidBuffer.originalPosition(),
-                uuidBuffer.endingPosition())));
-
-
-        //values are correct
         int currentLength = Arrays.copyOfRange(buffer.array(), lengthBuffer.endingPosition(), buffer.array().length).length;
         Assertions.assertEquals(currentLength, lengthBuffer.value());
         Assertions.assertEquals(uuid, uuidBuffer.value());
         Assertions.assertEquals(name, nameBuffer.value());
         Assertions.assertEquals(ping, pingBuffer.value());
         Assertions.assertEquals(mode.getNetworkId(), gamemodeBuffer.value());
-
-
+        Assertions.assertFalse(hasDisplayNameBuffer.value());
     }
 }

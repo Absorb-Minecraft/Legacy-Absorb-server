@@ -10,8 +10,30 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  test:
+    name: Running Tests
+    run-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build with Maven
+      id: test
+      run: mvn clean test
+    - name: Create Test Reports
+      if: always() && (steps.test.outcome == 'failure')
+      uses: actions/upload-artifact@v2
+            with:
+              name: "TestReport"
+              path: "target/surefire-reports/*.xml"
 
+  build:
+    name: Compiling code
+    needs: test
     runs-on: ubuntu-latest
 
     steps:

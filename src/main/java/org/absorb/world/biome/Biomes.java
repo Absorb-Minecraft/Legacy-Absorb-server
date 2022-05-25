@@ -176,7 +176,7 @@ public interface Biomes {
 
             .setDefaultProperties(new BiomePropertiesBuilder()
                     .setWeather(BiomeWeather.RAIN)
-                    .setWaterColour(12638463)
+                    .setWaterColour(4159204)
                     .setFogColour(12638463)
                     .setWaterFogColour(329011)
                     .setSkyColour(7972607)
@@ -376,7 +376,7 @@ public interface Biomes {
             .setNetworkId(17)
             .setDefaultProperties(new BiomePropertiesBuilder()
                     .setWeather(BiomeWeather.NONE)
-                    .setWaterColour(12638463)
+                    .setWaterColour(4159204)
                     .setFogColour(12638463)
                     .setWaterFogColour(329011)
                     .setSkyColour(7254527)
@@ -933,7 +933,7 @@ public interface Biomes {
                     .setSkyColour(8103167)
                     .build())
             .build();
-    Biome FOREST3A = new BiomeBuilder()
+    Biome DEEP_COLD_OCEAN = new BiomeBuilder()
             .setTemperature(0.5f)
             .setDownfall(0.5f)
             .setTickDelay(6000)
@@ -952,7 +952,7 @@ public interface Biomes {
                     .setSkyColour(8103167)
                     .build())
             .build();
-    Biome FOREST4A = new BiomeBuilder()
+    Biome FROZEN_OCEAN = new BiomeBuilder()
             .setTemperature(0.0f)
             .setDownfall(0.5f)
             .setTickDelay(6000)
@@ -992,7 +992,7 @@ public interface Biomes {
                     .setSkyColour(8103167)
                     .build())
             .build();
-    Biome FOREST6A = new BiomeBuilder()
+    Biome MUSHROOM_FIELDS = new BiomeBuilder()
             .setTemperature(0.9f)
             .setDownfall(1.0f)
             .setMoodSound(BiomeSounds.AMBIENT_CAVE)
