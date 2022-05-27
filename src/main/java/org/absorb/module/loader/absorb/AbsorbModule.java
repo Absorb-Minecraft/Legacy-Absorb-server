@@ -1,8 +1,6 @@
 package org.absorb.module.loader.absorb;
 
 import org.absorb.module.Module;
-import org.absorb.module.ModuleBuilder;
-import org.absorb.module.loader.ModuleLoader;
 import org.absorb.module.loader.ModuleLoaders;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,14 +8,19 @@ import java.io.File;
 
 public class AbsorbModule extends Module {
 
-    private File load;
+    private final @NotNull File load;
 
-    public AbsorbModule(@NotNull ModuleBuilder builder) {
+    public AbsorbModule(@NotNull AbsorbModuleBuilder builder) {
         super(builder);
+        this.load = builder.getFile();
+    }
+
+    public File getFile() {
+        return this.load;
     }
 
     @Override
-    public ModuleLoader getLoader() {
+    public AbsorbModuleLoader getLoader() {
         return ModuleLoaders.ABSORB_MODULE;
     }
 }

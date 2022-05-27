@@ -6,7 +6,21 @@ import org.absorb.module.loader.ModuleLoaders;
 import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 public class AbsorbModuleBuilder extends ModuleBuilder {
+
+    private File file;
+
+    public File getFile() {
+        return this.file;
+    }
+
+    public AbsorbModuleBuilder setFile(File file) {
+        this.file = file;
+        return this;
+    }
+
     @Override
     public AbsorbModuleLoader getLoader() {
         return ModuleLoaders.ABSORB_MODULE;
