@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 public class OutgoingPongPacket implements OutgoingPacket {
 
     public static final int ID = 0x01;
-    public static final int PLAY_ID = 0x1D;
+    public static final int PLAY_ID = 0x30;
 
     private final long payload;
     private final boolean usePlay;
@@ -25,7 +25,7 @@ public class OutgoingPongPacket implements OutgoingPacket {
     @Override
     public ByteBuffer toBytes(Client stream) {
         if (this.usePlay) {
-            return SerializerUtils.createPacket(PLAY_ID);
+            return SerializerUtils.createPacket(PLAY_ID, Serializers.INTEGER.write((int) this.payload));
         }
         return SerializerUtils.createPacket(ID, Serializers.LONG.write(this.payload));
     }

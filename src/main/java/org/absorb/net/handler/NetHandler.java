@@ -28,8 +28,8 @@ public class NetHandler {
 
     public void start() {
         this.currentlyRunning = new ConnectionHandler();
-        //new Thread(this.currentlyRunning).start();
-        this.currentlyRunning.run();
+        new Thread(this.currentlyRunning).start();
+        //this.currentlyRunning.run();
     }
 
     public void end() {

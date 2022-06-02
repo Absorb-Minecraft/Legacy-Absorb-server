@@ -5,7 +5,7 @@ import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.processor.NetProcess;
-import org.absorb.net.processor.play.entity.player.movement.PlayerMovementProcessorWrapper;
+import org.absorb.net.processor.play.entity.player.movement.PlayerMovementProcessorBasicWrapper;
 import org.jetbrains.annotations.NotNull;
 
 public class IncomingBasicPlayerMovementPacket implements IncomingPacket {
@@ -43,7 +43,7 @@ public class IncomingBasicPlayerMovementPacket implements IncomingPacket {
 
     @Override
     public @NotNull <P extends IncomingPacket> NetProcess<P> getProcess() {
-        return (NetProcess<P>) new PlayerMovementProcessorWrapper();
+        return (NetProcess<P>) new PlayerMovementProcessorBasicWrapper();
     }
 
     @Override

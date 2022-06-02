@@ -12,6 +12,8 @@ import org.absorb.entity.living.human.tab.PlayerTabBuilder;
 import org.absorb.inventory.entity.player.PlayerInventory;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.play.disconnect.OutgoingCloseConnectionPacketBuilder;
+import org.absorb.threaded.SimpleDataPoint;
+import org.absorb.threaded.ThreadedDataPoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.math.vector.Vector3d;
@@ -23,7 +25,9 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
+import java.util.stream.Collectors;
 
 public class Client {
 
@@ -41,6 +45,7 @@ public class Client {
     private boolean hiddenToList;
     private int lastKnownPing;
     private final Collection<Integer> teleportIds = new LinkedTransferQueue<>();
+    private final Collection<ThreadedDataPoint<Integer, Integer>> pings = new LinkedBlockingQueue<>();
     private PlayingState playingState = PlayingState.AWAITING;
     private @Nullable Vector3d lastPosition;
 
@@ -50,6 +55,30 @@ public class Client {
     public Client(@NotNull Socket socket) throws IOException {
         this.lastPacketSent = LocalDateTime.now();
         this.socket = socket;
+    }
+
+    public int getPingId() {
+        return this.pings.parallelStream().mapToInt(ThreadedDataPoint::getValue).sum();
+    }
+
+    public void addPingId(int id) {
+        this.pings.add(new SimpleDataPoint<>(id));
+    }
+
+    public void receivedPingId(int id) {
+        Optional<ThreadedDataPoint<Integer, Integer>> opPing = this.pings.parallelStream().filter(ping -> ping.getValue()==id).findFirst();
+        if (opPing.isEmpty()) {
+            return;
+        }
+        Set<ThreadedDataPoint<Integer, Integer>> toRemove =
+                this.pings.parallelStream().filter(ping -> ping.getTime().isBefore(opPing.get().getTime())).collect(Collectors.toSet());
+
+        LocalDateTime now = LocalDateTime.now();
+        this.lastKnownPing = now.getNano() - opPing.get().getTime().getNano();
+
+        this.pings.removeAll(toRemove);
+        this.pings.remove(opPing.get());
+
     }
 
     public @NotNull Vector3d getLocation() {
@@ -237,7 +266,7 @@ public class Client {
                 this.socket.getOutputStream().flush();
                 index = index + reduced.length;
             }
-        }catch (SocketException ignored){
+        } catch (SocketException ignored) {
 
         }
     }

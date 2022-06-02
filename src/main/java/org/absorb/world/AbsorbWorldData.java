@@ -13,6 +13,26 @@ public class AbsorbWorldData {
     private WorldType type;
     private @NotNull Vector3i compassPoint = new Vector3i(0, 0, 0);
     private @NotNull Vector3i spawnPoint = new Vector3i(0, 0, 0);
+    private long worldAge = 1;
+    private long worldTime = 1;
+
+    public long getWorldTime() {
+        return this.worldTime;
+    }
+
+    public AbsorbWorldData setWorldTime(long worldTime) {
+        this.worldTime = worldTime;
+        return this;
+    }
+
+    public long getWorldAge() {
+        return this.worldAge;
+    }
+
+    public AbsorbWorldData setWorldAge(long worldAge) {
+        this.worldAge = worldAge;
+        return this;
+    }
 
     public @NotNull Vector3i getCompassPoint() {
         return this.compassPoint;

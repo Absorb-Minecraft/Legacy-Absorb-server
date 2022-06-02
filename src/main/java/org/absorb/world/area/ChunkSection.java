@@ -2,7 +2,6 @@ package org.absorb.world.area;
 
 import org.absorb.block.pallet.BlockPallet;
 import org.absorb.block.pallet.SinglePallet;
-import org.absorb.block.state.AbsorbBlockStateBuilder;
 import org.absorb.block.state.FullBlockState;
 import org.absorb.block.type.AbsorbBlockTypes;
 import org.absorb.net.data.SerializerUtils;
@@ -46,29 +45,43 @@ public class ChunkSection {
     }
 
     public ByteBuffer write() {
-        System.out.println("Writing Chunk Section");
-        short blockCount =
-                (short) this
+        Set<FullBlockState> blocks = this
+                .blockPallets
+                .stream()
+                .flatMap(blockPallet -> blockPallet.getBlocks().parallelStream())
+                .filter(state -> !AbsorbBlockTypes.AIR.isEqual(state.getState().getType()))
+                .filter(state -> !AbsorbBlockTypes.CAVE_AIR.isEqual(state.getState().getType()))
+                .filter(state -> !AbsorbBlockTypes.VOID_AIR.isEqual(state.getState().getType()))
+                .collect(Collectors.toSet());
+
+        List<BlockPallet> pallets =
+                this
                         .blockPallets
                         .stream()
-                        .flatMap(blockPallet -> blockPallet.getBlocks().parallelStream())
-                        .filter(state -> !AbsorbBlockTypes.AIR.isEqual(state.getState().getType()))
-                        .filter(state -> !AbsorbBlockTypes.CAVE_AIR.isEqual(state.getState().getType()))
-                        .filter(state -> !AbsorbBlockTypes.VOID_AIR.isEqual(state.getState().getType()))
-                        .count();
+                        .filter(state -> state.getBlocks().parallelStream().noneMatch(full -> AbsorbBlockTypes.CAVE_AIR.isEqual(full.getState().getType())))
+                        .filter(state -> state.getBlocks().parallelStream().noneMatch(full -> AbsorbBlockTypes.VOID_AIR.isEqual(full.getState().getType())))
+                        .filter(state -> state.getBlocks().parallelStream().noneMatch(full -> AbsorbBlockTypes.AIR.isEqual(full.getState().getType())))
+                        .collect(Collectors.toCollection(LinkedList::new));
+
+
+        System.out.println("Writing Chunk Section");
+        short blockCount =
+                (short) blocks.size();
         ByteBuffer blockCountBuffer = Serializers.SHORT.write(blockCount);
         System.out.println("\tBlockCount: " + blockCount + " " + Arrays.toString(blockCountBuffer.array()));
 
 
+        /*List<ByteBuffer> blockBuffers =
+                this.blockPallets.stream().map(BlockPallet::write).collect(Collectors.toCollection(LinkedList::new));*/
         List<ByteBuffer> blockBuffers =
-                this.blockPallets.stream().map(BlockPallet::write).collect(Collectors.toCollection(LinkedList::new));
-        if(blockBuffers.size() != BLOCK_STATES_LIMIT){
+                pallets.stream().map(BlockPallet::write).collect(Collectors.toCollection(LinkedList::new));
+        if (blockBuffers.size()!=BLOCK_STATES_LIMIT) {
             int sizeBefore = blockBuffers.size();
-            if(sizeBefore > BLOCK_STATES_LIMIT){
+            if (sizeBefore > BLOCK_STATES_LIMIT) {
                 throw new RuntimeException("Blocks exceeded maximum per chunk: Max: " + BLOCK_STATES_LIMIT + " " +
                         "Currently: " + sizeBefore);
             }
-            for(int i = 0; i < (BLOCK_STATES_LIMIT - sizeBefore); i++){
+            for (int i = 0; i < (BLOCK_STATES_LIMIT - sizeBefore); i++) {
                 blockBuffers.add(new SinglePallet(AbsorbBlockTypes.AIR.get().getDefaultBlockState().asFull()).write());
             }
         }
@@ -76,13 +89,13 @@ public class ChunkSection {
         System.out.println("\tBlockBuffer: (" + blockBuffers.size() + ") " + Arrays.toString(blockBuffer.array()));
         List<ByteBuffer> biomeBuffers =
                 this.biomePallets.stream().map(BlockPallet::write).collect(Collectors.toCollection(LinkedList::new));
-        if(biomeBuffers.size() != BIOME_STATES_LIMIT){
+        if (biomeBuffers.size()!=BIOME_STATES_LIMIT) {
             int sizeBefore = biomeBuffers.size();
-            if(sizeBefore > BIOME_STATES_LIMIT){
+            if (sizeBefore > BIOME_STATES_LIMIT) {
                 throw new RuntimeException("Biome blocks exceeded maximum per chunk: Max: " + BIOME_STATES_LIMIT + " " +
                         "Currently: " + sizeBefore);
             }
-            for(int i = 0; i < (BIOME_STATES_LIMIT - sizeBefore); i++){
+            for (int i = 0; i < (BIOME_STATES_LIMIT - sizeBefore); i++) {
                 biomeBuffers.add(new SinglePallet(AbsorbBlockTypes.AIR.get().getDefaultBlockState().asFull()).write());
             }
         }

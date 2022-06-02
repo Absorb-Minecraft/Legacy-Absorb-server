@@ -1,47 +1,58 @@
 package org.absorb;
 
 import org.absorb.event.EventManager;
+import org.absorb.files.ServerProperties;
 import org.absorb.module.ModuleManager;
 import org.absorb.net.NetManager;
 import org.absorb.register.RegistryManager;
+import org.absorb.schedule.ScheduleManager;
 import org.absorb.world.AbsorbWorldManager;
+import org.jetbrains.annotations.Nullable;
 
 public class AbsorbManagers {
 
     public static AbsorbManagers instance;
 
-    private final NetManager netManager;
-    private final RegistryManager registryManager;
-    private final AbsorbWorldManager worldManager;
-    private final EventManager eventManager;
-    private final ModuleManager moduleManager;
+    NetManager netManager;
+    RegistryManager registryManager;
+    AbsorbWorldManager worldManager;
+    EventManager eventManager;
+    ModuleManager moduleManager;
+    ServerProperties properties;
+    ScheduleManager scheduleManager;
 
-    public AbsorbManagers(NetManager netManager, RegistryManager registryManager,
-                          AbsorbWorldManager worldManager, EventManager eventManager, ModuleManager moduleManager) {
-        this.netManager = netManager;
-        this.registryManager = registryManager;
-        this.worldManager = worldManager;
-        this.eventManager = eventManager;
-        this.moduleManager = moduleManager;
+    public static ServerProperties getProperties(){
+        return instance.properties;
     }
 
     public static EventManager getEventManager() {
-        return instance.eventManager;
+        return get(instance.eventManager);
     }
 
     public static ModuleManager getModuleManager() {
-        return instance.moduleManager;
+        return get(instance.moduleManager);
     }
 
     public static AbsorbWorldManager getWorldManager() {
-        return instance.worldManager;
+        return get(instance.worldManager);
     }
 
     public static NetManager getNetManager() {
-        return instance.netManager;
+        return get(instance.netManager);
     }
 
     public static RegistryManager getRegistryManager() {
-        return instance.registryManager;
+        return get(instance.registryManager);
+    }
+
+    public static ScheduleManager getScheduleManager() {
+        return get(instance.scheduleManager);
+    }
+
+    private static <T> T get(@Nullable T value) {
+        if (value==null) {
+            throw new RuntimeException("Manager has not booted yet");
+        }
+        return value;
     }
 }

@@ -58,6 +58,9 @@ public class ChunkPart implements BlockSetter {
                     "check the timing of your code");
             this.chunk.generatePartWithLevel(this.level);
         }
+        while(this.generated == null){
+
+        }
         return this.generated.getBlock(x, y, z, this.chunk.getWorld());
     }
 

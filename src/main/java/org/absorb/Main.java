@@ -2,7 +2,6 @@ package org.absorb;
 
 import org.absorb.event.EventManager;
 import org.absorb.files.ServerProperties;
-import org.absorb.module.Module;
 import org.absorb.module.ModuleManager;
 import org.absorb.module.loader.ModuleLoaders;
 import org.absorb.module.loader.absorb.AbsorbModule;
@@ -11,6 +10,8 @@ import org.absorb.net.NetManager;
 import org.absorb.net.handler.NetHandler;
 import org.absorb.register.AbsorbKey;
 import org.absorb.register.RegistryManager;
+import org.absorb.schedule.Schedule;
+import org.absorb.schedule.ScheduleManager;
 import org.absorb.utils.Identifiable;
 import org.absorb.world.AbsorbWorld;
 import org.absorb.world.AbsorbWorldBuilder;
@@ -31,7 +32,13 @@ import java.util.stream.Collectors;
 public class Main {
 
     public static void init() throws IOException {
-        ServerProperties properties = new ServerProperties();
+        AbsorbManagers.instance = new AbsorbManagers();
+        AbsorbManagers.instance.registryManager = new RegistryManager();
+        AbsorbManagers.instance.eventManager = new EventManager();
+        AbsorbManagers.instance.moduleManager = new ModuleManager();
+        AbsorbManagers.instance.scheduleManager = new ScheduleManager();
+
+        AbsorbManagers.instance.properties = new ServerProperties();
         AbsorbWorld world =
                 new AbsorbWorldBuilder()
                         .setBlockMax(new Vector3i(600, 20, 600))
@@ -41,13 +48,10 @@ public class Main {
                                 .setSeed(0)
                                 .setKey(new AbsorbKey(Identifiable.MINECRAFT_HOST, "temp")))
                         .build();
-        RegistryManager registryManager = new RegistryManager();
-        AbsorbWorldManager worldManager = new AbsorbWorldManager(world);
+        AbsorbManagers.instance.worldManager = new AbsorbWorldManager(world);
         System.out.println("Loaded world: " + world.getWorldData().getKey().asFormatted());
-        EventManager eventManager = new EventManager();
-        ModuleManager moduleManager = new ModuleManager();
         AbsorbModuleLoader absorbModuleLoader = ModuleLoaders.ABSORB_MODULE;
-        if(!AbsorbModuleLoader.MODULE_FOLDER.exists()){
+        if (!AbsorbModuleLoader.MODULE_FOLDER.exists()) {
             AbsorbModuleLoader.MODULE_FOLDER.mkdirs();
         }
         @NotNull Collection<File> canLoad = absorbModuleLoader.getCanLoad();
@@ -72,15 +76,15 @@ public class Main {
         });
 
 
-        ServerSocket socket = new ServerSocket(properties.getPort());
+        ServerSocket socket = new ServerSocket(AbsorbManagers.getProperties().getPort());
 
         NetHandler handler = new NetHandler(socket);
-        NetManager netManager = new NetManager(handler);
-
-        AbsorbManagers.instance = new AbsorbManagers(netManager, registryManager, worldManager, eventManager, moduleManager);
+        AbsorbManagers.instance.netManager = new NetManager(handler);
 
         System.out.println("Ready to accept players");
         handler.start();
+        RegistryManager.getVanillaValues(Schedule.class).parallelStream().forEach(schedule -> AbsorbManagers.instance.scheduleManager.register(schedule));
+        AbsorbManagers.getScheduleManager().runSchedulers();
     }
 
     public static void main(String[] args) {

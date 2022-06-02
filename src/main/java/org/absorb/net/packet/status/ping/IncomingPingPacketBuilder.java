@@ -32,6 +32,10 @@ public class IncomingPingPacketBuilder implements IncomingPacketBuilder<Incoming
 
     @Override
     public IncomingPingPacketBuilder from(ByteBuffer packetBytes) {
+        if (this.usePlay) {
+            this.payload = Serializers.INTEGER.read(0, packetBytes).value();
+            return this;
+        }
         this.payload = Serializers.LONG.read(0, packetBytes).value();
         return this;
     }
