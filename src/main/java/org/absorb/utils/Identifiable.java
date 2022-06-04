@@ -7,6 +7,7 @@ public interface Identifiable {
 
     String MINECRAFT_HOST = "minecraft";
     String ABSORB_HOST = "absorb";
+    String BRIGADIER_HOST = "brigadier";
 
     @NotNull String getName();
 

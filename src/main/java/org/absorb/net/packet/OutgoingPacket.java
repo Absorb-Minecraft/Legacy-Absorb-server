@@ -15,8 +15,6 @@ public interface OutgoingPacket extends Packet {
 
     default void writeTo(@NotNull Client stream) throws IOException {
         ByteBuffer bytes = this.toBytes(stream);
-        System.out.println("Writing: ");
-        System.out.println("\t>>" + this.getClass().getSimpleName());
         stream.write(bytes);
     }
 

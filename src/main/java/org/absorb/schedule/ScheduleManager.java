@@ -1,5 +1,6 @@
 package org.absorb.schedule;
 
+import org.absorb.Main;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public class ScheduleManager {
 
     public void runSchedulers() {
         new Thread(() -> {
-            while (true) {
+            while (Main.IS_RUNNING) {
                 this.schedules.parallelStream().forEach(schedule -> {
                     LocalDateTime now = LocalDateTime.now();
                     LocalDateTime scheduleTime = schedule.getTime();

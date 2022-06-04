@@ -1,7 +1,11 @@
 package org.absorb;
 
+import org.absorb.command.CommandManager;
+import org.absorb.command.Commands;
+import org.absorb.console.ConsoleSource;
 import org.absorb.event.EventManager;
 import org.absorb.files.ServerProperties;
+import org.absorb.message.channel.ChannelManager;
 import org.absorb.module.ModuleManager;
 import org.absorb.module.loader.ModuleLoaders;
 import org.absorb.module.loader.absorb.AbsorbModule;
@@ -31,12 +35,26 @@ import java.util.stream.Collectors;
 
 public class Main {
 
+    public static boolean IS_RUNNING = true;
+
     public static void init() throws IOException {
+        for (int i = 0; i < 25; i++) {
+            System.out.println();
+        }
         AbsorbManagers.instance = new AbsorbManagers();
+        AbsorbManagers.instance.console = new ConsoleSource();
+        AbsorbManagers.getConsole().setProgress(0, 5);
         AbsorbManagers.instance.registryManager = new RegistryManager();
         AbsorbManagers.instance.eventManager = new EventManager();
         AbsorbManagers.instance.moduleManager = new ModuleManager();
         AbsorbManagers.instance.scheduleManager = new ScheduleManager();
+        AbsorbManagers.instance.channelManager = new ChannelManager();
+        AbsorbManagers.instance.commandManager = new CommandManager();
+
+
+        Commands.getAll();
+        AbsorbManagers.getConsole().setProgress(1, 5);
+
 
         AbsorbManagers.instance.properties = new ServerProperties();
         AbsorbWorld world =
@@ -49,13 +67,18 @@ public class Main {
                                 .setKey(new AbsorbKey(Identifiable.MINECRAFT_HOST, "temp")))
                         .build();
         AbsorbManagers.instance.worldManager = new AbsorbWorldManager(world);
+
         System.out.println("Loaded world: " + world.getWorldData().getKey().asFormatted());
+        AbsorbManagers.getConsole().setProgress(1, 4);
+
         AbsorbModuleLoader absorbModuleLoader = ModuleLoaders.ABSORB_MODULE;
         if (!AbsorbModuleLoader.MODULE_FOLDER.exists()) {
             AbsorbModuleLoader.MODULE_FOLDER.mkdirs();
         }
         @NotNull Collection<File> canLoad = absorbModuleLoader.getCanLoad();
         System.out.println("Found " + canLoad.size() + " compatible files");
+        AbsorbManagers.getConsole().setProgress(2, 4);
+
         Set<AbsorbModule> loaded = canLoad.parallelStream().map(load -> {
             try {
                 return absorbModuleLoader.create(load);
@@ -66,6 +89,8 @@ public class Main {
             }
         }).filter(Objects::nonNull).collect(Collectors.toSet());
         System.out.println("Loading modules");
+        AbsorbManagers.getConsole().setProgress(3, 4);
+
         loaded.parallelStream().forEach(module -> {
             try {
                 System.out.println("Loading " + module.getDisplayName() + " Version: " + module.getVersion());
@@ -81,7 +106,10 @@ public class Main {
         NetHandler handler = new NetHandler(socket);
         AbsorbManagers.instance.netManager = new NetManager(handler);
 
+        AbsorbManagers.getConsole().runCommandScanner();
+
         System.out.println("Ready to accept players");
+        AbsorbManagers.instance.console.removeProgress();
         handler.start();
         RegistryManager.getVanillaValues(Schedule.class).parallelStream().forEach(schedule -> AbsorbManagers.instance.scheduleManager.register(schedule));
         AbsorbManagers.getScheduleManager().runSchedulers();

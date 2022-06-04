@@ -1,6 +1,7 @@
 package org.absorb.net.handler;
 
 import org.absorb.AbsorbManagers;
+import org.absorb.Main;
 import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.Serializers;
@@ -173,7 +174,7 @@ public class NetHandler {
 
         @Override
         public void run() {
-            while (this.running) {
+            while (this.running || Main.IS_RUNNING) {
                 try {
                     Socket clientSocket = server.accept();
                     //clientSocket.setReuseAddress(true);

@@ -2,6 +2,7 @@ package org.absorb.net.processor.login.pre;
 
 import net.kyori.adventure.text.Component;
 import org.absorb.AbsorbManagers;
+import org.absorb.entity.EntityEffect;
 import org.absorb.entity.WorldEntity;
 import org.absorb.entity.living.human.Gamemodes;
 import org.absorb.entity.living.human.Human;
@@ -16,6 +17,7 @@ import org.absorb.net.packet.play.difficulty.OutgoingServerDifficultyPacketBuild
 import org.absorb.net.packet.play.entity.player.compass.OutgoingSpawnPositionPacketBuilder;
 import org.absorb.net.packet.play.entity.player.movement.outgoing.OutgoingPlayerMovementPacketBuilder;
 import org.absorb.net.packet.play.entity.player.tab.add.OutgoingPlayerTabUpdateAddPlayerPacketBuilder;
+import org.absorb.net.packet.play.entity.status.OutgoingEntityStatusUpdatePacketBuilder;
 import org.absorb.net.packet.play.join.OutgoingJoinPacketBuilder;
 import org.absorb.net.packet.play.settings.ability.OutgoingAbilityPacketBuilder;
 import org.absorb.net.processor.NetProcess;
@@ -84,12 +86,6 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
                 .build()
                 .writeTo(info);
 
-        new OutgoingServerDifficultyPacketBuilder()
-                .setDifficulty(world.getWorldData().getDifficulty())
-                .setLocked(true)
-                .build()
-                .writeTo(info);
-
         /*new OutgoingAbilityPacketBuilder()
                 .setFlyingAllowed(true)
                 .setFlyingSpeed(0.5f)
@@ -99,6 +95,12 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
                 .setFlying(true)
                 .build()
                 .writeTo(info);*/
+
+        new OutgoingServerDifficultyPacketBuilder()
+                .setDifficulty(world.getWorldData().getDifficulty())
+                .setLocked(true)
+                .build()
+                .writeTo(info);
 
         /*new OutgoingSwapHotbarPacketBuilder().setNewSlot((byte) 0).build().writeTo(info);
 
@@ -120,10 +122,10 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
                         .map(Supplier::get)
                         .collect(Collectors.toSet()))
                 .build()
-                .writeTo(info);
+                .writeTo(info);*/
 
         for (EntityEffect<?> effect : playerEntity.getEffects()) {
             new OutgoingEntityStatusUpdatePacketBuilder().setEffect(effect).setEntityId(worldHuman.getInstanceId()).build().writeTo(info);
-        }*/
+        }
     }
 }

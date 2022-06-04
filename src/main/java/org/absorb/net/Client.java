@@ -2,6 +2,7 @@ package org.absorb.net;
 
 import net.kyori.adventure.text.Component;
 import org.absorb.AbsorbManagers;
+import org.absorb.command.CommandSender;
 import org.absorb.entity.WorldEntity;
 import org.absorb.entity.living.human.ChatMode;
 import org.absorb.entity.living.human.Gamemode;
@@ -10,8 +11,10 @@ import org.absorb.entity.living.human.Human;
 import org.absorb.entity.living.human.tab.PlayerTab;
 import org.absorb.entity.living.human.tab.PlayerTabBuilder;
 import org.absorb.inventory.entity.player.PlayerInventory;
+import org.absorb.message.MessagePosition;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.play.disconnect.OutgoingCloseConnectionPacketBuilder;
+import org.absorb.net.packet.play.message.chat.OutgoingChatMessagePacketBuilder;
 import org.absorb.threaded.SimpleDataPoint;
 import org.absorb.threaded.ThreadedDataPoint;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +32,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.stream.Collectors;
 
-public class Client {
+public class Client implements CommandSender {
 
     private @NotNull PacketState state = PacketState.HANDSHAKE;
     private @Nullable String username;
@@ -50,7 +53,6 @@ public class Client {
     private @Nullable Vector3d lastPosition;
 
     private static final int NETTY_MAX_CAP = 1500;
-
 
     public Client(@NotNull Socket socket) throws IOException {
         this.lastPacketSent = LocalDateTime.now();
@@ -299,4 +301,8 @@ public class Client {
     }
 
 
+    @Override
+    public void sendMessage(@Nullable UUID uuid, @NotNull Component component) {
+        new OutgoingChatMessagePacketBuilder().setMessage(component).setPosition(MessagePosition.CHAT).setFrom(uuid).build().writeToAsync(this);
+    }
 }

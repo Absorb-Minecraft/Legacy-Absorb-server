@@ -11,7 +11,7 @@
           <option name="goals">
             <list>
               <option value="clean" />
-              <option value="build" />
+              <option value="package" />
             </list>
           </option>
           <option name="pomFileName" />

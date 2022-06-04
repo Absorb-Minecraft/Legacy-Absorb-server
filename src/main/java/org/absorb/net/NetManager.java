@@ -12,6 +12,7 @@ import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayer
 import org.absorb.net.packet.play.entity.player.movement.incoming.basic.IncomingBasicPlayerMovementPacketBuilder;
 import org.absorb.net.packet.play.entity.player.movement.incoming.rotation.IncomingRotationPacketBuilder;
 import org.absorb.net.packet.play.entity.player.teleport.confirm.IncomingTeleportConfirmPacketBuilder;
+import org.absorb.net.packet.play.message.IncomingMessagePacketBuilder;
 import org.absorb.net.packet.play.recipe.craft.IncomingRecipeRequestPacketBuilder;
 import org.absorb.net.packet.play.settings.client.IncomingClientSettingsPacketBuilder;
 import org.absorb.net.packet.status.ping.IncomingPingPacketBuilder;
@@ -67,6 +68,7 @@ public class NetManager {
         this.registerIncomingPacketBuilder(new IncomingBasicPlayerMovementPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingChangeAbilityPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingRotationPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingMessagePacketBuilder());
     }
 
     public NetHandler getHandler() {

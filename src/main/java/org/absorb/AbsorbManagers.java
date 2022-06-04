@@ -1,7 +1,10 @@
 package org.absorb;
 
+import org.absorb.command.CommandManager;
+import org.absorb.console.ConsoleSource;
 import org.absorb.event.EventManager;
 import org.absorb.files.ServerProperties;
+import org.absorb.message.channel.ChannelManager;
 import org.absorb.module.ModuleManager;
 import org.absorb.net.NetManager;
 import org.absorb.register.RegistryManager;
@@ -13,6 +16,7 @@ public class AbsorbManagers {
 
     public static AbsorbManagers instance;
 
+    ConsoleSource console;
     NetManager netManager;
     RegistryManager registryManager;
     AbsorbWorldManager worldManager;
@@ -20,8 +24,22 @@ public class AbsorbManagers {
     ModuleManager moduleManager;
     ServerProperties properties;
     ScheduleManager scheduleManager;
+    ChannelManager channelManager;
+    CommandManager commandManager;
 
-    public static ServerProperties getProperties(){
+    public static CommandManager getCommandManager() {
+        return get(instance.commandManager);
+    }
+
+    public static ConsoleSource getConsole() {
+        return get(instance.console);
+    }
+
+    public static ChannelManager getChannelManager() {
+        return get(instance.channelManager);
+    }
+
+    public static ServerProperties getProperties() {
         return instance.properties;
     }
 
