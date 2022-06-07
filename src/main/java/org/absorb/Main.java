@@ -1,5 +1,7 @@
 package org.absorb;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.absorb.command.CommandManager;
 import org.absorb.command.Commands;
 import org.absorb.console.ConsoleSource;
@@ -10,6 +12,7 @@ import org.absorb.module.ModuleManager;
 import org.absorb.module.loader.ModuleLoaders;
 import org.absorb.module.loader.absorb.AbsorbModule;
 import org.absorb.module.loader.absorb.AbsorbModuleLoader;
+import org.absorb.net.Client;
 import org.absorb.net.NetManager;
 import org.absorb.net.handler.NetHandler;
 import org.absorb.register.AbsorbKey;
@@ -28,6 +31,8 @@ import org.spongepowered.math.vector.Vector3i;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -43,7 +48,7 @@ public class Main {
         }
         AbsorbManagers.instance = new AbsorbManagers();
         AbsorbManagers.instance.console = new ConsoleSource();
-        AbsorbManagers.getConsole().setProgress(0, 5);
+        AbsorbManagers.getConsole().sendProgress(0, 5);
         AbsorbManagers.instance.registryManager = new RegistryManager();
         AbsorbManagers.instance.eventManager = new EventManager();
         AbsorbManagers.instance.moduleManager = new ModuleManager();
@@ -53,7 +58,7 @@ public class Main {
 
 
         Commands.getAll();
-        AbsorbManagers.getConsole().setProgress(1, 5);
+        AbsorbManagers.getConsole().sendProgress(1, 5);
 
 
         AbsorbManagers.instance.properties = new ServerProperties();
@@ -69,7 +74,7 @@ public class Main {
         AbsorbManagers.instance.worldManager = new AbsorbWorldManager(world);
 
         System.out.println("Loaded world: " + world.getWorldData().getKey().asFormatted());
-        AbsorbManagers.getConsole().setProgress(1, 4);
+        AbsorbManagers.getConsole().sendProgress(1, 4);
 
         AbsorbModuleLoader absorbModuleLoader = ModuleLoaders.ABSORB_MODULE;
         if (!AbsorbModuleLoader.MODULE_FOLDER.exists()) {
@@ -77,7 +82,7 @@ public class Main {
         }
         @NotNull Collection<File> canLoad = absorbModuleLoader.getCanLoad();
         System.out.println("Found " + canLoad.size() + " compatible files");
-        AbsorbManagers.getConsole().setProgress(2, 4);
+        AbsorbManagers.getConsole().sendProgress(2, 4);
 
         Set<AbsorbModule> loaded = canLoad.parallelStream().map(load -> {
             try {
@@ -89,7 +94,7 @@ public class Main {
             }
         }).filter(Objects::nonNull).collect(Collectors.toSet());
         System.out.println("Loading modules");
-        AbsorbManagers.getConsole().setProgress(3, 4);
+        AbsorbManagers.getConsole().sendProgress(3, 4);
 
         loaded.parallelStream().forEach(module -> {
             try {
@@ -106,13 +111,44 @@ public class Main {
         NetHandler handler = new NetHandler(socket);
         AbsorbManagers.instance.netManager = new NetManager(handler);
 
-        AbsorbManagers.getConsole().runCommandScanner();
+        AbsorbManagers.getConsole().runCommandRunner();
 
-        System.out.println("Ready to accept players");
-        AbsorbManagers.instance.console.removeProgress();
+        AbsorbManagers.getConsole().sendMessage(Component.text("Ready to accept players").color(NamedTextColor.GREEN));
+        //AbsorbManagers.instance.console.removeProgress();
         handler.start();
         RegistryManager.getVanillaValues(Schedule.class).parallelStream().forEach(schedule -> AbsorbManagers.instance.scheduleManager.register(schedule));
         AbsorbManagers.getScheduleManager().runSchedulers();
+    }
+
+    public static void stop() {
+        stop(LocalTime.now().plus(1, ChronoUnit.MICROS), Component.text("Server is shutting down."));
+    }
+
+    public static void stop(@NotNull LocalTime exitAt, @NotNull Component disconnectMessage) {
+        AbsorbManagers.getConsole().sendMessage(Component.text("stopping server"));
+        Collection<Client> clients = AbsorbManagers.getNetManager().getClients();
+        AbsorbManagers.getConsole().sendMessage(Component.text("Disconnecting clients"));
+
+        int i = 0;
+        for (Client client : clients) {
+            AbsorbManagers.getConsole().sendProgress(i, clients.size());
+            client.disconnect(disconnectMessage);
+            i++;
+        }
+        AbsorbManagers.getConsole().sendProgress(clients.size(), clients.size());
+
+
+        Main.IS_RUNNING = false;
+        AbsorbManagers.getConsole().sendMessage(Component.text("Shutting down network"));
+AbsorbManagers.getNetManager().getHandler().end();
+        AbsorbManagers.getConsole().sendMessage(Component.text("Disconnecting threads"));
+        while (true) {
+            LocalTime time = LocalTime.now();
+            if (time.isAfter(exitAt)) {
+                break;
+            }
+        }
+        System.exit(0);
     }
 
     public static void main(String[] args) {

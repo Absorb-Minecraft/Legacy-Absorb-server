@@ -1,11 +1,17 @@
 package org.absorb.command;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.absorb.AbsorbManagers;
 import org.absorb.command.node.*;
+import org.absorb.command.node.executor.CommandContext;
+import org.absorb.command.node.executor.NodeExecutor;
 import org.absorb.command.node.executor.node.result.CommandNodeResult;
 import org.absorb.command.node.executor.node.result.UnvaluedNodeResult;
 import org.absorb.command.node.executor.node.result.ValueNodeResult;
 import org.absorb.command.node.parser.ParserResult;
 import org.absorb.command.node.parser.suggestion.SuggestionParser;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,8 +25,29 @@ public class CommandManager {
         return this.rootCommandNode;
     }
 
-    public SortedSet<String> getTabComplete(String rawCommand) {
-        SortedSet<CommandNodeResult> possible = this.getPossibleCommand(rawCommand);
+    public void execute(@NotNull CommandSender sender, @NotNull String rawCommand) {
+        SortedSet<CommandNodeResult> possible = this.getPossibleCommand(sender, rawCommand);
+        if (possible.isEmpty()) {
+            return;
+        }
+        CommandContext context = new CommandContext(sender, possible);
+        CommandNode executorNode = possible.last().getNode();
+        Optional<NodeExecutor> opExecutor = executorNode.getExecutor();
+        if (opExecutor.isEmpty()) {
+            AbsorbManagers.getConsole().sendMessage(Component.text("Could not find command of: " + rawCommand).color(TextColor.color(255, 0, 0)));
+            return;
+        }
+        NodeExecutor executor = opExecutor.get();
+        if (!executor.canExecute(sender)) {
+            AbsorbManagers.getConsole().sendMessage(Component.text("You cannot use this command").color(TextColor.color(255,
+                    0, 0)));
+            return;
+        }
+        executor.execute(context);
+    }
+
+    public SortedSet<String> getTabComplete(@NotNull CommandSender sender, @NotNull String rawCommand) {
+        SortedSet<CommandNodeResult> possible = this.getPossibleCommand(sender, rawCommand);
         if (possible.isEmpty()) {
             return Collections.emptyNavigableSet();
         }
@@ -51,7 +78,7 @@ public class CommandManager {
         set.add(new ValueNodeResult<>(castNode, set.size(), castResult));
     }
 
-    private SortedSet<CommandNodeResult> getPossibleCommand(String rawCommand) {
+    private SortedSet<CommandNodeResult> getPossibleCommand(@NotNull CommandSender sender, @NotNull String rawCommand) {
         SortedSet<CommandNodeResult> set = new TreeSet<>(Comparator.comparing(CommandNodeResult::getIndex));
         CommandNode currentNode = this.rootCommandNode;
         set.add(new UnvaluedNodeResult(currentNode, 0, rawCommand, 0));

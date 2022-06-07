@@ -141,7 +141,7 @@
       <option name="onlyWarnOnLoop" value="true" />
     </inspection_tool>
     <inspection_tool class="SuspiciousArrayCast" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
-    <inspection_tool class="SystemExit" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="SystemExit" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="SystemGetenv" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="SystemOutErr" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="SystemProperties" enabled="true" level="WARNING" enabled_by_default="true" />

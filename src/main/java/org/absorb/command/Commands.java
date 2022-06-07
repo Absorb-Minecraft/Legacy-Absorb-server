@@ -18,7 +18,7 @@ public interface Commands {
     Supplier<LiteralCommandNode> STOP = () -> new CommandNodeBuilder<LiteralCommandNode>()
             .setName("stop")
             .setParent(AbsorbManagers.getCommandManager().getRootCommand())
-            .setExecutable(context -> Main.IS_RUNNING = false)
+            .setExecutable(context -> Main.stop())
             .build();
 
     static Collection<CommandNode> getAll() {
