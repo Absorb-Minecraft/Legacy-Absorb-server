@@ -46,10 +46,9 @@ jobs:
         cache: maven
     - name: Create version file
       uses: "finnp/create-file-action@master"
-        env:
-          FILE_NAME: "src/main/resources/META-INF/absorb_version.csv"
-          FILE_DATA: "GITHUB,0,0,${{github.run_id}}"
-
+      env:
+        FILE_NAME: "src/main/resources/META-INF/absorb_version.csv"
+        FILE_DATA: "GITHUB,0,0,${{github.run_id}}"
     - name: Build with Maven
       run: mvn clean package
     - uses: actions/upload-artifact@v2
