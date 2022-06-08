@@ -61,7 +61,6 @@ public class StatusResponsePacket implements OutgoingPacket {
             node.node("description").node("text").set(PlainTextComponentSerializer.plainText().serialize(this.descriptionText));
             node.node("players").node("max").set(this.maxPlayers);
             node.node("players").node("online").set(this.currentPlayers);
-            //node.node("players").node("sample").set(Collections.emptyList());
             node.node("version").node("name").set(this.nameVersion);
             node.node("version").node("protocol").set(this.protocolVersion);
             String json =

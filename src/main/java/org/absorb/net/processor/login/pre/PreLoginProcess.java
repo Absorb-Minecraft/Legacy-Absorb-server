@@ -13,16 +13,18 @@ import org.absorb.net.PlayingState;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.login.post.OutgoingLoginSuccessfulPacketBuilder;
 import org.absorb.net.packet.login.pre.IncomingPreLoginPacket;
+import org.absorb.net.packet.play.command.declare.OutgoingDeclaredCommandsPacketBuilder;
 import org.absorb.net.packet.play.difficulty.OutgoingServerDifficultyPacketBuilder;
 import org.absorb.net.packet.play.entity.player.compass.OutgoingSpawnPositionPacketBuilder;
 import org.absorb.net.packet.play.entity.player.movement.outgoing.OutgoingPlayerMovementPacketBuilder;
 import org.absorb.net.packet.play.entity.player.tab.add.OutgoingPlayerTabUpdateAddPlayerPacketBuilder;
 import org.absorb.net.packet.play.entity.status.OutgoingEntityStatusUpdatePacketBuilder;
 import org.absorb.net.packet.play.join.OutgoingJoinPacketBuilder;
-import org.absorb.net.packet.play.settings.ability.OutgoingAbilityPacketBuilder;
 import org.absorb.net.processor.NetProcess;
 import org.absorb.world.AbsorbWorld;
 import org.absorb.world.area.AbsorbChunk;
+import org.absorb.world.area.ChunkPart;
+import org.absorb.world.area.ChunkSection;
 import org.absorb.world.type.PlayerWorldTypeView;
 import org.spongepowered.math.vector.Vector3d;
 
@@ -86,6 +88,8 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
                 .build()
                 .writeTo(info);
 
+        new OutgoingDeclaredCommandsPacketBuilder().walkAllCommands(AbsorbManagers.getCommandManager().getRootCommand()).build().writeToAsync(info);
+
         /*new OutgoingAbilityPacketBuilder()
                 .setFlyingAllowed(true)
                 .setFlyingSpeed(0.5f)
@@ -127,5 +131,39 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
         for (EntityEffect<?> effect : playerEntity.getEffects()) {
             new OutgoingEntityStatusUpdatePacketBuilder().setEffect(effect).setEntityId(worldHuman.getInstanceId()).build().writeTo(info);
         }
+
+        /*new OutgoingSwapHotbarPacketBuilder().setNewSlot(connection.getInventory().getHotbar().getSelected()).build
+        ().writeTo(connection);*/
+        int id = info.newTeleportId();
+        /*connection.registerTeleportId(id);
+        new OutgoingPlayerMovementPacketBuilder().setPosition(connection.getLocation()).setTeleportId(id).build().writeTo(connection);*/
+
+        Set<PlayerTab> tabs =
+                AbsorbManagers
+                        .getNetManager()
+                        .getClients()
+                        .parallelStream()
+                        .filter(client -> !client.isHiddenToList())
+                        .map(Client::createTab)
+                        .collect(Collectors.toSet());
+
+        new OutgoingPlayerTabUpdateAddPlayerPacketBuilder().addTabs(tabs).build().writeTo(info);
+
+        new OutgoingSpawnPositionPacketBuilder().setAngle(0).setLocation(worldHuman.getWorld().getWorldData().getCompassPoint())
+                .build().writeTo(info);
+
+        AbsorbChunk chunk = world.generateChunkAtBlock(info.getLocation().floorX(),
+                info.getLocation().floorZ());
+        ChunkPart part = chunk.getPartWithBlockHeight(2);
+        Set<ChunkSection> set = Set.of(part.asSection());
+
+        /*new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(set)
+        .build().writeToAsync(info);*/
+
+        info.setPlayingState(PlayingState.LOGIN_PRE_DATA);
+
+        id = info.newTeleportId();
+        info.registerTeleportId(id);
+        new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).setTeleportId(id).build().writeTo(info);
     }
 }

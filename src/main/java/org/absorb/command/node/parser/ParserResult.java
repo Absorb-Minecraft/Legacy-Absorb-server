@@ -1,14 +1,19 @@
 package org.absorb.command.node.parser;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Optional;
 
 public class ParserResult<T> {
 
-    private final String original;
+    private final @NotNull String original;
     private final int taken;
     private final T value;
 
-    public ParserResult(String original, int taken, T value) {
+    public ParserResult(@NotNull String original, int taken, T value) {
+        while(original.substring(taken).startsWith(" ")){
+            taken++;
+        }
         this.value = value;
         this.taken = taken;
         this.original = original;
@@ -58,5 +63,9 @@ public class ParserResult<T> {
 
     public <R> ParserResult<R> createFrom(int newTake, R value) {
         return new ParserResult<>(this.original, newTake, value);
+    }
+
+    public String toString() {
+        return this.original.substring(this.taken);
     }
 }

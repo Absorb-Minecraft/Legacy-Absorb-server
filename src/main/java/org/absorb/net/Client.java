@@ -1,6 +1,7 @@
 package org.absorb.net;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.absorb.AbsorbManagers;
 import org.absorb.command.CommandSender;
 import org.absorb.entity.WorldEntity;
@@ -297,7 +298,14 @@ public class Client implements CommandSender {
     }
 
     public void disconnect(@NotNull Component component) {
-        new OutgoingCloseConnectionPacketBuilder().setUsingPlay(this.state==PacketState.PLAY).setMessage(component).build().writeToAsync(this);
+        try {
+            new OutgoingCloseConnectionPacketBuilder().setUsingPlay(this.state==PacketState.PLAY).setMessage(component).build().writeTo(this);
+        } catch (IOException e) {
+            AbsorbManagers.getConsole().sendMessage(Component.text("Failed to disconnect forcing disconnect: ").color(TextColor.color(255, 0, 0)).append(Component.text(this.getUsername())));
+            e.printStackTrace();
+        }
+        AbsorbManagers.getNetManager().unregister(this);
+
     }
 
 

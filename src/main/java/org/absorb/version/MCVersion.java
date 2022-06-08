@@ -36,7 +36,7 @@ public class MCVersion {
         return this.networkName;
     }
 
-    public String name() {
+    public String getName() {
         return this.getMajor() + "." + this.getMinor() + "." + this.getPatch();
     }
 }

@@ -1,7 +1,6 @@
 package org.absorb.command.node;
 
 import org.absorb.command.node.parser.CommandParser;
-import org.absorb.command.node.parser.properties.CommandParserProperty;
 import org.absorb.command.node.parser.suggestion.SuggestionTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,15 +11,26 @@ public class ArgumentCommandNode<A> extends AbstractCommandNode implements Namea
 
     private final @NotNull String name;
     private final @NotNull CommandParser<A> parser;
-    private final @Nullable CommandParserProperty<? super A> property;
     private final @Nullable SuggestionTypes suggestionType;
 
-    public ArgumentCommandNode(CommandNodeBuilder<ArgumentCommandNode<A>> builder) {
+    ArgumentCommandNode(CommandNodeBuilder<ArgumentCommandNode<A>> builder) {
         super(builder);
         this.name = builder.getName();
         this.parser = (CommandParser<A>) builder.getParser();
-        this.property = (CommandParserProperty<? super A>) builder.getProperty();
         this.suggestionType = builder.getSuggestionType();
+    }
+
+    @Override
+    public byte getFlags() {
+        byte original = super.getFlags();
+        if (this.executor!=null) {
+            original = (byte) (original + 0x04);
+        }
+        if (this.suggestionType!=null) {
+            original = (byte) (original + 0x10);
+        }
+        return original;
+
     }
 
 
@@ -30,10 +40,6 @@ public class ArgumentCommandNode<A> extends AbstractCommandNode implements Namea
 
     public @NotNull CommandParser<A> getParser() {
         return this.parser;
-    }
-
-    public Optional<CommandParserProperty<? super A>> getProperty() {
-        return Optional.ofNullable(this.property);
     }
 
     public @NotNull Optional<SuggestionTypes> getSuggestionType() {

@@ -120,7 +120,13 @@ public class AbsorbWorld {
         //TODO
         AbsorbChunk chunk = new AbstractAbsorbChunk(this, new Vector2i(x, z));
         this.chunks.add(chunk);
+        chunk.generateParts();
         return chunk;
+    }
+
+    public int getChunkLevelHeight(){
+        int blocks = this.getMaxBlock().y() - this.getMinBlock().y();
+        return blocks / ChunkPart.CHUNK_PART_HEIGHT;
     }
 
     public ConnectedCollection<WorldEntity> getEntities() {

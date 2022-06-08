@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.math.vector.Vector3i;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -35,6 +36,10 @@ public class ChunkPart implements BlockSetter {
         this.level = level;
     }
 
+    public boolean isEmpty(){
+        return this.generated == null;
+    }
+
     public void registerEntity(WorldEntity entity) {
         this.entities.offer(entity);
     }
@@ -54,8 +59,8 @@ public class ChunkPart implements BlockSetter {
             return opBlock.get();
         }
         if (this.generated==null) {
-            System.err.println("Chunk has not generated part yet was being requested for BlockAt(x, y, z). Please " +
-                    "check the timing of your code");
+            System.err.println("Chunk has not generated part yet was being requested for BlockAt(" + x + ", " + y +
+                    ", " + z + "). Please check the timing of your code");
             this.chunk.generatePartWithLevel(this.level);
         }
         while (this.generated==null) {

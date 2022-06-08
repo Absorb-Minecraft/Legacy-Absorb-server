@@ -75,9 +75,6 @@ public class NetHandler {
             byte[] packetData = Arrays.copyOfRange(this.data, packetId.endingPosition(), this.data.length);
 
             org.absorb.net.packet.IncomingPacket packet = builder.get().from(ByteBuffer.wrap(packetData)).build();
-            //if (packet.getId()!=IncomingBasicPlayerMovementPacket.ID) {
-            System.out.println("\t>>" + packet.getClass().getSimpleName());
-            //}
             packet.getProcess().onProcess(this.netInfo, packet);
             return true;
         }

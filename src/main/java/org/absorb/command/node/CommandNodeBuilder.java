@@ -117,16 +117,22 @@ public class CommandNodeBuilder<N extends CommandNode> implements Builder<N> {
 
     @Override
     public @NotNull N build() {
+        AbstractCommandNode node = null;
         if (this.parent==null) {
-            return (N) buildRoot();
+            node = this.buildRoot();
         }
-        if (this.name==null) {
+        if (this.name==null && node == null) {
             throw new IllegalArgumentException("Name is required for Literal or Argument Nodes");
         }
-        if (this.parser!=null) {
-            return (N) buildArgument();
+        if (this.parser!=null && node == null) {
+            node = this.buildArgument();
+        }else if(node == null) {
+            node = this.buildLiteral();
         }
-        return (N) buildLiteral();
+        if(node instanceof NameableCommandNode ret) {
+            node.getParent().ifPresent(parent -> parent.registerChild(ret));
+        }
+        return (N)node;
     }
 
     @Override

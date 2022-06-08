@@ -1,14 +1,15 @@
 package org.absorb.command.node;
 
+import org.absorb.utils.Validation;
 import org.jetbrains.annotations.NotNull;
 
 public class LiteralCommandNode extends AbstractCommandNode implements NameableCommandNode {
 
     private final @NotNull String name;
 
-    public LiteralCommandNode(CommandNodeBuilder<LiteralCommandNode> builder) {
+    LiteralCommandNode(CommandNodeBuilder<LiteralCommandNode> builder) {
         super(builder);
-        this.name = builder.getName();
+        this.name = Validation.notNull(builder.getName());
     }
 
     public @NotNull String getName() {

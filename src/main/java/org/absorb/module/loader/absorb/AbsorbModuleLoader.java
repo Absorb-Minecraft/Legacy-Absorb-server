@@ -3,8 +3,9 @@ package org.absorb.module.loader.absorb;
 import org.absorb.AbsorbManagers;
 import org.absorb.event.events.module.load.construct.ConstructModuleEvent;
 import org.absorb.files.json.SimpleNode;
-import org.absorb.module.ModuleVersion;
+import org.absorb.module.version.ModuleVersion;
 import org.absorb.module.loader.FileModuleLoader;
+import org.absorb.module.version.StandardVersion;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -206,7 +207,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
 
         return (AbsorbModule) new AbsorbModuleBuilder()
                 .setDisplayName(projectName)
-                .setVersion(new ModuleVersion(versionMajor, versionMinor, versionPatch))
+                .setVersion(new StandardVersion(versionMajor, versionMinor, versionPatch))
                 .setKeyName(projectId)
                 .setMainClass(mainClass)
                 .setDescription(description)

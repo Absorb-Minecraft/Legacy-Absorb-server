@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public abstract class AbstractCommandNode implements CommandNode {
 
-    protected final @NotNull NodeExecutor executor;
+    protected final @Nullable NodeExecutor executor;
     protected final List<NameableCommandNode> children = new LinkedList<>();
     protected final @Nullable CommandNode redirect;
     protected final @Nullable CommandNode parent;
@@ -20,13 +20,21 @@ public abstract class AbstractCommandNode implements CommandNode {
         this.executor = builder.getExecutor();
         this.redirect = builder.getRedirectTo();
         this.parent = builder.getParent();
-        if (this.parent!=null && this instanceof NameableCommandNode thisNameable) {
+        /*if (this.parent!=null && this instanceof NameableCommandNode thisNameable) {
             this.parent.registerChild(thisNameable);
-        }
+        }*/
     }
 
     public Optional<CommandNode> getParent() {
         return Optional.ofNullable(this.parent);
+    }
+
+    public byte getFlags() {
+        int flags = this.getNodeTypeId();
+        if (this.redirect!=null) {
+            flags = flags + 8;
+        }
+        return (byte) flags;
     }
 
     @Override

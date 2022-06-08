@@ -100,6 +100,11 @@ public class NetManager {
     }
 
     public void unregister(Client info) {
+        try {
+            info.getSocket().close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.info.remove(info.getAddress());
     }
 }

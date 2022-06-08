@@ -12,7 +12,6 @@ import java.util.Collections;
 
 public class ClientPingEventBuilder implements Builder<ClientPingEvent> {
 
-
     private Client client;
     private int protocolVersion;
     private String name;
@@ -117,7 +116,7 @@ public class ClientPingEventBuilder implements Builder<ClientPingEvent> {
         this.currentPlayers = AbsorbManagers.getNetManager().getClients().size() - 1;
         this.maxPlayers = this.currentPlayers + 1;
         this.description = Component.empty();
-        this.name = "Absorb " + MCVersion.CURRENT.toString();
+        this.name = "Absorb " + MCVersion.CURRENT.getName();
         this.protocolVersion = MCVersion.CURRENT.protocolVersion();
         return this;
     }

@@ -1,6 +1,7 @@
 package org.absorb.module;
 
 import org.absorb.module.loader.ModuleLoader;
+import org.absorb.module.version.ModuleVersion;
 import org.absorb.utils.Builder;
 
 import java.util.Collection;

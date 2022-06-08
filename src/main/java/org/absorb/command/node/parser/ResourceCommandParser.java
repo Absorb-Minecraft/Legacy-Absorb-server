@@ -1,9 +1,11 @@
 package org.absorb.command.node.parser;
 
+import org.absorb.command.node.parser.properties.CommandParserProperty;
 import org.absorb.utils.Identifiable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ResourceCommandParser<R extends Identifiable> implements CommandParser<R> {
@@ -20,6 +22,11 @@ public class ResourceCommandParser<R extends Identifiable> implements CommandPar
         R resourceResult =
                 this.getter.get().parallelStream().filter(resource -> resource.getResourceKey().asFormatted().equals(resultAsString.getValue())).findAny().orElseThrow(() -> new Exception("Cannot find acceptable resource key"));
         return previous.createFrom(resultAsString.getTaken(), resourceResult);
+    }
+
+    @Override
+    public Optional<CommandParserProperty<R>> getProperty() {
+        return Optional.empty();
     }
 
     @Override

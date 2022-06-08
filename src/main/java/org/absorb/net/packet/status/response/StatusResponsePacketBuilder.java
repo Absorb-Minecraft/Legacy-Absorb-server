@@ -72,7 +72,7 @@ public class StatusResponsePacketBuilder implements OutgoingPacketBuilder<Status
         this.currentPlayers = AbsorbManagers.getNetManager().getClients().size();
         this.maxPlayers = this.currentPlayers + 1;
         this.description = Component.text("A reimplementation of the minecraft server");
-        this.versionName = "Absorb " + MCVersion.CURRENT.name();
+        this.versionName = "Absorb " + MCVersion.CURRENT.getName();
         this.versionProtocol = 0;
         return this;
     }

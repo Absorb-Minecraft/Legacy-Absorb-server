@@ -34,12 +34,13 @@ public class CommandManager {
         CommandNode executorNode = possible.last().getNode();
         Optional<NodeExecutor> opExecutor = executorNode.getExecutor();
         if (opExecutor.isEmpty()) {
-            AbsorbManagers.getConsole().sendMessage(Component.text("Could not find command of: " + rawCommand).color(TextColor.color(255, 0, 0)));
+            sender.sendMessage(Component.text("Could not find command of: " + rawCommand).color(TextColor.color(255, 0,
+                    0)));
             return;
         }
         NodeExecutor executor = opExecutor.get();
         if (!executor.canExecute(sender)) {
-            AbsorbManagers.getConsole().sendMessage(Component.text("You cannot use this command").color(TextColor.color(255,
+            sender.sendMessage(Component.text("You cannot use this command").color(TextColor.color(255,
                     0, 0)));
             return;
         }

@@ -121,6 +121,7 @@ public class ConsoleSource implements CommandSender {
     public void sendMessage(@Nullable UUID uuid, @NotNull Component component) {
         if (this.removeNextLine) {
             System.out.print(toAnsi(component) + "\r");
+            this.removeNextLine = false;
             return;
         }
         System.out.println(toAnsi(component));

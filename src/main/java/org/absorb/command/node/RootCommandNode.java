@@ -2,7 +2,7 @@ package org.absorb.command.node;
 
 public class RootCommandNode extends AbstractCommandNode {
 
-    public RootCommandNode(CommandNodeBuilder<RootCommandNode> builder) {
+    RootCommandNode(CommandNodeBuilder<RootCommandNode> builder) {
         super(builder);
     }
 

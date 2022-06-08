@@ -20,6 +20,12 @@ public interface AbsorbChunk {
 
     ChunkPart generatePartWithHeight(int height);
 
+    default void generateParts(){
+        for(int i = 0; i < this.getWorld().getChunkLevelHeight(); i++){
+            this.generatePartWithLevel(i);
+        }
+    }
+
     @NotNull Vector3i getHighestPoint(int x, int z);
 
     @NotNull AbsorbWorld getWorld();

@@ -1,5 +1,6 @@
 package org.absorb.module;
 
+import org.absorb.module.version.ModuleVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
