@@ -2,4 +2,4 @@ target/
 .idea/*
 !.idea/inspectionProfiles/
 Server
-src/resources/META-INF/absorb_version.csv
+src/main/resources/META-INF/absorb_version.csv
