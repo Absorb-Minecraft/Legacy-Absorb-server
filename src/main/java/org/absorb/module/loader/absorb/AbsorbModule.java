@@ -13,6 +13,9 @@ public class AbsorbModule extends Module {
     public AbsorbModule(@NotNull AbsorbModuleBuilder builder) {
         super(builder);
         this.load = builder.getFile();
+        if (this.load==null) {
+            throw new IllegalStateException("Module must have file set");
+        }
     }
 
     public File getFile() {

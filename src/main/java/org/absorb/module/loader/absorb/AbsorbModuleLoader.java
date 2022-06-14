@@ -3,7 +3,6 @@ package org.absorb.module.loader.absorb;
 import org.absorb.AbsorbManagers;
 import org.absorb.event.events.module.load.construct.ConstructModuleEvent;
 import org.absorb.files.json.SimpleNode;
-import org.absorb.module.version.ModuleVersion;
 import org.absorb.module.loader.FileModuleLoader;
 import org.absorb.module.version.StandardVersion;
 import org.jetbrains.annotations.NotNull;
@@ -206,6 +205,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
         file.close();
 
         return (AbsorbModule) new AbsorbModuleBuilder()
+                .setFile(module)
                 .setDisplayName(projectName)
                 .setVersion(new StandardVersion(versionMajor, versionMinor, versionPatch))
                 .setKeyName(projectId)
@@ -219,9 +219,9 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
         URLClassLoader urlLoader = new URLClassLoader(new URL[]{module.getFile().toURI().toURL()});
         JarFile jar = new JarFile(module.getFile());
         Enumeration<JarEntry> entries = jar.entries();
-        JarEntry current;
         Class<?> mainClass = null;
-        while ((current = entries.nextElement())!=null) {
+        while (entries.hasMoreElements()) {
+            JarEntry current = entries.nextElement();
             if (current.isDirectory()) {
                 continue;
             }
@@ -245,7 +245,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
             throw new IOException("Could not find Main Class, jar was loaded for library use however this is not " +
                     "a supported way");
         }
-        Object mainInstance = null;
+        Object mainInstance;
         try {
             Constructor<?> cons = mainClass.getConstructor();
             mainInstance = cons.newInstance();
