@@ -11,11 +11,13 @@ import java.util.concurrent.LinkedTransferQueue;
 public class AbstractEntity implements Entity {
 
     private boolean hasSpawned;
-    private final @NotNull EntityType type;
+    private final @NotNull EntityType<?> type;
     private @Nullable Component customName;
     private final Collection<EntityEffect<?>> effects = new LinkedTransferQueue<>();
+    private boolean isFlying;
+    private boolean hasGravity;
 
-    public AbstractEntity(@NotNull EntityType type) {
+    public AbstractEntity(@NotNull EntityType<?> type) {
         this.type = type;
     }
 
@@ -35,7 +37,27 @@ public class AbstractEntity implements Entity {
     }
 
     @Override
-    public @NotNull EntityType getType() {
+    public void setGravity(boolean gravity) {
+        this.hasGravity = gravity;
+    }
+
+    @Override
+    public boolean hasGravity() {
+        return this.hasGravity;
+    }
+
+    @Override
+    public void setFlying(boolean isFlying) {
+        this.isFlying = isFlying;
+    }
+
+    @Override
+    public boolean isFlying() {
+        return this.isFlying;
+    }
+
+    @Override
+    public @NotNull EntityType<?> getType() {
         return this.type;
     }
 

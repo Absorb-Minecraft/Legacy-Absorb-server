@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.math.vector.Vector3i;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -36,8 +35,8 @@ public class ChunkPart implements BlockSetter {
         this.level = level;
     }
 
-    public boolean isEmpty(){
-        return this.generated == null;
+    public boolean isEmpty() {
+        return this.generated==null;
     }
 
     public void registerEntity(WorldEntity entity) {
@@ -152,7 +151,7 @@ public class ChunkPart implements BlockSetter {
                     final int finalX = x;
                     final int finalY = y;
                     final int finalZ = z;
-                    new Thread(() -> section.addBlockPallet(new SinglePallet(this.getBlockAt(finalX, finalY, finalZ).getState()))).start();
+                    new Thread(() -> section.addBlockPallet(new SinglePallet(this.getBlockAt(finalX, finalY, finalZ).getState(), new Vector3i(finalX, finalY, finalZ)))).start();
                 }
             }
         }

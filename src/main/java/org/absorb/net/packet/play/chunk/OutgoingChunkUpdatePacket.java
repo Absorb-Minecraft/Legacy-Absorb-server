@@ -1,5 +1,6 @@
 package org.absorb.net.packet.play.chunk;
 
+import me.nullicorn.nedit.NBTOutputStream;
 import me.nullicorn.nedit.type.NBTCompound;
 import org.absorb.block.state.FullBlockState;
 import org.absorb.files.nbt.compound.NBTCompoundBuilder;
@@ -18,6 +19,8 @@ import org.absorb.world.area.ChunkSection;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurateException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -67,68 +70,84 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
 
     @Override
     public ByteBuffer toBytes(@NotNull Client stream) {
-        ByteBuffer chunkX = Serializers.INTEGER.write(this.chunk.getChunk().getPosition().x());
-        System.out.println("\tChunkX: " + chunkX + Arrays.toString(chunkX.array()));
-        ByteBuffer chunkY = Serializers.INTEGER.write(this.chunk.getChunk().getPosition().y());
-        System.out.println("\tChunkY: " + chunkY + Arrays.toString(chunkY.array()));
-
-        NBTCompoundEntry<Long[], Long[]> worldSurface = NBTCompoundKeys.WORLD_SURFACE.withValue(new Long[0]);
-
-
-        Long[] heightMap = this.chunk.getHeightMap();
-        NBTCompoundEntry<Long[], Long[]> motionBlocking = NBTCompoundKeys.MOTION_BLOCKING.withValue(heightMap);
-        NBTCompound heightMapCompound = new NBTCompoundBuilder().addAll(worldSurface, motionBlocking).build();
-        NBTCompound rootHeightMapCompound = new NBTCompound();
-        rootHeightMapCompound.put("", heightMapCompound);
-        ByteBuffer heightMapBuffer = Serializers.NBT_COMPOUND_ENTRIES.write(rootHeightMapCompound);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        NBTOutputStream nbtOS;
         try {
-            System.out.println("\tHeightMap: " + AsJson.asJson(rootHeightMapCompound));
-        } catch (ConfigurateException e) {
-            e.printStackTrace();
+            nbtOS = new NBTOutputStream(baos, false);
+
+
+            ByteBuffer chunkX = Serializers.INTEGER.write(this.chunk.getChunk().getPosition().x());
+            nbtOS.write(chunkX.array());
+            System.out.println("\tChunkX: " + chunkX + Arrays.toString(chunkX.array()));
+
+
+            ByteBuffer chunkY = Serializers.INTEGER.write(this.chunk.getChunk().getPosition().y());
+            nbtOS.write(chunkY.array());
+            System.out.println("\tChunkY: " + chunkY + Arrays.toString(chunkY.array()));
+
+
+            NBTCompoundEntry<Long[], Long[]> worldSurface = NBTCompoundKeys.WORLD_SURFACE.withValue(new Long[0]);
+            Long[] heightMap = this.chunk.getHeightMap();
+            NBTCompoundEntry<Long[], Long[]> motionBlocking = NBTCompoundKeys.MOTION_BLOCKING.withValue(heightMap);
+            NBTCompound heightMapCompound = new NBTCompoundBuilder().addAll(worldSurface, motionBlocking).build();
+            NBTCompound rootHeightMapCompound = new NBTCompound();
+            rootHeightMapCompound.put("", heightMapCompound);
+            nbtOS.writeFully(rootHeightMapCompound);
+            try {
+                System.out.println("\tHeightMap: " + AsJson.asJson(rootHeightMapCompound));
+            } catch (ConfigurateException e) {
+                e.printStackTrace();
+            }
+
+            List<ByteBuffer> chunkSections = this.blockData.stream().map(ChunkSection::write).toList();
+            int chunkSectionsSize = chunkSections.parallelStream().mapToInt(sect -> sect.array().length).sum();
+            ByteBuffer chunkSectionsSizeBuffer = Serializers.VAR_INTEGER.write(chunkSectionsSize);
+            nbtOS.write(chunkSectionsSizeBuffer.array());
+            System.out.println("\tChunkSectionSize: " + chunkSectionsSize + Arrays.toString(chunkSectionsSizeBuffer.array()));
+
+            ByteBuffer chunkSectionsBuffer = SerializerUtils.collect(chunkSections);
+            nbtOS.write(chunkSectionsBuffer.array());
+            System.out.println("ChunkSectionBuffer: (" + chunkSectionsBuffer.array().length + ")" + Arrays.toString(chunkSectionsBuffer.array()));
+
+            //TODO none container tile entities
+            ByteBuffer tileEntityCount = Serializers.VAR_INTEGER.write(0);
+            System.out.println("TileEntityCount: " + 0 + Arrays.toString(tileEntityCount.array()));
+            nbtOS.write(tileEntityCount.array());
+
+
+            ByteBuffer trustEdge = Serializers.BOOLEAN.write(this.trustLightOnEdge);
+            nbtOS.write(trustEdge.array());
+
+            long[] skyLightArray =
+                    this.blockData.stream().flatMap(chunk -> chunk.getBlockPallet().stream()).flatMap(pallet -> pallet.getBlocks().values().stream()).mapToLong(FullBlockState::getSkyLight).toArray();
+            ByteBuffer skyLights = Serializers.BITSET.write(BitSet.valueOf(skyLightArray));
+            nbtOS.write(skyLights.array());
+
+            long[] blockLightArray =
+                    this.blockData.stream().flatMap(chunk -> chunk.getBlockPallet().stream()).flatMap(pallet -> pallet.getBlocks().values().stream()).mapToLong(FullBlockState::getBlockLight).toArray();
+            ByteBuffer blockLight = Serializers.BITSET.write(BitSet.valueOf(blockLightArray));
+            nbtOS.write(blockLight.array());
+
+            long[] emptySkyLightArray = skyLightArray; //TODO
+            ByteBuffer emptySkylight = Serializers.BITSET.write(BitSet.valueOf(emptySkyLightArray));
+            nbtOS.write(emptySkylight.array());
+
+            long[] emptyBlockLightArray = blockLightArray; //TODO
+            ByteBuffer emptyBlockLight = Serializers.BITSET.write(BitSet.valueOf(emptyBlockLightArray));
+            nbtOS.write(emptyBlockLight.array());
+
+            ByteBuffer skyLightArraysLength = Serializers.VAR_INTEGER.write(0); //TODO -> work this one out
+            nbtOS.write(skyLightArraysLength.array());
+
+            ByteBuffer blockLightArraysLength = Serializers.VAR_INTEGER.write(0); //TODO -> work this one out
+            nbtOS.write(blockLightArraysLength.array());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        List<ByteBuffer> chunkSections = this.blockData.stream().map(ChunkSection::write).toList();
-        int chunkSectionsSize = chunkSections.parallelStream().mapToInt(sect -> sect.array().length).sum();
-        ByteBuffer chunkSectionsSizeBuffer = Serializers.VAR_INTEGER.write(chunkSectionsSize);
-        System.out.println("\tChunkSectionSize: " + chunkSectionsSize + Arrays.toString(chunkSectionsSizeBuffer.array()));
-        ByteBuffer chunkSectionsBuffer = SerializerUtils.collect(chunkSections);
-        System.out.println("ChunkSectionBuffer: " + Arrays.toString(chunkSectionsBuffer.array()));
 
-        //TODO none container tile entities
-        ByteBuffer tileEntityCount = Serializers.VAR_INTEGER.write(0);
-        System.out.println("TileEntityCount: " + 0 + Arrays.toString(tileEntityCount.array()));
-        ByteBuffer trustEdge = Serializers.BOOLEAN.write(this.trustLightOnEdge);
-        long[] skyLightArray =
-                this.blockData.stream().flatMap(chunk -> chunk.getBlockPallet().stream()).flatMap(pallet -> pallet.getBlocks().stream()).mapToLong(FullBlockState::getSkyLight).toArray();
-        ByteBuffer skyLights = Serializers.BITSET.write(BitSet.valueOf(skyLightArray));
-        long[] blockLightArray =
-                this.blockData.stream().flatMap(chunk -> chunk.getBlockPallet().stream()).flatMap(pallet -> pallet.getBlocks().stream()).mapToLong(FullBlockState::getBlockLight).toArray();
-        ByteBuffer blockLight = Serializers.BITSET.write(BitSet.valueOf(blockLightArray));
-        long[] emptySkyLightArray = skyLightArray; //TODO
-        ByteBuffer emptySkylight = Serializers.BITSET.write(BitSet.valueOf(emptySkyLightArray));
-        long[] emptyBlockLightArray = blockLightArray; //TODO
-        ByteBuffer emptyBlockLight = Serializers.BITSET.write(BitSet.valueOf(emptyBlockLightArray));
-        ByteBuffer skyLightArraysLength = Serializers.VAR_INTEGER.write(0); //TODO -> work this one out
-        ByteBuffer blockLightArraysLength = Serializers.VAR_INTEGER.write(0); //TODO -> work this one out
+        ByteBuffer ret = ByteBuffer.wrap(baos.toByteArray());
+        return SerializerUtils.createPacket(ID, ret);
 
-        ByteBuffer bytes = SerializerUtils.createPacket(ID,
-                chunkX,
-                chunkY,
-                heightMapBuffer,
-                chunkSectionsSizeBuffer,
-                chunkSectionsBuffer,
-                tileEntityCount,
-                trustEdge,
-                skyLights,
-                blockLight,
-                emptySkylight,
-                emptyBlockLight,
-                skyLightArraysLength,
-                blockLightArraysLength);
-
-        System.out.println("Bytes Size: " + bytes.limit());
-        System.out.println("Bytes: " + Arrays.toString(bytes.array()));
-
-        return bytes;
     }
 }

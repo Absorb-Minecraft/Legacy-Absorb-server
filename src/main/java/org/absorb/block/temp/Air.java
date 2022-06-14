@@ -8,7 +8,7 @@ import org.absorb.utils.Identifiable;
 public class Air {
 
     private static AbsorbBlockStateBuilder buildState() {
-        return new AbsorbBlockStateBuilder().setNetworkId(0);
+        return new AbsorbBlockStateBuilder().setNetworkId(9789);
     }
 
     public static AbsorbBlockType getType() {

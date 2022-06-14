@@ -4,17 +4,14 @@ import org.absorb.net.Client;
 import org.absorb.net.data.SerializerUtils;
 import org.absorb.net.data.Serializers;
 import org.absorb.net.packet.OutgoingPacket;
-import org.absorb.net.packet.OutgoingPacketBuilder;
-import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class OutgoingAbilityPacket implements OutgoingPacket {
 
-    private static final int ID = 0x32;
+    public static final int ID = 0x32;
 
     private final boolean isInvulnerable;
     private final boolean isFlying;

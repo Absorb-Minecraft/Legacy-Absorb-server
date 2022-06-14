@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -35,6 +36,9 @@ public class ConsoleSource implements CommandSender {
         colours.put(new Vector3i(0, 0, 255), Ansi.Color.BLUE);
         colours.put(new Vector3i(0, 255, 0), Ansi.Color.GREEN);
         colours.put(new Vector3i(255, 0, 0), Ansi.Color.RED);
+        colours.put(new Vector3i(255, 255, 0), Ansi.Color.YELLOW);
+        colours.put(new Vector3i(0, 255, 255), Ansi.Color.CYAN);
+        colours.put(new Vector3i(255, 0, 255), Ansi.Color.MAGENTA);
         COLOURS = Collections.unmodifiableMap(colours);
     }
 
@@ -70,6 +74,7 @@ public class ConsoleSource implements CommandSender {
 
         while (!children.isEmpty()) {
             for (Component child : children) {
+                ret.reset();
                 TextColor colour = child.color();
                 if (colour!=null) {
                     ret.fg(this.getClosesColour(colour.red(), colour.green(), colour.blue()));
@@ -142,6 +147,9 @@ public class ConsoleSource implements CommandSender {
             while (Main.IS_RUNNING) {
                 try {
                     String line = lineReader.readLine();
+                    AbsorbManagers.getCommandManager().execute(this, line);
+                }catch (UserInterruptException e){
+                    String line = "stop host forced shutdown";
                     AbsorbManagers.getCommandManager().execute(this, line);
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();

@@ -1,24 +1,29 @@
 package org.absorb.block.pallet;
 
+import org.absorb.block.locatable.LocatableBlock;
 import org.absorb.block.state.FullBlockState;
 import org.absorb.net.data.Serializers;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.math.vector.Vector3i;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 
 public class SinglePallet implements BlockPallet {
 
     private final @NotNull FullBlockState state;
+    private final @NotNull Vector3i location;
 
-    public SinglePallet(@NotNull FullBlockState state) {
+    public SinglePallet(@NotNull FullBlockState state, @NotNull Vector3i location) {
         this.state = state;
+        this.location = location;
     }
 
     @Override
-    public Set<FullBlockState> getBlocks() {
-        return Set.of(this.state);
+    public Map<Vector3i, FullBlockState> getBlocks() {
+        return Map.of(this.location, this.state);
     }
 
     @Override

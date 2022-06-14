@@ -15,7 +15,15 @@ public interface Entity {
 
     boolean hasSpawned();
 
-    @NotNull EntityType getType();
+    void setGravity(boolean gravity);
+
+    boolean hasGravity();
+
+    void setFlying(boolean isFlying);
+
+    boolean isFlying();
+
+    @NotNull EntityType<? extends Entity> getType();
 
     Optional<Component> getCustomName();
 

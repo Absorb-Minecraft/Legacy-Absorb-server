@@ -8,7 +8,7 @@ import org.absorb.utils.Identifiable;
 public class Bedrock {
 
     private static AbsorbBlockStateBuilder buildState() {
-        return new AbsorbBlockStateBuilder().setNetworkId(7);
+        return new AbsorbBlockStateBuilder().setNetworkId(33);
     }
 
     public static AbsorbBlockType getType() {
@@ -18,7 +18,7 @@ public class Bedrock {
                 .setName("Bedrock")
                 .setKey("bedrock")
                 .setHost(Identifiable.MINECRAFT_HOST)
-                .setNetworkId(7)
+                .setNetworkId(25)
                 .build();
     }
 }

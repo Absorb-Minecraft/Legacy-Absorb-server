@@ -14,8 +14,8 @@ public class GeneratedFlatChunk implements GeneratedChunk {
 
     private final Map<Integer, FullBlockState> generateAt = new HashMap<>();
 
-    public GeneratedFlatChunk(){
-        this.generateAt.put(0, AbsorbBlockTypes.BEDROCK.get().getDefaultBlockState().asFull());
+    public GeneratedFlatChunk() {
+        this.generateAt.put(-30, AbsorbBlockTypes.BEDROCK.get().getDefaultBlockState().asFull());
     }
 
     @Override

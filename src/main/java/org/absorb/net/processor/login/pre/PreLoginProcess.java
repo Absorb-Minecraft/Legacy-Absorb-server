@@ -13,6 +13,7 @@ import org.absorb.net.PlayingState;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.login.post.OutgoingLoginSuccessfulPacketBuilder;
 import org.absorb.net.packet.login.pre.IncomingPreLoginPacket;
+import org.absorb.net.packet.play.chunk.OutgoingChunkUpdatePacketBuilder;
 import org.absorb.net.packet.play.command.declare.OutgoingDeclaredCommandsPacketBuilder;
 import org.absorb.net.packet.play.difficulty.OutgoingServerDifficultyPacketBuilder;
 import org.absorb.net.packet.play.entity.player.compass.OutgoingSpawnPositionPacketBuilder;
@@ -20,6 +21,7 @@ import org.absorb.net.packet.play.entity.player.movement.outgoing.OutgoingPlayer
 import org.absorb.net.packet.play.entity.player.tab.add.OutgoingPlayerTabUpdateAddPlayerPacketBuilder;
 import org.absorb.net.packet.play.entity.status.OutgoingEntityStatusUpdatePacketBuilder;
 import org.absorb.net.packet.play.join.OutgoingJoinPacketBuilder;
+import org.absorb.net.packet.play.settings.ability.OutgoingAbilityPacketBuilder;
 import org.absorb.net.processor.NetProcess;
 import org.absorb.world.AbsorbWorld;
 import org.absorb.world.area.AbsorbChunk;
@@ -157,10 +159,12 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
         ChunkPart part = chunk.getPartWithBlockHeight(2);
         Set<ChunkSection> set = Set.of(part.asSection());
 
-        /*new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(set)
-        .build().writeToAsync(info);*/
+        new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(set)
+                .build().writeToAsync(info);
 
         info.setPlayingState(PlayingState.LOGIN_PRE_DATA);
+
+        new OutgoingAbilityPacketBuilder().fromClient(info).build().writeTo(info);
 
         id = info.newTeleportId();
         info.registerTeleportId(id);

@@ -53,14 +53,14 @@ public class Main {
                 date.get(ChronoField.SECOND_OF_DAY), StandardVersion.DEV);
 
         InputStream stream = Main.class.getClassLoader().getResourceAsStream("META-INF/absorb_version.csv");
-        if(stream != null){
+        if (stream!=null) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             String line = reader.lines().collect(Collectors.joining(""));
             String[] split = line.split(",");
-            if(split.length == 3){
+            if (split.length==3) {
                 version = new StandardVersion(Integer.parseInt(split[0]), Integer.parseInt(split[1]),
                         Integer.parseInt(split[2]));
-            }else{
+            } else {
                 version = new StandardVersion(Integer.parseInt(split[1]), Integer.parseInt(split[2]),
                         Integer.parseInt(split[3]), split[0]);
             }
@@ -69,7 +69,7 @@ public class Main {
         VERSION = version;
     }
 
-    public static void init() throws IOException {
+    public static void init(String[] args) throws IOException {
         IS_RUNNING = true;
         AbsorbManagers.instance = new AbsorbManagers();
         AbsorbManagers.instance.console = new ConsoleSource();
@@ -80,7 +80,6 @@ public class Main {
         AbsorbManagers.instance.scheduleManager = new ScheduleManager();
         AbsorbManagers.instance.channelManager = new ChannelManager();
         AbsorbManagers.instance.commandManager = new CommandManager();
-
 
         Commands.getAll();
         AbsorbManagers.getConsole().sendProgress(1, 5);
@@ -181,7 +180,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            init();
+            init(args);
         } catch (IOException e) {
             e.printStackTrace();
         }

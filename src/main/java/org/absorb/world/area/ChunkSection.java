@@ -6,15 +6,18 @@ import org.absorb.block.state.FullBlockState;
 import org.absorb.block.type.AbsorbBlockTypes;
 import org.absorb.net.data.SerializerUtils;
 import org.absorb.net.data.Serializers;
+import org.jetbrains.annotations.NotNull;
+import org.spongepowered.math.vector.Vector3i;
 
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.stream.Collectors;
 
 public class ChunkSection {
 
-    private final Set<BlockPallet> blockPallets = new HashSet<>();
-    private final Set<BlockPallet> biomePallets = new HashSet<>();
+    private final Collection<BlockPallet> blockPallets = new LinkedTransferQueue<>();
+    private final Collection<BlockPallet> biomePallets = new LinkedTransferQueue<>();
     private final int level;
 
     private static final int BLOCK_STATES_LIMIT = 4096;
@@ -28,12 +31,16 @@ public class ChunkSection {
         return this.level;
     }
 
-    public void addBlockPallet(BlockPallet pallet) {
-        blockPallets.add(pallet);
+    public void addBlockPallet(@NotNull BlockPallet pallet) {
+        try {
+            this.blockPallets.add(pallet);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
-    public void addBiomePallet(BlockPallet pallet) {
-        biomePallets.add(pallet);
+    public void addBiomePallet(@NotNull BlockPallet pallet) {
+        this.biomePallets.add(pallet);
     }
 
     public Collection<BlockPallet> getBlockPallet() {
@@ -48,33 +55,23 @@ public class ChunkSection {
         Set<FullBlockState> blocks = this
                 .blockPallets
                 .stream()
-                .flatMap(blockPallet -> blockPallet.getBlocks().parallelStream())
-                .filter(state -> !AbsorbBlockTypes.AIR.isEqual(state.getState().getType()))
-                .filter(state -> !AbsorbBlockTypes.CAVE_AIR.isEqual(state.getState().getType()))
-                .filter(state -> !AbsorbBlockTypes.VOID_AIR.isEqual(state.getState().getType()))
+                .flatMap(blockPallet -> blockPallet.getBlocks().values().parallelStream())
+                .filter(entry -> !AbsorbBlockTypes.AIR.isEqual(entry.getState().getType()))
+                .filter(entry -> !AbsorbBlockTypes.CAVE_AIR.isEqual(entry.getState().getType()))
+                .filter(entry -> !AbsorbBlockTypes.VOID_AIR.isEqual(entry.getState().getType()))
                 .collect(Collectors.toSet());
-
-        List<BlockPallet> pallets =
-                this
-                        .blockPallets
-                        .stream()
-                        .filter(state -> state.getBlocks().parallelStream().noneMatch(full -> AbsorbBlockTypes.CAVE_AIR.isEqual(full.getState().getType())))
-                        .filter(state -> state.getBlocks().parallelStream().noneMatch(full -> AbsorbBlockTypes.VOID_AIR.isEqual(full.getState().getType())))
-                        .filter(state -> state.getBlocks().parallelStream().noneMatch(full -> AbsorbBlockTypes.AIR.isEqual(full.getState().getType())))
-                        .collect(Collectors.toCollection(LinkedList::new));
-
 
         System.out.println("Writing Chunk Section");
         short blockCount =
                 (short) blocks.size();
         ByteBuffer blockCountBuffer = Serializers.SHORT.write(blockCount);
         System.out.println("\tBlockCount: " + blockCount + " " + Arrays.toString(blockCountBuffer.array()));
-
-
-        /*List<ByteBuffer> blockBuffers =
-                this.blockPallets.stream().map(BlockPallet::write).collect(Collectors.toCollection(LinkedList::new));*/
         List<ByteBuffer> blockBuffers =
-                pallets.stream().map(BlockPallet::write).collect(Collectors.toCollection(LinkedList::new));
+                this
+                        .blockPallets
+                        .stream()
+                        .sorted((o1, o2) -> o1.compareOnBlockLocation().compare(o1, o2)).map(BlockPallet::write)
+                        .collect(Collectors.toCollection(LinkedList::new));
         if (blockBuffers.size()!=BLOCK_STATES_LIMIT) {
             int sizeBefore = blockBuffers.size();
             if (sizeBefore > BLOCK_STATES_LIMIT) {
@@ -82,7 +79,11 @@ public class ChunkSection {
                         "Currently: " + sizeBefore);
             }
             for (int i = 0; i < (BLOCK_STATES_LIMIT - sizeBefore); i++) {
-                blockBuffers.add(new SinglePallet(AbsorbBlockTypes.AIR.get().getDefaultBlockState().asFull()).write());
+                blockBuffers.add(
+                        new SinglePallet(
+                                AbsorbBlockTypes.AIR.get().getDefaultBlockState().asFull(),
+                                new Vector3i(i, i, i)
+                        ).write());
             }
         }
         ByteBuffer blockBuffer = SerializerUtils.collect(blockBuffers);
@@ -96,7 +97,10 @@ public class ChunkSection {
                         "Currently: " + sizeBefore);
             }
             for (int i = 0; i < (BIOME_STATES_LIMIT - sizeBefore); i++) {
-                biomeBuffers.add(new SinglePallet(AbsorbBlockTypes.AIR.get().getDefaultBlockState().asFull()).write());
+                biomeBuffers.add(
+                        new SinglePallet(
+                                AbsorbBlockTypes.AIR.get().getDefaultBlockState().asFull(),
+                                new Vector3i(i, i, i)).write());
             }
         }
 

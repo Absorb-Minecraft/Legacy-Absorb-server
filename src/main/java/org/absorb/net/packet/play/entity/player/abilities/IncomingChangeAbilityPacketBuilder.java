@@ -8,10 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 public class IncomingChangeAbilityPacketBuilder implements IncomingPacketBuilder<IncomingChangeAbilityPacket> {
 
-    private PlayerAbilities ability;
+    private @Nullable PlayerAbilities ability;
 
     public IncomingChangeAbilityPacketBuilder setAbility(@Nullable PlayerAbilities ability){
         this.ability = ability;
@@ -26,7 +27,10 @@ public class IncomingChangeAbilityPacketBuilder implements IncomingPacketBuilder
     @Override
     public PacketBuilder<IncomingChangeAbilityPacket> from(ByteBuffer packetBytes) {
         byte packet = Serializers.BYTE.read(0, packetBytes).value();
-        this.ability = PlayerAbilities.getValueOf(packet);
+        if(packet != 0) {
+            this.ability = PlayerAbilities.getValueOf(packet);
+            System.out.println("Change ability: " + this.ability.name());
+        }
         return this;
     }
 

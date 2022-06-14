@@ -5,7 +5,7 @@ import org.absorb.world.location.Locatable;
 import org.absorb.world.location.Location;
 import org.jetbrains.annotations.NotNull;
 
-public class LocatableBlock implements Locatable {
+public class LocatableBlock implements Locatable, Comparable<LocatableBlock> {
 
     private final @NotNull FullBlockState state;
     private final @NotNull Location location;
@@ -22,5 +22,10 @@ public class LocatableBlock implements Locatable {
     @Override
     public @NotNull Location getLocation() {
         return this.location;
+    }
+
+    @Override
+    public int compareTo(@NotNull LocatableBlock o) {
+        return this.location.compareTo(o.location);
     }
 }

@@ -1,5 +1,9 @@
 package org.absorb.net.packet.play.settings.ability;
 
+import org.absorb.entity.Entity;
+import org.absorb.entity.living.human.Gamemodes;
+import org.absorb.entity.living.human.Human;
+import org.absorb.net.Client;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
@@ -13,6 +17,20 @@ public class OutgoingAbilityPacketBuilder implements OutgoingPacketBuilder<Outgo
     private boolean isInstantBreak;
     private float flyingSpeed;
     private float fieldOfView;
+
+    public OutgoingAbilityPacketBuilder fromClient(@NotNull Client client){
+        this.fromEntity(client.getEntity().getEntity());
+        return this;
+    }
+
+    public OutgoingAbilityPacketBuilder fromEntity(@NotNull Entity entity){
+        this.isFlying = entity.isFlying();
+        if(entity instanceof Human human){
+            this.isFlyingAllowed = human.isFlyingAllowed();
+            this.isInstantBreak = human.getGamemode() ==Gamemodes.CREATIVE;
+        }
+        return this;
+    }
 
     public boolean isInvulnerable() {
         return this.isInvulnerable;
@@ -74,22 +92,26 @@ public class OutgoingAbilityPacketBuilder implements OutgoingPacketBuilder<Outgo
     }
 
     @Override
-    public PacketBuilder<OutgoingAbilityPacket> reset() {
-        return null;
+    public @NotNull PacketBuilder<OutgoingAbilityPacket> reset() {
+        this.fieldOfView = 0.1f;
+        this.isInstantBreak = false;
+        this.isInvulnerable = false;
+        this.flyingSpeed = 0.05f;
+        return this;
     }
 
     @Override
-    public PacketBuilder<OutgoingAbilityPacket> copy() {
-        return null;
+    public @NotNull PacketBuilder<OutgoingAbilityPacket> copy() {
+        return new OutgoingAbilityPacketBuilder().setFlying(this.isFlying).setFlyingAllowed(this.isFlyingAllowed).setFieldOfView(this.fieldOfView).setInstantBreak(this.isInstantBreak);
     }
 
     @Override
     public int getId() {
-        return 0;
+        return OutgoingAbilityPacket.ID;
     }
 
     @Override
     public @NotNull PacketState getState() {
-        return null;
+        return PacketState.PLAY;
     }
 }

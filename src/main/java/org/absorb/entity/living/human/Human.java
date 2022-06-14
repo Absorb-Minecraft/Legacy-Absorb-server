@@ -12,6 +12,7 @@ public class Human extends AbstractLivingEntity {
 
     private @NotNull Gamemode gamemode = Gamemodes.CREATIVE;
     private @Nullable Component tabDisplayName;
+    private Boolean isFlyingAllowed;
 
     public Human() {
         super(EntityTypes.HUMAN);
@@ -27,6 +28,24 @@ public class Human extends AbstractLivingEntity {
 
     public @NotNull Gamemode getGamemode() {
         return this.gamemode;
+    }
+
+    public boolean isFlyingAllowed() {
+        if (this.isFlyingAllowed==null) {
+            if (this.gamemode==Gamemodes.CREATIVE) {
+                return true;
+            }
+            return false;
+        }
+        return this.isFlyingAllowed;
+    }
+
+    public void setFlyingAllowed(boolean check) {
+        this.isFlyingAllowed = check;
+    }
+
+    public void setGamemodeFlyingRequirements() {
+        this.isFlyingAllowed = null;
     }
 
     public void setGamemode(@NotNull Gamemode mode) {

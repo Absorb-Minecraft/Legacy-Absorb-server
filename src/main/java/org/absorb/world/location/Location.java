@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3d;
 import org.spongepowered.math.vector.Vector3i;
 
-public class Location {
+public class Location implements Comparable<Location>{
 
     private final @NotNull AbsorbWorld world;
     private final @NotNull Vector3d position;
@@ -39,4 +39,26 @@ public class Location {
         return this.world;
     }
 
+    @Override
+    public int compareTo(@NotNull Location o) {
+        if(this.getBlockPosition().y() > o.getBlockPosition().y()){
+            return 1;
+        }
+        if(this.getBlockPosition().y() < o.getBlockPosition().y()){
+            return -1;
+        }
+        if(this.getBlockPosition().z() > o.getBlockPosition().z()){
+            return 1;
+        }
+        if(this.getBlockPosition().z() < o.getBlockPosition().z()){
+            return -1;
+        }
+        if(this.getBlockPosition().x() > o.getBlockPosition().x()){
+            return 1;
+        }
+        if(this.getBlockPosition().x() < o.getBlockPosition().x()){
+            return -1;
+        }
+        return 0;
+    }
 }
