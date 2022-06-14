@@ -1,5 +1,8 @@
 # Absorb
 
+[![](https://jitpack.io/v/Absorb-Minecraft/Absorb-server.svg)](https://jitpack.io/#Absorb-Minecraft/Absorb-server)
+
+
 ## What is it?
 Absorb is a reimplementation of the Minecraft server which is designed to take advantage of modern day hardware such 
 as multiple threads and async compute. 
