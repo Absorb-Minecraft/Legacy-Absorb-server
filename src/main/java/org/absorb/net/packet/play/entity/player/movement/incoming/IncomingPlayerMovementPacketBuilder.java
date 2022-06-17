@@ -6,6 +6,7 @@ import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.math.vector.Vector3d;
 
 import java.nio.ByteBuffer;
 
@@ -119,5 +120,12 @@ public class IncomingPlayerMovementPacketBuilder implements IncomingPacketBuilde
     @Override
     public @NotNull PacketState getState() {
         return PacketState.PLAY;
+    }
+
+    public IncomingPlayerMovementPacketBuilder setPosition(Vector3d position) {
+        this.x = position.x();
+        this.y = position.y();
+        this.z = position.z();
+        return this;
     }
 }

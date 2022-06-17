@@ -1,4 +1,4 @@
-package org.absorb.net.packet.play.disconnect;
+package org.absorb.net.packet.play.client.disconnect;
 
 import net.kyori.adventure.text.Component;
 import org.absorb.net.Client;

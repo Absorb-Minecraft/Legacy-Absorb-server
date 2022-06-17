@@ -6,7 +6,7 @@ public class MCVersion {
     public static final MCVersion MC1_18_2 = new MCVersion(1, 18, 2, 758);
     public static final MCVersion MC1_18_0 = new MCVersion(1, 18, 0, 757);
 
-    public static final MCVersion CURRENT = MC1_19_0;
+    public static final MCVersion CURRENT = MC1_18_2;
 
     private final int major;
     private final int minor;

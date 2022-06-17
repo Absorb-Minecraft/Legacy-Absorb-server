@@ -14,12 +14,16 @@ import org.absorb.entity.living.human.tab.PlayerTabBuilder;
 import org.absorb.inventory.entity.player.PlayerInventory;
 import org.absorb.message.MessagePosition;
 import org.absorb.net.packet.PacketState;
-import org.absorb.net.packet.play.disconnect.OutgoingCloseConnectionPacketBuilder;
+import org.absorb.net.packet.play.chunk.OutgoingChunkUpdatePacketBuilder;
+import org.absorb.net.packet.play.client.disconnect.OutgoingCloseConnectionPacketBuilder;
 import org.absorb.net.packet.play.message.chat.OutgoingChatMessagePacketBuilder;
 import org.absorb.threaded.SimpleDataPoint;
 import org.absorb.threaded.ThreadedDataPoint;
+import org.absorb.world.AbsorbWorld;
+import org.absorb.world.area.AbsorbChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.math.vector.Vector2i;
 import org.spongepowered.math.vector.Vector3d;
 
 import java.io.IOException;
@@ -43,7 +47,7 @@ public class Client implements CommandSender {
     private @Nullable WorldEntity entity;
     private final @NotNull PlayerInventory inventory = new PlayerInventory();
     private @Nullable Locale locale;
-    private byte viewDistance;
+    private byte viewDistance = 2;
     private @NotNull ChatMode chatMode = ChatMode.HIDDEN;
     private boolean colouredChatMessages;
     private boolean hiddenToList;
@@ -58,6 +62,82 @@ public class Client implements CommandSender {
     public Client(@NotNull Socket socket) throws IOException {
         this.lastPacketSent = LocalDateTime.now();
         this.socket = socket;
+    }
+
+    public void updateChunks() {
+        updateChunks(this.getViewingChunks());
+    }
+
+    public void updateChunks(Iterable<Vector2i> collection) {
+        AbsorbWorld world = this.getEntity().getWorld();
+//will be threaded when its working
+        /*collection.forEach(chunkPos -> new Thread(() -> {
+            AbsorbChunk chunk = world.generateChunk(chunkPos);
+            chunk.generateParts();
+            chunk.getParts().stream().forEach(part -> {
+                while (part.isEmpty()) {
+
+                }
+                Set<ChunkSection> sections = Collections.singleton(part.asSection());
+                new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(sections).build().writeToAsync(this);
+            });
+        }).run());*/
+
+        collection.forEach(chunkPos -> {
+            AbsorbChunk chunk = world.generateChunk(chunkPos);
+            chunk.generateParts();
+
+            try {
+                new OutgoingChunkUpdatePacketBuilder()
+                        .setChunk(chunk)
+                        .setTrustLightOnEdge(false)
+                        .addParts(chunk.getParts())
+                        .build()
+                        .writeTo(this);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        /*Vector2i chunkPos = collection.iterator().next();
+        AbsorbChunk chunk = world.generateChunk(chunkPos);
+        chunk.generateParts();
+
+        new OutgoingChunkUpdatePacketBuilder()
+                .setChunk(chunk)
+                .setTrustLightOnEdge(false)
+                .addParts(chunk.getParts())
+                .build()
+                .writeToAsync(this);*/
+
+
+        /*Vector2i chunkPos = collection.iterator().next();
+        AbsorbChunk chunk = world.generateChunk(chunkPos);
+        chunk.generateParts();
+        ChunkPart part = chunk.generatePartWithHeight(this.getEntity().getPosition().floorY());
+        while (part.isEmpty()) {
+
+        }
+        Set<ChunkSection> sections = Collections.singleton(part.asSection());
+        new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections
+        (sections).build().writeToAsync(this);*/
+
+    }
+
+    public Collection<Vector2i> getViewingChunks() {
+        Vector2i currentChunk = this.getEntity().getLocation().getChunkPosition();
+        Collection<Vector2i> collection = new HashSet<>();
+        byte viewDistance = this.getViewDistance();
+        int maxX = currentChunk.x() + viewDistance;
+        int minX = currentChunk.x() - viewDistance;
+        int maxZ = currentChunk.y() + viewDistance;
+        int minZ = currentChunk.y() - viewDistance;
+        for (int x = minX; x < maxX; x++) {
+            for (int z = minZ; z < maxZ; z++) {
+                collection.add(new Vector2i(x, z));
+            }
+        }
+        return collection;
     }
 
     public int getPingId() {
@@ -82,15 +162,6 @@ public class Client implements CommandSender {
         this.pings.removeAll(toRemove);
         this.pings.remove(opPing.get());
 
-    }
-
-    public @NotNull Vector3d getLocation() {
-        return this.lastPosition==null ? new Vector3d(0, 0, 0):this.lastPosition;
-    }
-
-    public void setLocation(@NotNull Vector3d location) {
-        this.lastPosition = location;
-        this.getEntity().setPosition(location);
     }
 
     public PlayingState getPlayingState() {

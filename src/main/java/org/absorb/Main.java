@@ -108,21 +108,19 @@ public class Main {
         AbsorbManagers.getConsole().sendMessage(Component.text("Found " + canLoad.size() + " compatible files"));
         AbsorbManagers.getConsole().sendProgress(2, 4);
 
-        Set<AbsorbModule> loaded = canLoad.parallelStream().map(load -> {
+        Set<AbsorbModule> loaded = canLoad.parallelStream().flatMap(load -> {
             try {
-                return absorbModuleLoader.create(load);
+                return absorbModuleLoader.create(load).parallelStream();
             } catch (IOException e) {
                 e.printStackTrace();
                 //noinspection ReturnOfNull
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toSet());
-        System.out.println("Loading modules");
         AbsorbManagers.getConsole().sendProgress(3, 4);
 
         loaded.parallelStream().forEach(module -> {
             try {
-                System.out.println("Loading " + module.getDisplayName() + " Version: " + module.getVersion());
                 absorbModuleLoader.load(module);
             } catch (IOException e) {
                 e.printStackTrace();

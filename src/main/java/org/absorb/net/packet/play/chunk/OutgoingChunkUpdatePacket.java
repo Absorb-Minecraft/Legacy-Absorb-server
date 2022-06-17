@@ -2,7 +2,6 @@ package org.absorb.net.packet.play.chunk;
 
 import me.nullicorn.nedit.NBTOutputStream;
 import me.nullicorn.nedit.type.NBTCompound;
-import org.absorb.block.state.FullBlockState;
 import org.absorb.files.nbt.compound.NBTCompoundBuilder;
 import org.absorb.files.nbt.compound.NBTCompoundEntry;
 import org.absorb.files.nbt.compound.NBTCompoundKeys;
@@ -14,8 +13,8 @@ import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketState;
 import org.absorb.utils.AsJson;
+import org.absorb.world.area.AbsorbChunk;
 import org.absorb.world.area.ChunkPart;
-import org.absorb.world.area.ChunkSection;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurateException;
 
@@ -26,19 +25,19 @@ import java.util.*;
 
 public class OutgoingChunkUpdatePacket implements OutgoingPacket {
 
-    private final @NotNull ChunkPart chunk;
+    private final @NotNull AbsorbChunk chunk;
     private final boolean trustLightOnEdge;
-    private final @NotNull TreeSet<ChunkSection> blockData = new TreeSet<>(Comparator.comparing(ChunkSection::getLevel));
+    private final @NotNull TreeSet<ChunkPart> blockData = new TreeSet<>(Comparator.comparing(ChunkPart::getLevel));
 
     public static final int ID = 0x22;
 
     public OutgoingChunkUpdatePacket(OutgoingChunkUpdatePacketBuilder builder) {
-        this.chunk = builder.getChunkPart();
+        this.chunk = builder.getChunk();
         this.trustLightOnEdge = builder.isTrustLightOnEdge();
-        this.blockData.addAll(builder.getChunkSections());
+        this.blockData.addAll(builder.getParts());
     }
 
-    public ChunkPart getChunkPart() {
+    public @NotNull AbsorbChunk getChunk() {
         return this.chunk;
     }
 
@@ -46,7 +45,7 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
         return this.trustLightOnEdge;
     }
 
-    public Set<ChunkSection> getBlockData() {
+    public Set<ChunkPart> getParts() {
         return this.blockData;
     }
 
@@ -63,9 +62,9 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
     @Override
     public @NotNull OutgoingPacketBuilder<? extends Packet> toBuilder() {
         return new OutgoingChunkUpdatePacketBuilder()
-                .setChunkPart(this.chunk)
+                .setChunk(this.chunk)
                 .setTrustLightOnEdge(this.trustLightOnEdge)
-                .addChunkSections(this.getBlockData());
+                .addParts(this.getParts());
     }
 
     @Override
@@ -76,19 +75,23 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
             nbtOS = new NBTOutputStream(baos, false);
 
 
-            ByteBuffer chunkX = Serializers.INTEGER.write(this.chunk.getChunk().getPosition().x());
+            ByteBuffer chunkX = Serializers.INTEGER.write(this.chunk.getPosition().x());
             nbtOS.write(chunkX.array());
-            System.out.println("\tChunkX: " + chunkX + Arrays.toString(chunkX.array()));
+            System.out.println("\tChunkX: " + this.chunk.getPosition().x() + Arrays.toString(chunkX.array()));
 
 
-            ByteBuffer chunkY = Serializers.INTEGER.write(this.chunk.getChunk().getPosition().y());
+            ByteBuffer chunkY = Serializers.INTEGER.write(this.chunk.getPosition().y());
             nbtOS.write(chunkY.array());
-            System.out.println("\tChunkY: " + chunkY + Arrays.toString(chunkY.array()));
+            System.out.println("\tChunkY: " + this.chunk.getPosition().y() + Arrays.toString(chunkY.array()));
 
 
             NBTCompoundEntry<Long[], Long[]> worldSurface = NBTCompoundKeys.WORLD_SURFACE.withValue(new Long[0]);
-            Long[] heightMap = this.chunk.getHeightMap();
-            NBTCompoundEntry<Long[], Long[]> motionBlocking = NBTCompoundKeys.MOTION_BLOCKING.withValue(heightMap);
+            byte[] heightMap = this.chunk.getHeightMap();
+            Long[] longHeightMap = new Long[heightMap.length];
+            for (int index = 0; index < heightMap.length; index++) {
+                longHeightMap[index] = (long) heightMap[index];
+            }
+            NBTCompoundEntry<Long[], Long[]> motionBlocking = NBTCompoundKeys.MOTION_BLOCKING.withValue(longHeightMap);
             NBTCompound heightMapCompound = new NBTCompoundBuilder().addAll(worldSurface, motionBlocking).build();
             NBTCompound rootHeightMapCompound = new NBTCompound();
             rootHeightMapCompound.put("", heightMapCompound);
@@ -99,7 +102,7 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
                 e.printStackTrace();
             }
 
-            List<ByteBuffer> chunkSections = this.blockData.stream().map(ChunkSection::write).toList();
+            List<ByteBuffer> chunkSections = this.blockData.stream().map(part -> part.asSection().write()).toList();
             int chunkSectionsSize = chunkSections.parallelStream().mapToInt(sect -> sect.array().length).sum();
             ByteBuffer chunkSectionsSizeBuffer = Serializers.VAR_INTEGER.write(chunkSectionsSize);
             nbtOS.write(chunkSectionsSizeBuffer.array());
@@ -118,22 +121,29 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
             ByteBuffer trustEdge = Serializers.BOOLEAN.write(this.trustLightOnEdge);
             nbtOS.write(trustEdge.array());
 
-            long[] skyLightArray =
-                    this.blockData.stream().flatMap(chunk -> chunk.getBlockPallet().stream()).flatMap(pallet -> pallet.getBlocks().values().stream()).mapToLong(FullBlockState::getSkyLight).toArray();
-            ByteBuffer skyLights = Serializers.BITSET.write(BitSet.valueOf(skyLightArray));
+            BitSet hasSkylight = new BitSet();
+            List<ChunkPart> parts = new ArrayList<>(this.blockData);
+            for (int index = 0; index < this.blockData.size(); index++) {
+                //1 for if any block in the section has skylight light
+                hasSkylight.set(index, false); //false as skylight array must also have it
+            }
+            ByteBuffer skyLights = Serializers.BITSET.write(hasSkylight);
             nbtOS.write(skyLights.array());
 
-            long[] blockLightArray =
-                    this.blockData.stream().flatMap(chunk -> chunk.getBlockPallet().stream()).flatMap(pallet -> pallet.getBlocks().values().stream()).mapToLong(FullBlockState::getBlockLight).toArray();
-            ByteBuffer blockLight = Serializers.BITSET.write(BitSet.valueOf(blockLightArray));
+            BitSet hasBlockLight = new BitSet();
+            for (int index = 0; index < this.blockData.size(); index++) {
+                //1 for if any block in the section has
+                hasSkylight.set(index, false); //false as skylight array must also have it
+            }
+            ByteBuffer blockLight = Serializers.BITSET.write(hasBlockLight);
             nbtOS.write(blockLight.array());
 
-            long[] emptySkyLightArray = skyLightArray; //TODO
-            ByteBuffer emptySkylight = Serializers.BITSET.write(BitSet.valueOf(emptySkyLightArray));
+            //long[] emptySkyLightArray = ; //TODO
+            ByteBuffer emptySkylight = Serializers.BITSET.write(new BitSet());
             nbtOS.write(emptySkylight.array());
 
-            long[] emptyBlockLightArray = blockLightArray; //TODO
-            ByteBuffer emptyBlockLight = Serializers.BITSET.write(BitSet.valueOf(emptyBlockLightArray));
+            //long[] emptyBlockLightArray = blockLightArray; //TODO
+            ByteBuffer emptyBlockLight = Serializers.BITSET.write(new BitSet());
             nbtOS.write(emptyBlockLight.array());
 
             ByteBuffer skyLightArraysLength = Serializers.VAR_INTEGER.write(0); //TODO -> work this one out

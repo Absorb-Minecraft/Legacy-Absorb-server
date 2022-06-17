@@ -13,20 +13,18 @@ import org.absorb.net.PlayingState;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.login.post.OutgoingLoginSuccessfulPacketBuilder;
 import org.absorb.net.packet.login.pre.IncomingPreLoginPacket;
-import org.absorb.net.packet.play.chunk.OutgoingChunkUpdatePacketBuilder;
 import org.absorb.net.packet.play.command.declare.OutgoingDeclaredCommandsPacketBuilder;
 import org.absorb.net.packet.play.difficulty.OutgoingServerDifficultyPacketBuilder;
 import org.absorb.net.packet.play.entity.player.compass.OutgoingSpawnPositionPacketBuilder;
 import org.absorb.net.packet.play.entity.player.movement.outgoing.OutgoingPlayerMovementPacketBuilder;
 import org.absorb.net.packet.play.entity.player.tab.add.OutgoingPlayerTabUpdateAddPlayerPacketBuilder;
+import org.absorb.net.packet.play.entity.player.view.OutgoingUpdateViewPacketBuilder;
 import org.absorb.net.packet.play.entity.status.OutgoingEntityStatusUpdatePacketBuilder;
 import org.absorb.net.packet.play.join.OutgoingJoinPacketBuilder;
 import org.absorb.net.packet.play.settings.ability.OutgoingAbilityPacketBuilder;
 import org.absorb.net.processor.NetProcess;
 import org.absorb.world.AbsorbWorld;
 import org.absorb.world.area.AbsorbChunk;
-import org.absorb.world.area.ChunkPart;
-import org.absorb.world.area.ChunkSection;
 import org.absorb.world.type.PlayerWorldTypeView;
 import org.spongepowered.math.vector.Vector3d;
 
@@ -154,13 +152,17 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
         new OutgoingSpawnPositionPacketBuilder().setAngle(0).setLocation(worldHuman.getWorld().getWorldData().getCompassPoint())
                 .build().writeTo(info);
 
-        AbsorbChunk chunk = world.generateChunkAtBlock(info.getLocation().floorX(),
-                info.getLocation().floorZ());
-        ChunkPart part = chunk.getPartWithBlockHeight(2);
-        Set<ChunkSection> set = Set.of(part.asSection());
+        AbsorbChunk chunk = world.generateChunkAtBlock(info.getEntity().getPosition().floorX(),
+                info.getEntity().getPosition().floorZ());
+        //ChunkPart part = chunk.getPartWithBlockHeight(2);
+        //Set<ChunkSection> set = Set.of(part.asSection());
 
-        new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(set)
-                .build().writeToAsync(info);
+        info.updateChunks();
+
+        /*new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(set)
+                .build().writeToAsync(info);*/
+
+        new OutgoingUpdateViewPacketBuilder().setChunk(chunk).build().writeToAsync(info);
 
         info.setPlayingState(PlayingState.LOGIN_PRE_DATA);
 

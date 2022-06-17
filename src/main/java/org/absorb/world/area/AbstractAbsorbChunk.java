@@ -1,5 +1,6 @@
 package org.absorb.world.area;
 
+import org.absorb.block.locatable.LocatableBlock;
 import org.absorb.world.AbsorbWorld;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector2i;
@@ -9,6 +10,7 @@ import org.spongepowered.math.vector.Vector3i;
 import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 public class AbstractAbsorbChunk implements AbsorbChunk {
 
@@ -46,8 +48,8 @@ public class AbstractAbsorbChunk implements AbsorbChunk {
     }
 
     @Override
-    public @NotNull Vector3i getHighestPoint(int x, int z) {
-        int y = this.parts.stream().mapToInt(part -> part.getHighestPoint(x, z).y()).max().orElse(0);
+    public @NotNull Vector3i getHighestPoint(int x, int z, Predicate<LocatableBlock> check) {
+        int y = this.parts.stream().mapToInt(part -> part.getHighestPoint(x, z, check).y()).max().orElse(0);
         return new Vector3i(x, y, z);
     }
 

@@ -2,6 +2,7 @@ package org.absorb.net.packet.play.chunk;
 
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.world.area.AbsorbChunk;
 import org.absorb.world.area.ChunkPart;
 import org.absorb.world.area.ChunkSection;
 import org.jetbrains.annotations.NotNull;
@@ -12,15 +13,15 @@ import java.util.Set;
 
 public class OutgoingChunkUpdatePacketBuilder implements OutgoingPacketBuilder<OutgoingChunkUpdatePacket> {
 
-    private ChunkPart chunk;
+    private AbsorbChunk chunk;
     private boolean trustLightOnEdge;
-    private final Set<ChunkSection> blockData = new HashSet<>();
+    private final Set<ChunkPart> blockData = new HashSet<>();
 
-    public ChunkPart getChunkPart() {
+    public AbsorbChunk getChunk() {
         return this.chunk;
     }
 
-    public OutgoingChunkUpdatePacketBuilder setChunkPart(ChunkPart chunk) {
+    public OutgoingChunkUpdatePacketBuilder setChunk(AbsorbChunk chunk) {
         this.chunk = chunk;
         return this;
     }
@@ -34,11 +35,11 @@ public class OutgoingChunkUpdatePacketBuilder implements OutgoingPacketBuilder<O
         return this;
     }
 
-    public Set<ChunkSection> getChunkSections() {
+    public Set<ChunkPart> getParts() {
         return this.blockData;
     }
 
-    public OutgoingChunkUpdatePacketBuilder addChunkSections(Collection<? extends ChunkSection> sections) {
+    public OutgoingChunkUpdatePacketBuilder addParts(Collection<? extends ChunkPart> sections) {
         this.blockData.addAll(sections);
         return this;
     }
@@ -50,7 +51,7 @@ public class OutgoingChunkUpdatePacketBuilder implements OutgoingPacketBuilder<O
 
     @Override
     public @NotNull OutgoingChunkUpdatePacketBuilder copy() {
-        return new OutgoingChunkUpdatePacketBuilder().setChunkPart(this.chunk).setTrustLightOnEdge(this.trustLightOnEdge).addChunkSections(this.getChunkSections());
+        return new OutgoingChunkUpdatePacketBuilder().setChunk(this.chunk).setTrustLightOnEdge(this.trustLightOnEdge).addParts(this.getParts());
     }
 
     @Override

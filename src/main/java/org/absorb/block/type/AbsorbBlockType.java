@@ -2,14 +2,13 @@ package org.absorb.block.type;
 
 import org.absorb.block.BlockTag;
 import org.absorb.block.state.AbsorbBlockState;
+import org.absorb.block.type.properties.BlockTypeProperty;
 import org.absorb.register.AbsorbKey;
 import org.absorb.state.AbsorbState;
 import org.absorb.utils.NetworkIdentifiable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AbsorbBlockType implements NetworkIdentifiable {
@@ -21,29 +20,30 @@ public class AbsorbBlockType implements NetworkIdentifiable {
     private final @NotNull String name;
     private final @NotNull String host;
     private final @NotNull String key;
+    private final @NotNull Collection<BlockTypeProperty<?>> properties = new HashSet<>();
     private final int networkId;
 
 
     public AbsorbBlockType(@NotNull AbsorbBlockTypeBuilder builder) {
-        if(builder.getDefaultState() == null){
+        if (builder.getDefaultState()==null) {
             throw new RuntimeException("Default state is not set");
         }
-        if(builder.getBlockStates() == null || builder.getBlockStates().isEmpty()){
+        if (builder.getBlockStates()==null || builder.getBlockStates().isEmpty()) {
             throw new RuntimeException("BlockStates is missing");
         }
         /*if(builder.getItem() == null){
             throw new RuntimeException("Block item is missing");
         }*/
-        if(builder.getNetworkId() == null){
+        if (builder.getNetworkId()==null) {
             throw new RuntimeException("NetworkId is missing");
         }
-        if(builder.getName() == null){
+        if (builder.getName()==null) {
             throw new RuntimeException("Name is missing");
         }
-        if(builder.getKey() == null){
+        if (builder.getKey()==null) {
             throw new RuntimeException("Key is missing");
         }
-        if(builder.getHost() == null){
+        if (builder.getHost()==null) {
             throw new RuntimeException("Host is missing");
         }
         AbsorbBlockState defaultState = builder.getDefaultState().setType(this).build();
@@ -58,6 +58,10 @@ public class AbsorbBlockType implements NetworkIdentifiable {
         this.host = builder.getHost();
         this.key = builder.getKey();
         this.networkId = builder.getNetworkId();
+    }
+
+    public <T> Optional<T> get(Class<? extends BlockTypeProperty<T>> clazz) {
+        return this.properties.parallelStream().filter(clazz::isInstance).findAny().map(prop -> (T) prop.get());
     }
 
     public @NotNull AbsorbKey getItemKey() {

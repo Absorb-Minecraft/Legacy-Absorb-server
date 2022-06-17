@@ -5,10 +5,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 public interface FileModuleLoader<M extends Module> extends ModuleLoader<M> {
 
     boolean canLoad(@NotNull File module);
 
-    @NotNull Module create(@NotNull File module) throws IOException;
+    @NotNull Collection<M> create(@NotNull File module) throws IOException;
 }

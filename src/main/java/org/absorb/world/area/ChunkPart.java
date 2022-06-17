@@ -14,9 +14,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
+import java.util.function.Predicate;
 
 public class ChunkPart implements BlockSetter {
 
@@ -76,36 +75,13 @@ public class ChunkPart implements BlockSetter {
         this.generated = chunk;
     }
 
-    public Long[] getHeightMap() {
-        ArrayBlockingQueue<Long> queue = new ArrayBlockingQueue<>(256);
-        LinkedBlockingQueue<Thread> threads = new LinkedBlockingQueue<>();
-
-        for (int x = 0; x < CHUNK_WIDTH; x++) {
-            for (int z = 0; z < CHUNK_LENGTH; z++) {
-                final int finalX = x;
-                final int finalZ = z;
-                Thread thread = new Thread(() -> {
-                    queue.add((long) 1);
-                    //queue.add((long) this.getHighestPoint(finalX, finalZ).y());
-                });
-                threads.add(thread);
-                thread.start();
-            }
-        }
-        boolean await = true;
-        while (await) {
-            await = threads.parallelStream().anyMatch(Thread::isAlive);
-        }
-        return queue.toArray(Long[]::new);
-    }
-
     @Override
-    public @NotNull Vector3i getHighestPoint(int x, int z) {
+    public @NotNull Vector3i getHighestPoint(int x, int z, Predicate<LocatableBlock> check) {
         int height = 0;
         int min = this.getMinimumBlockHeight();
         for (int i = 0; i < CHUNK_PART_HEIGHT; i++) {
             LocatableBlock block = this.getBlockAt(x, i + min, z);
-            if (BlockTags.AIR.contains(block.getState().getState().getType())) {
+            if (!check.test(block)) {
                 continue;
             }
             height = i + min;

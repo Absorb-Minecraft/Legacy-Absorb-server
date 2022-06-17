@@ -2,10 +2,11 @@ package org.absorb.world.location;
 
 import org.absorb.world.AbsorbWorld;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.math.vector.Vector2i;
 import org.spongepowered.math.vector.Vector3d;
 import org.spongepowered.math.vector.Vector3i;
 
-public class Location implements Comparable<Location>{
+public class Location implements Comparable<Location> {
 
     private final @NotNull AbsorbWorld world;
     private final @NotNull Vector3d position;
@@ -39,26 +40,24 @@ public class Location implements Comparable<Location>{
         return this.world;
     }
 
+    public @NotNull Vector2i getChunkPosition() {
+        return new Vector2i(this.position.floorX() >> 4, this.position.floorZ() >> 4);
+    }
+
     @Override
     public int compareTo(@NotNull Location o) {
-        if(this.getBlockPosition().y() > o.getBlockPosition().y()){
+        if (this.getBlockPosition().y() > o.getBlockPosition().y()) {
             return 1;
         }
-        if(this.getBlockPosition().y() < o.getBlockPosition().y()){
+        if (this.getBlockPosition().y() < o.getBlockPosition().y()) {
             return -1;
         }
-        if(this.getBlockPosition().z() > o.getBlockPosition().z()){
+        if (this.getBlockPosition().z() > o.getBlockPosition().z()) {
             return 1;
         }
-        if(this.getBlockPosition().z() < o.getBlockPosition().z()){
+        if (this.getBlockPosition().z() < o.getBlockPosition().z()) {
             return -1;
         }
-        if(this.getBlockPosition().x() > o.getBlockPosition().x()){
-            return 1;
-        }
-        if(this.getBlockPosition().x() < o.getBlockPosition().x()){
-            return -1;
-        }
-        return 0;
+        return Integer.compare(this.getBlockPosition().x(), o.getBlockPosition().x());
     }
 }

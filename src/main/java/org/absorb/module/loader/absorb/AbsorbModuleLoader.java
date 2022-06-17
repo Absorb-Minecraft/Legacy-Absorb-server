@@ -152,7 +152,12 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
     }
 
     @Override
-    public @NotNull AbsorbModule create(@NotNull File module) throws IOException {
+    public @NotNull Collection<AbsorbModule> create(@NotNull File module) throws IOException {
+        return Collections.singleton(this.createOnly(module));
+    }
+
+
+    public @NotNull AbsorbModule createOnly(@NotNull File module) throws IOException {
         JarFile file;
         file = new JarFile(module);
 

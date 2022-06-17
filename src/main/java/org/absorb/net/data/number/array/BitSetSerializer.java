@@ -27,7 +27,7 @@ public class BitSetSerializer implements Serializer<BitSet> {
         long[] array = value.toLongArray();
         ByteBuffer sizeBuffer = Serializers.VAR_INTEGER.write(array.length);
         ByteBuffer dataBuffer = ByteBuffer.allocate(0);
-        for (int i = 0; i < value.size(); i++) {
+        for (int i = 0; i < array.length; i++) {
             long v = array[i];
             ByteBuffer longBuffer = Serializers.LONG.write(v);
             dataBuffer.limit(dataBuffer.limit() + longBuffer.limit());

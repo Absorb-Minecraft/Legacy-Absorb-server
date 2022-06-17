@@ -124,12 +124,16 @@ public class AbsorbWorld {
         return chunk;
     }
 
-    public int getChunkLevelHeight(){
+    public int getChunkLevelHeight() {
         int blocks = this.getMaxBlock().y() - this.getMinBlock().y();
         return blocks / ChunkPart.CHUNK_PART_HEIGHT;
     }
 
     public ConnectedCollection<WorldEntity> getEntities() {
         return new ConnectedCollection<>(this.chunks.parallelStream().map(AbsorbChunk::getEntities).toArray(Collection[]::new));
+    }
+
+    public AbsorbChunk generateChunk(Vector2i chunkPos) {
+        return this.generateChunk(chunkPos.x(), chunkPos.y());
     }
 }

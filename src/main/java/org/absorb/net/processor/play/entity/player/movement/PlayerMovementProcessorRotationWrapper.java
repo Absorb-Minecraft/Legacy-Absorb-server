@@ -5,6 +5,7 @@ import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayer
 import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayerMovementPacketBuilder;
 import org.absorb.net.packet.play.entity.player.movement.incoming.rotation.IncomingRotationPacket;
 import org.absorb.net.processor.NetProcess;
+import org.spongepowered.math.vector.Vector3d;
 
 import java.io.IOException;
 
@@ -14,10 +15,9 @@ public class PlayerMovementProcessorRotationWrapper implements NetProcess<Incomi
 
     @Override
     public void onProcess(Client connection, IncomingRotationPacket packet) throws IOException {
+        Vector3d position = connection.getEntity().getPosition();
         IncomingPlayerMovementPacket packetWrapper = new IncomingPlayerMovementPacketBuilder()
-                .setY(connection.getLocation().y())
-                .setX(connection.getLocation().x())
-                .setZ(connection.getLocation().z())
+                .setPosition(position)
                 .setPitch(packet.getPitch())
                 .setYaw(packet.getYaw())
                 .build();

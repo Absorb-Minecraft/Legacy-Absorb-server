@@ -18,16 +18,20 @@ public class OutgoingAbilityPacketBuilder implements OutgoingPacketBuilder<Outgo
     private float flyingSpeed;
     private float fieldOfView;
 
-    public OutgoingAbilityPacketBuilder fromClient(@NotNull Client client){
+    public OutgoingAbilityPacketBuilder() {
+        reset();
+    }
+
+    public OutgoingAbilityPacketBuilder fromClient(@NotNull Client client) {
         this.fromEntity(client.getEntity().getEntity());
         return this;
     }
 
-    public OutgoingAbilityPacketBuilder fromEntity(@NotNull Entity entity){
+    public OutgoingAbilityPacketBuilder fromEntity(@NotNull Entity entity) {
         this.isFlying = entity.isFlying();
-        if(entity instanceof Human human){
+        if (entity instanceof Human human) {
             this.isFlyingAllowed = human.isFlyingAllowed();
-            this.isInstantBreak = human.getGamemode() ==Gamemodes.CREATIVE;
+            this.isInstantBreak = human.getGamemode()==Gamemodes.CREATIVE;
         }
         return this;
     }

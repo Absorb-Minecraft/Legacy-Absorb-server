@@ -7,7 +7,7 @@ import org.absorb.net.Client;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.login.handshake.HandshakeState;
 import org.absorb.net.packet.login.handshake.IncomingHandshakePacket;
-import org.absorb.net.packet.play.disconnect.OutgoingCloseConnectionPacketBuilder;
+import org.absorb.net.packet.play.client.disconnect.OutgoingCloseConnectionPacketBuilder;
 import org.absorb.net.processor.NetProcess;
 import org.absorb.version.MCVersion;
 

@@ -1,5 +1,8 @@
 package org.absorb.world.area;
 
+import org.absorb.block.locatable.LocatableBlock;
+import org.absorb.block.type.properties.mass.MassProperty;
+import org.absorb.block.type.properties.mass.MassType;
 import org.absorb.entity.WorldEntity;
 import org.absorb.utils.colllection.ConnectedCollection;
 import org.absorb.world.AbsorbWorld;
@@ -9,6 +12,7 @@ import org.spongepowered.math.vector.Vector3i;
 
 import java.util.Collection;
 import java.util.SortedSet;
+import java.util.function.Predicate;
 
 public interface AbsorbChunk {
 
@@ -20,13 +24,28 @@ public interface AbsorbChunk {
 
     ChunkPart generatePartWithHeight(int height);
 
-    default void generateParts(){
-        for(int i = 0; i < this.getWorld().getChunkLevelHeight(); i++){
+    default void generateParts() {
+        for (int i = 0; i < this.getWorld().getChunkLevelHeight(); i++) {
             this.generatePartWithLevel(i);
         }
     }
 
-    @NotNull Vector3i getHighestPoint(int x, int z);
+    @NotNull Vector3i getHighestPoint(int x, int z, Predicate<LocatableBlock> block);
+
+    default byte[] getHeightMap() {
+        byte[] heightmaps = new byte[ChunkPart.CHUNK_WIDTH * ChunkPart.CHUNK_LENGTH];
+        for (int x = 0; x < ChunkPart.CHUNK_WIDTH; x++) {
+            for (int z = 0; z < ChunkPart.CHUNK_LENGTH; z++) {
+                int index = z + (x * ChunkPart.CHUNK_WIDTH);
+                heightmaps[index] = (byte) this.getHighestPoint(x, z,
+                        (loc) -> loc.getState().getState().getType().get(MassProperty.class).map(mass -> mass==MassType.SOLID).orElse(false)).y();
+            }
+        }
+        return heightmaps;
+
+        //long sendingY = (long) Math.ceil(StrictMath.log(maxY + 1) / StrictMath.log(2));
+
+    }
 
     @NotNull AbsorbWorld getWorld();
 
