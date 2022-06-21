@@ -2,13 +2,14 @@ package org.absorb.block.type;
 
 import org.absorb.block.BlockTag;
 import org.absorb.block.state.AbsorbBlockStateBuilder;
+import org.absorb.block.type.properties.BlockTypeProperty;
+import org.absorb.block.type.properties.mass.MassProperty;
+import org.absorb.block.type.properties.mass.MassType;
 import org.absorb.register.AbsorbKey;
 import org.absorb.state.AbsorbState;
 import org.absorb.utils.Builder;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class AbsorbBlockTypeBuilder implements Builder<AbsorbBlockType> {
 
@@ -21,6 +22,21 @@ public class AbsorbBlockTypeBuilder implements Builder<AbsorbBlockType> {
     private String host;
     private String key;
     private Integer networkId;
+    private Map<String, BlockTypeProperty> properties = new HashMap<>();
+
+    public AbsorbBlockTypeBuilder addProperty(BlockTypeProperty property) {
+        this.properties.put(property.getResourceKey().asFormatted(), property);
+        return this;
+    }
+
+    public AbsorbBlockTypeBuilder setMass(MassType type) {
+        this.addProperty(new MassProperty(type));
+        return this;
+    }
+
+    public Collection<BlockTypeProperty> getProperties() {
+        return this.properties.values();
+    }
 
     public Integer getNetworkId() {
         return this.networkId;

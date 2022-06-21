@@ -3,6 +3,8 @@ package org.absorb.block.type;
 import org.absorb.block.BlockTag;
 import org.absorb.block.state.AbsorbBlockState;
 import org.absorb.block.type.properties.BlockTypeProperty;
+import org.absorb.block.type.properties.mass.MassProperty;
+import org.absorb.block.type.properties.mass.MassType;
 import org.absorb.register.AbsorbKey;
 import org.absorb.state.AbsorbState;
 import org.absorb.utils.NetworkIdentifiable;
@@ -20,7 +22,7 @@ public class AbsorbBlockType implements NetworkIdentifiable {
     private final @NotNull String name;
     private final @NotNull String host;
     private final @NotNull String key;
-    private final @NotNull Collection<BlockTypeProperty<?>> properties = new HashSet<>();
+    private final @NotNull Collection<BlockTypeProperty> properties = new HashSet<>();
     private final int networkId;
 
 
@@ -58,10 +60,18 @@ public class AbsorbBlockType implements NetworkIdentifiable {
         this.host = builder.getHost();
         this.key = builder.getKey();
         this.networkId = builder.getNetworkId();
+        this.properties.addAll(builder.getProperties());
     }
 
-    public <T> Optional<T> get(Class<? extends BlockTypeProperty<T>> clazz) {
-        return this.properties.parallelStream().filter(clazz::isInstance).findAny().map(prop -> (T) prop.get());
+    public MassType getMassType() {
+        return this.get(MassProperty.class).orElseThrow(() -> new RuntimeException("Block (" + this.getResourceKey().asFormatted() +
+                ") does not " +
+                "contain Mass " +
+                "property")).get();
+    }
+
+    public <T extends BlockTypeProperty> Optional<T> get(Class<T> clazz) {
+        return this.properties.parallelStream().filter(clazz::isInstance).findAny().map(prop -> (T) prop);
     }
 
     public @NotNull AbsorbKey getItemKey() {

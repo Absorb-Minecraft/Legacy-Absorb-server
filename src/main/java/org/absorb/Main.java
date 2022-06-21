@@ -91,7 +91,7 @@ public class Main {
                         .setBlockMax(new Vector3i(600, 20, 600))
                         .setBlockMin(new Vector3i(-200, 0, -200))
                         .setWorldData(new AbsorbWorldData()
-                                .setType(WorldTypes.OVERWORLD)
+                                .setType(WorldTypes.FLAT)
                                 .setSeed(0)
                                 .setKey(new AbsorbKey(Identifiable.MINECRAFT_HOST, "temp")))
                         .build();

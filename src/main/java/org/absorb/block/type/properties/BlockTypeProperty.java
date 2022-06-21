@@ -1,6 +1,6 @@
 package org.absorb.block.type.properties;
 
-public interface BlockTypeProperty<T> {
+import org.absorb.utils.Identifiable;
 
-    T get();
+public interface BlockTypeProperty extends Identifiable {
 }

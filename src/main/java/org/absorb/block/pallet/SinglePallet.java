@@ -1,15 +1,12 @@
 package org.absorb.block.pallet;
 
-import org.absorb.block.locatable.LocatableBlock;
 import org.absorb.block.state.FullBlockState;
 import org.absorb.net.data.Serializers;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
 
 public class SinglePallet implements BlockPallet {
 

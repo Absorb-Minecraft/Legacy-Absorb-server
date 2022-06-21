@@ -1,11 +1,12 @@
 package org.absorb.world.area;
 
-import org.absorb.block.BlockTags;
 import org.absorb.block.locatable.LocatableBlock;
 import org.absorb.block.pallet.SinglePallet;
+import org.absorb.block.state.FullBlockState;
 import org.absorb.entity.WorldEntity;
 import org.absorb.world.AbsorbWorld;
 import org.absorb.world.BlockSetter;
+import org.absorb.world.type.GeneratedAirChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.math.vector.Vector3i;
@@ -34,8 +35,12 @@ public class ChunkPart implements BlockSetter {
         this.level = level;
     }
 
+    public boolean isGenerated() {
+        return this.generated!=null;
+    }
+
     public boolean isEmpty() {
-        return this.generated==null;
+        return !this.isGenerated() || this.generated instanceof GeneratedAirChunk;
     }
 
     public void registerEntity(WorldEntity entity) {
@@ -56,12 +61,12 @@ public class ChunkPart implements BlockSetter {
         if (opBlock.isPresent()) {
             return opBlock.get();
         }
-        if (this.generated==null) {
+        if (!this.isGenerated()) {
             System.err.println("Chunk has not generated part yet was being requested for BlockAt(" + x + ", " + y +
                     ", " + z + "). Please check the timing of your code");
             this.chunk.generatePartWithLevel(this.level);
         }
-        while (this.generated==null) {
+        while (!this.isGenerated()) {
 
         }
         return this.generated.getBlock(x, y, z, this.chunk.getWorld());
@@ -127,7 +132,12 @@ public class ChunkPart implements BlockSetter {
                     final int finalX = x;
                     final int finalY = y;
                     final int finalZ = z;
-                    new Thread(() -> section.addBlockPallet(new SinglePallet(this.getBlockAt(finalX, finalY, finalZ).getState(), new Vector3i(finalX, finalY, finalZ)))).start();
+                    new Thread(() -> {
+                        Vector3i vector = new Vector3i(finalX, finalY, finalZ);
+                        FullBlockState block = this.getBlockAt(finalX, finalY, finalZ).getState();
+
+                        section.addBlockPallet(new SinglePallet(block, vector));
+                    }).run();
                 }
             }
         }

@@ -52,14 +52,14 @@ public class ChunkSection {
     }
 
     public ByteBuffer write() {
-        Set<FullBlockState> blocks = this
+        Collection<FullBlockState> blocks = this
                 .blockPallets
                 .stream()
                 .flatMap(blockPallet -> blockPallet.getBlocks().values().parallelStream())
                 .filter(entry -> !AbsorbBlockTypes.AIR.isEqual(entry.getState().getType()))
                 .filter(entry -> !AbsorbBlockTypes.CAVE_AIR.isEqual(entry.getState().getType()))
                 .filter(entry -> !AbsorbBlockTypes.VOID_AIR.isEqual(entry.getState().getType()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
         System.out.println("Writing Chunk Section");
         short blockCount =
@@ -70,7 +70,8 @@ public class ChunkSection {
                 this
                         .blockPallets
                         .stream()
-                        .sorted((o1, o2) -> o1.compareOnBlockLocation().compare(o1, o2)).map(BlockPallet::write)
+                        .sorted((o1, o2) -> o1.compareOnBlockLocation().compare(o1, o2))
+                        .map(BlockPallet::write)
                         .collect(Collectors.toCollection(LinkedList::new));
         if (blockBuffers.size()!=BLOCK_STATES_LIMIT) {
             int sizeBefore = blockBuffers.size();
@@ -87,6 +88,7 @@ public class ChunkSection {
             }
         }
         ByteBuffer blockBuffer = SerializerUtils.collect(blockBuffers);
+        System.out.println("\tOriginalBuffer: " + blockBuffers.stream().map(byteBuffer -> Arrays.toString(byteBuffer.array())).collect(Collectors.joining("")));
         System.out.println("\tBlockBuffer: (" + blockBuffers.size() + ") " + Arrays.toString(blockBuffer.array()));
         List<ByteBuffer> biomeBuffers =
                 this.biomePallets.stream().map(BlockPallet::write).collect(Collectors.toCollection(LinkedList::new));

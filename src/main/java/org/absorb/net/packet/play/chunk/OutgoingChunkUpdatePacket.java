@@ -85,13 +85,14 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
             System.out.println("\tChunkY: " + this.chunk.getPosition().y() + Arrays.toString(chunkY.array()));
 
 
-            NBTCompoundEntry<Long[], Long[]> worldSurface = NBTCompoundKeys.WORLD_SURFACE.withValue(new Long[0]);
             byte[] heightMap = this.chunk.getHeightMap();
             Long[] longHeightMap = new Long[heightMap.length];
             for (int index = 0; index < heightMap.length; index++) {
                 longHeightMap[index] = (long) heightMap[index];
             }
             NBTCompoundEntry<Long[], Long[]> motionBlocking = NBTCompoundKeys.MOTION_BLOCKING.withValue(longHeightMap);
+            NBTCompoundEntry<Long[], Long[]> worldSurface = NBTCompoundKeys.WORLD_SURFACE.withValue(longHeightMap);
+
             NBTCompound heightMapCompound = new NBTCompoundBuilder().addAll(worldSurface, motionBlocking).build();
             NBTCompound rootHeightMapCompound = new NBTCompound();
             rootHeightMapCompound.put("", heightMapCompound);
@@ -102,7 +103,8 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
                 e.printStackTrace();
             }
 
-            List<ByteBuffer> chunkSections = this.blockData.stream().map(part -> part.asSection().write()).toList();
+            List<ByteBuffer> chunkSections =
+                    this.blockData.stream().map(part -> part.asSection().write()).toList();
             int chunkSectionsSize = chunkSections.parallelStream().mapToInt(sect -> sect.array().length).sum();
             ByteBuffer chunkSectionsSizeBuffer = Serializers.VAR_INTEGER.write(chunkSectionsSize);
             nbtOS.write(chunkSectionsSizeBuffer.array());

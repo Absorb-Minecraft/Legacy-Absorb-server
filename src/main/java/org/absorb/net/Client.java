@@ -90,7 +90,7 @@ public class Client implements CommandSender {
             try {
                 new OutgoingChunkUpdatePacketBuilder()
                         .setChunk(chunk)
-                        .setTrustLightOnEdge(false)
+                        .setTrustLightOnEdge(true)
                         .addParts(chunk.getParts())
                         .build()
                         .writeTo(this);
@@ -126,7 +126,7 @@ public class Client implements CommandSender {
 
     public Collection<Vector2i> getViewingChunks() {
         Vector2i currentChunk = this.getEntity().getLocation().getChunkPosition();
-        Collection<Vector2i> collection = new HashSet<>();
+        /*Collection<Vector2i> collection = new HashSet<>();
         byte viewDistance = this.getViewDistance();
         int maxX = currentChunk.x() + viewDistance;
         int minX = currentChunk.x() - viewDistance;
@@ -137,7 +137,8 @@ public class Client implements CommandSender {
                 collection.add(new Vector2i(x, z));
             }
         }
-        return collection;
+        return collection;*/
+        return Collections.singleton(currentChunk);
     }
 
     public int getPingId() {

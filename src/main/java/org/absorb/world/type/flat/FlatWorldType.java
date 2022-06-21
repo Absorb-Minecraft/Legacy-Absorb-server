@@ -4,6 +4,7 @@ import org.absorb.register.AbsorbKey;
 import org.absorb.utils.Identifiable;
 import org.absorb.world.area.ChunkPart;
 import org.absorb.world.area.GeneratedChunk;
+import org.absorb.world.type.GeneratedAirChunk;
 import org.absorb.world.type.WorldType;
 import org.jetbrains.annotations.NotNull;
 
@@ -113,6 +114,10 @@ public class FlatWorldType implements WorldType {
 
     @Override
     public @NotNull GeneratedChunk generateChunk(@NotNull ChunkPart part) {
+        if(part.getLevel() != 0){
+            return new GeneratedAirChunk();
+        }
+
         return new GeneratedFlatChunk();
     }
 

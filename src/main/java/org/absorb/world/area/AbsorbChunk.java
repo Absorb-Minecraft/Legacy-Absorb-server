@@ -1,7 +1,6 @@
 package org.absorb.world.area;
 
 import org.absorb.block.locatable.LocatableBlock;
-import org.absorb.block.type.properties.mass.MassProperty;
 import org.absorb.block.type.properties.mass.MassType;
 import org.absorb.entity.WorldEntity;
 import org.absorb.utils.colllection.ConnectedCollection;
@@ -38,7 +37,7 @@ public interface AbsorbChunk {
             for (int z = 0; z < ChunkPart.CHUNK_LENGTH; z++) {
                 int index = z + (x * ChunkPart.CHUNK_WIDTH);
                 heightmaps[index] = (byte) this.getHighestPoint(x, z,
-                        (loc) -> loc.getState().getState().getType().get(MassProperty.class).map(mass -> mass==MassType.SOLID).orElse(false)).y();
+                        (loc) -> loc.getState().getState().getType().getMassType()==MassType.SOLID).y();
             }
         }
         return heightmaps;
