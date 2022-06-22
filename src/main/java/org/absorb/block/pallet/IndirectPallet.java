@@ -1,6 +1,6 @@
 package org.absorb.block.pallet;
 
-import org.absorb.block.state.FullBlockState;
+import org.absorb.block.locatable.BlockData;
 import org.absorb.net.data.SerializerUtils;
 import org.absorb.net.data.Serializers;
 import org.spongepowered.math.vector.Vector3i;
@@ -16,9 +16,9 @@ public class IndirectPallet implements BlockPallet {
 
     private static class BlockMappings {
         private final Vector3i location;
-        private final FullBlockState state;
+        private final BlockData state;
 
-        private BlockMappings(Vector3i location, FullBlockState state) {
+        private BlockMappings(Vector3i location, BlockData state) {
             this.location = location;
             this.state = state;
         }
@@ -27,7 +27,7 @@ public class IndirectPallet implements BlockPallet {
             return this.location;
         }
 
-        public FullBlockState getState() {
+        public BlockData getState() {
             return this.state;
         }
     }
@@ -42,13 +42,13 @@ public class IndirectPallet implements BlockPallet {
         this.bitsPerEntry = bitsPerEntry;
     }
 
-    public void addBlock(Vector3i location, FullBlockState state) {
+    public void addBlock(Vector3i location, BlockData state) {
         this.mappings.add(new BlockMappings(location, state));
 
     }
 
     @Override
-    public Map<Vector3i, FullBlockState> getBlocks() {
+    public Map<Vector3i, BlockData> getBlocks() {
         return this.mappings.parallelStream().collect(Collectors.toMap(BlockMappings::getLocation,
                 BlockMappings::getState));
     }

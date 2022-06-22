@@ -2,7 +2,7 @@ package org.absorb.world.area;
 
 import org.absorb.block.locatable.LocatableBlock;
 import org.absorb.block.pallet.SinglePallet;
-import org.absorb.block.state.FullBlockState;
+import org.absorb.block.locatable.BlockData;
 import org.absorb.entity.WorldEntity;
 import org.absorb.world.AbsorbWorld;
 import org.absorb.world.BlockSetter;
@@ -134,7 +134,7 @@ public class ChunkPart implements BlockSetter {
                     final int finalZ = z;
                     new Thread(() -> {
                         Vector3i vector = new Vector3i(finalX, finalY, finalZ);
-                        FullBlockState block = this.getBlockAt(finalX, finalY, finalZ).getState();
+                        BlockData block = this.getBlockAt(finalX, finalY, finalZ).getState();
 
                         section.addBlockPallet(new SinglePallet(block, vector));
                     }).run();

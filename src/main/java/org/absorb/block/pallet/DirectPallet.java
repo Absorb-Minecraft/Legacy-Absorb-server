@@ -1,6 +1,6 @@
 package org.absorb.block.pallet;
 
-import org.absorb.block.state.FullBlockState;
+import org.absorb.block.locatable.BlockData;
 import org.absorb.net.data.Serializers;
 import org.spongepowered.math.vector.Vector3i;
 
@@ -12,7 +12,7 @@ public class DirectPallet implements BlockPallet {
 
 
     @Override
-    public Map<Vector3i, FullBlockState> getBlocks() {
+    public Map<Vector3i, BlockData> getBlocks() {
         return new HashMap<>();
     }
 

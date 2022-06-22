@@ -1,18 +1,19 @@
-package org.absorb.block.state;
+package org.absorb.block.locatable;
 
+import org.absorb.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-public class FullBlockState {
+public class BlockData {
 
-    private final @NotNull AbsorbBlockState state;
+    private final @NotNull BlockState state;
     private long blockLight;
     private long skyLight;
 
-    public FullBlockState(@NotNull AbsorbBlockState state) {
+    public BlockData(@NotNull BlockState state) {
         this.state = state;
     }
 
-    public @NotNull AbsorbBlockState getState() {
+    public @NotNull BlockState getState() {
         return this.state;
     }
 
@@ -20,7 +21,7 @@ public class FullBlockState {
         return this.blockLight;
     }
 
-    public FullBlockState setBlockLight(long blockLight) {
+    public BlockData setBlockLight(long blockLight) {
         this.blockLight = blockLight;
         return this;
     }
@@ -29,7 +30,7 @@ public class FullBlockState {
         return this.skyLight;
     }
 
-    public FullBlockState setSkyLight(long skyLight) {
+    public BlockData setSkyLight(long skyLight) {
         this.skyLight = skyLight;
         return this;
     }

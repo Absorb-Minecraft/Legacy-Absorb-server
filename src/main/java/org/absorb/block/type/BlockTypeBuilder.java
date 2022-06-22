@@ -1,37 +1,50 @@
 package org.absorb.block.type;
 
 import org.absorb.block.BlockTag;
-import org.absorb.block.state.AbsorbBlockStateBuilder;
+import org.absorb.block.state.BlockStateBuilder;
+import org.absorb.block.state.properties.BlockStateProperty;
 import org.absorb.block.type.properties.BlockTypeProperty;
 import org.absorb.block.type.properties.mass.MassProperty;
 import org.absorb.block.type.properties.mass.MassType;
 import org.absorb.register.AbsorbKey;
-import org.absorb.state.AbsorbState;
 import org.absorb.utils.Builder;
+import org.absorb.utils.Identifiable;
 
 import java.util.*;
 
-public class AbsorbBlockTypeBuilder implements Builder<AbsorbBlockType> {
+public class BlockTypeBuilder implements Builder<BlockType> {
 
     private AbsorbKey item;
     private Collection<BlockTag> tags;
-    private Collection<AbsorbBlockStateBuilder> blockStates;
-    private AbsorbBlockStateBuilder defaultState;
-    private Collection<AbsorbState<?>> propertyStates;
+    private Collection<BlockStateBuilder> blockStates;
+    private BlockStateBuilder defaultState;
+    private Collection<BlockStateProperty<?>> propertyStates;
     private String name;
     private String host;
     private String key;
     private Integer networkId;
     private Map<String, BlockTypeProperty> properties = new HashMap<>();
 
-    public AbsorbBlockTypeBuilder addProperty(BlockTypeProperty property) {
+    public BlockTypeBuilder() {
+        reset();
+    }
+
+    public BlockTypeBuilder addProperty(BlockTypeProperty property) {
         this.properties.put(property.getResourceKey().asFormatted(), property);
         return this;
     }
 
-    public AbsorbBlockTypeBuilder setMass(MassType type) {
+    public BlockTypeBuilder setMass(MassType type) {
         this.addProperty(new MassProperty(type));
         return this;
+    }
+
+    public MassType getMass() {
+        BlockTypeProperty property = this.properties.get(Identifiable.ABSORB_HOST + ":mass_type");
+        if (property==null) {
+            return null;
+        }
+        return ((MassProperty) property).get();
     }
 
     public Collection<BlockTypeProperty> getProperties() {
@@ -42,7 +55,7 @@ public class AbsorbBlockTypeBuilder implements Builder<AbsorbBlockType> {
         return this.networkId;
     }
 
-    public AbsorbBlockTypeBuilder setNetworkId(int networkId) {
+    public BlockTypeBuilder setNetworkId(int networkId) {
         this.networkId = networkId;
         return this;
     }
@@ -51,7 +64,7 @@ public class AbsorbBlockTypeBuilder implements Builder<AbsorbBlockType> {
         return this.name;
     }
 
-    public AbsorbBlockTypeBuilder setName(String name) {
+    public BlockTypeBuilder setName(String name) {
         this.name = name;
         return this;
     }
@@ -60,7 +73,7 @@ public class AbsorbBlockTypeBuilder implements Builder<AbsorbBlockType> {
         return this.host;
     }
 
-    public AbsorbBlockTypeBuilder setHost(String host) {
+    public BlockTypeBuilder setHost(String host) {
         this.host = host;
         return this;
     }
@@ -69,7 +82,7 @@ public class AbsorbBlockTypeBuilder implements Builder<AbsorbBlockType> {
         return this.key;
     }
 
-    public AbsorbBlockTypeBuilder setKey(String key) {
+    public BlockTypeBuilder setKey(String key) {
         this.key = key;
         return this;
     }
@@ -78,68 +91,75 @@ public class AbsorbBlockTypeBuilder implements Builder<AbsorbBlockType> {
         return this.item;
     }
 
-    public AbsorbBlockTypeBuilder setItem(AbsorbKey item) {
+    public BlockTypeBuilder setItem(AbsorbKey item) {
         this.item = item;
         return this;
+    }
+
+    public BlockTypeBuilder setItem(Identifiable register) {
+        return this.setItem(register.getResourceKey());
     }
 
     public Collection<BlockTag> getTags() {
         return this.tags;
     }
 
-    public AbsorbBlockTypeBuilder setTags(Collection<BlockTag> tags) {
+    public BlockTypeBuilder setTags(Collection<BlockTag> tags) {
         this.tags = tags;
         return this;
     }
 
-    public Collection<AbsorbBlockStateBuilder> getBlockStates() {
+    public Collection<BlockStateBuilder> getBlockStates() {
         return this.blockStates;
     }
 
-    public AbsorbBlockTypeBuilder setBlockStates(Collection<AbsorbBlockStateBuilder> blockStates) {
+    public BlockTypeBuilder setBlockStates(Collection<BlockStateBuilder> blockStates) {
         this.blockStates = blockStates;
         return this;
     }
 
-    public AbsorbBlockTypeBuilder setBlockStates(AbsorbBlockStateBuilder... blockStates) {
+    public BlockTypeBuilder setBlockStates(BlockStateBuilder... blockStates) {
         return this.setBlockStates(List.of(blockStates));
     }
 
-    public AbsorbBlockStateBuilder getDefaultState() {
+    public BlockStateBuilder getDefaultState() {
         return this.defaultState;
     }
 
-    public AbsorbBlockTypeBuilder setDefaultState(AbsorbBlockStateBuilder defaultState) {
+    public BlockTypeBuilder setDefaultState(BlockStateBuilder defaultState) {
         this.defaultState = defaultState;
         return this;
     }
 
-    public Collection<AbsorbState<?>> getPropertyStates() {
+    public Collection<BlockStateProperty<?>> getPropertyStates() {
         return this.propertyStates;
     }
 
-    public AbsorbBlockTypeBuilder setPropertyStates(Collection<AbsorbState<?>> propertyStates) {
+    public BlockTypeBuilder setPropertyStates(Collection<BlockStateProperty<?>> propertyStates) {
         this.propertyStates = propertyStates;
         return this;
     }
 
     @Override
-    public AbsorbBlockType build() {
-        return new AbsorbBlockType(this);
+    public BlockType build() {
+        return new BlockType(this);
     }
 
     @Override
-    public Builder<AbsorbBlockType> reset() {
+    public Builder<BlockType> reset() {
         this.blockStates = new HashSet<>();
         this.defaultState = null;
         this.item = null;
         this.tags = new HashSet<>();
         this.propertyStates = new HashSet<>();
+        this.key = null;
+        this.host = Identifiable.MINECRAFT_HOST;
+        this.name = null;
         return this;
     }
 
     @Override
-    public Builder<AbsorbBlockType> copy() {
-        return new AbsorbBlockTypeBuilder().setBlockStates(this.getBlockStates()).setDefaultState(this.getDefaultState()).setItem(this.getItem()).setTags(this.getTags()).setPropertyStates(this.getPropertyStates());
+    public Builder<BlockType> copy() {
+        return new BlockTypeBuilder().setBlockStates(this.getBlockStates()).setDefaultState(this.getDefaultState()).setItem(this.getItem()).setTags(this.getTags()).setPropertyStates(this.getPropertyStates());
     }
 }
