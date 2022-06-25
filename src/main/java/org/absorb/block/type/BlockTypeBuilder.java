@@ -2,7 +2,7 @@ package org.absorb.block.type;
 
 import org.absorb.block.BlockTag;
 import org.absorb.block.state.BlockStateBuilder;
-import org.absorb.block.state.properties.BlockStateProperty;
+import org.absorb.block.state.properties.BlockStatePropertyType;
 import org.absorb.block.type.properties.BlockTypeProperty;
 import org.absorb.block.type.properties.mass.MassProperty;
 import org.absorb.block.type.properties.mass.MassType;
@@ -18,12 +18,12 @@ public class BlockTypeBuilder implements Builder<BlockType> {
     private Collection<BlockTag> tags;
     private Collection<BlockStateBuilder> blockStates;
     private BlockStateBuilder defaultState;
-    private Collection<BlockStateProperty<?>> propertyStates;
+    private final Collection<BlockStatePropertyType<?>> propertyStates = new HashSet<>();
     private String name;
     private String host;
     private String key;
     private Integer networkId;
-    private Map<String, BlockTypeProperty> properties = new HashMap<>();
+    private final Map<String, BlockTypeProperty> properties = new HashMap<>();
 
     public BlockTypeBuilder() {
         reset();
@@ -31,6 +31,11 @@ public class BlockTypeBuilder implements Builder<BlockType> {
 
     public BlockTypeBuilder addProperty(BlockTypeProperty property) {
         this.properties.put(property.getResourceKey().asFormatted(), property);
+        return this;
+    }
+
+    public BlockTypeBuilder addStateProperty(BlockStatePropertyType<?> property) {
+        this.propertyStates.add(property);
         return this;
     }
 
@@ -131,12 +136,13 @@ public class BlockTypeBuilder implements Builder<BlockType> {
         return this;
     }
 
-    public Collection<BlockStateProperty<?>> getPropertyStates() {
+    public Collection<BlockStatePropertyType<?>> getPropertyStates() {
         return this.propertyStates;
     }
 
-    public BlockTypeBuilder setPropertyStates(Collection<BlockStateProperty<?>> propertyStates) {
-        this.propertyStates = propertyStates;
+    public BlockTypeBuilder setPropertyStates(Collection<? extends BlockStatePropertyType<?>> propertyStates) {
+        this.propertyStates.clear();
+        this.propertyStates.addAll(propertyStates);
         return this;
     }
 
@@ -151,7 +157,7 @@ public class BlockTypeBuilder implements Builder<BlockType> {
         this.defaultState = null;
         this.item = null;
         this.tags = new HashSet<>();
-        this.propertyStates = new HashSet<>();
+        this.propertyStates.clear();
         this.key = null;
         this.host = Identifiable.MINECRAFT_HOST;
         this.name = null;

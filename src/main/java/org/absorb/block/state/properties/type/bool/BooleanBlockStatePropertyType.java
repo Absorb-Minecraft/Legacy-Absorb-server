@@ -1,6 +1,6 @@
 package org.absorb.block.state.properties.type.bool;
 
-import org.absorb.block.state.properties.FixedBlockStatePropertyType;
+import org.absorb.block.state.properties.type.FixedBlockStatePropertyType;
 
 import java.util.Collection;
 import java.util.Set;

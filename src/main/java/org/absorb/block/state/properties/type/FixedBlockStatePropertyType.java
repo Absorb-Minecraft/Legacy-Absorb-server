@@ -1,4 +1,6 @@
-package org.absorb.block.state.properties;
+package org.absorb.block.state.properties.type;
+
+import org.absorb.block.state.properties.BlockStatePropertyType;
 
 import java.util.Collection;
 

@@ -4,6 +4,7 @@ import org.absorb.block.BlockTag;
 import org.absorb.block.state.BlockState;
 import org.absorb.block.state.BlockStateBuilder;
 import org.absorb.block.state.properties.BlockStateProperty;
+import org.absorb.block.state.properties.BlockStatePropertyType;
 import org.absorb.block.type.properties.BlockTypeProperty;
 import org.absorb.block.type.properties.mass.MassProperty;
 import org.absorb.block.type.properties.mass.MassType;
@@ -11,6 +12,7 @@ import org.absorb.register.AbsorbKey;
 import org.absorb.register.Typed;
 import org.absorb.utils.NetworkIdentifiable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,12 +20,12 @@ import java.util.stream.Collectors;
 @Typed(getTypesClass = BlockTypes.class)
 public class BlockType implements NetworkIdentifiable {
 
-    private final @NotNull AbsorbKey item;
+    private final @Nullable AbsorbKey item;
     private final @NotNull Collection<BlockTag> tags;
     private final @NotNull TreeSet<BlockState> blockStates;
     private Integer minimumBlockState;
     private final @NotNull BlockState defaultState;
-    private final @NotNull Collection<BlockStateProperty<?>> propertyStates;
+    private final @NotNull Collection<BlockStatePropertyType<?>> propertyStates;
     private final @NotNull String name;
     private final @NotNull String host;
     private final @NotNull String key;
@@ -44,9 +46,6 @@ public class BlockType implements NetworkIdentifiable {
             throw new RuntimeException("Default state is not set: " + builder.getHost() + ":" + builder.getKey());
         } else {
             defaultStateBuilder = builder.getDefaultState();
-        }
-        if (builder.getItem()==null) {
-            throw new RuntimeException("Block item is missing: " + builder.getHost() + ":" + builder.getKey());
         }
         if (builder.getNetworkId()==null) {
             throw new RuntimeException("NetworkId is missing: " + builder.getHost() + ":" + builder.getKey());
@@ -99,8 +98,8 @@ public class BlockType implements NetworkIdentifiable {
         return this.properties.parallelStream().filter(clazz::isInstance).findAny().map(prop -> (T) prop);
     }
 
-    public @NotNull AbsorbKey getItemKey() {
-        return this.item;
+    public @NotNull Optional<AbsorbKey> getItemKey() {
+        return Optional.ofNullable(this.item);
     }
 
     public @NotNull Collection<BlockTag> getTags() {
@@ -115,7 +114,7 @@ public class BlockType implements NetworkIdentifiable {
         return this.defaultState;
     }
 
-    public @NotNull Collection<BlockStateProperty<?>> getPropertyStates() {
+    public @NotNull Collection<BlockStatePropertyType<?>> getPropertyStates() {
         return Collections.unmodifiableCollection(this.propertyStates);
     }
 
