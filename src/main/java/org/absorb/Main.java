@@ -134,7 +134,9 @@ public class Main {
         AbsorbManagers.instance.netManager = new NetManager(handler);
 
         AbsorbManagers.getConsole().runCommandRunner();
+while(!AbsorbManagers.getRegistryManager().isReady()){
 
+}
         AbsorbManagers.getConsole().sendMessage(Component.text("Ready to accept players").color(NamedTextColor.GREEN));
         handler.start();
         RegistryManager.getVanillaValues(Schedule.class).parallelStream().forEach(schedule -> AbsorbManagers.instance.scheduleManager.register(schedule));

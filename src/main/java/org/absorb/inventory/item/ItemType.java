@@ -1,8 +1,12 @@
 package org.absorb.inventory.item;
 
+import org.absorb.block.type.BlockType;
 import org.absorb.inventory.item.data.StackDataKey;
+import org.absorb.inventory.item.properties.ItemTypeProperty;
+import org.absorb.register.AbsorbKey;
 import org.absorb.utils.NetworkIdentifiable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -14,14 +18,20 @@ public class ItemType implements NetworkIdentifiable {
     private final @NotNull String name;
     private final @NotNull String key;
     private final @NotNull String host;
+    private @Nullable AbsorbKey blockKey;
+    private @Nullable BlockType block;
     private final @NotNull Collection<StackDataKey<?, ?>> supportedData = new HashSet<>();
+    private final @NotNull Collection<ItemTypeProperty> properties = new HashSet<>();
 
-    ItemType(int id, String host, String key, String name, Collection<StackDataKey<?, ?>> data){
-        this.networkId = id;
-        this.host = host;
-        this.key = key;
-        this.name = name;
-        this.supportedData.addAll(data);
+    private final int stackSize;
+
+    public ItemType(@NotNull ItemTypeBuilder builder) {
+        this.supportedData.addAll(builder.getSupportedData());
+        this.key = builder.getKey();
+        this.host = builder.getHost();
+        this.networkId = builder.getNetworkId();
+        this.stackSize = builder.getStackSize();
+        this.name = builder.getName();
     }
 
     public Collection<StackDataKey<?, ?>> getSupportedData() {

@@ -1,11 +1,11 @@
 package org.absorb.register;
 
 import org.absorb.block.BlockTag;
-import org.absorb.block.type.AbsorbBlockType;
+import org.absorb.block.type.BlockType;
 import org.absorb.inventory.item.ItemType;
 import org.absorb.inventory.item.data.StackDataKey;
 import org.absorb.inventory.recipe.Recipe;
-import org.absorb.register.registry.MemoryRegistry;
+import org.absorb.register.registry.MemoryBuilderRegistry;
 import org.absorb.register.registry.Registry;
 import org.absorb.utils.Identifiable;
 import org.absorb.utils.NetworkIdentifiable;
@@ -23,32 +23,55 @@ public class RegistryManager {
 
     private final Collection<Registry<WorldType>> worldTypes = new LinkedTransferQueue<>();
     private final Collection<Registry<Biome>> biomes = new LinkedTransferQueue<>();
-    private final Collection<Registry<AbsorbBlockType>> blockTypes = new LinkedTransferQueue<>();
+    private final LinkedTransferQueue<Registry<BlockType>> blockTypes = new LinkedTransferQueue<>();
     private final Collection<Registry<ItemType>> itemTypes = new LinkedTransferQueue<>();
     private final Collection<Registry<? extends StackDataKey<?, ?>>> stackDataKey = new LinkedTransferQueue<>();
     private final Collection<Registry<Recipe>> recipes = new LinkedTransferQueue<>();
     private final Collection<Registry<BlockTag>> blockTags = new LinkedTransferQueue<>();
+    private boolean haveBlockStatesBeenInit;
 
     public RegistryManager() {
         init();
     }
 
     private void init() {
-        worldTypes.addAll(RegistryManager.getVanillaValues(WorldType.class).stream().map(MemoryRegistry::new).collect(Collectors.toSet()));
-        biomes.addAll(RegistryManager.getVanillaValues(Biome.class).stream().map(MemoryRegistry::new).collect(Collectors.toSet()));
+        worldTypes.addAll(RegistryManager.getVanillaValues(WorldType.class).stream().map(MemoryBuilderRegistry::of).collect(Collectors.toSet()));
+        biomes.addAll(RegistryManager.getVanillaValues(Biome.class).stream().map(MemoryBuilderRegistry::of).collect(Collectors.toSet()));
         stackDataKey.addAll(RegistryManager
                 .getVanillaValues(StackDataKey.class)
                 .stream()
                 .map(data -> (StackDataKey<?, ?>) data)
-                .map(MemoryRegistry::new)
+                .map(MemoryBuilderRegistry::of)
                 .collect(Collectors.toUnmodifiableSet()));
+        this.blockTypes.addAll(RegistryManager.getVanillaRegisters(BlockType.class));
+        new Thread(this::initBlockStates).start();
     }
 
-    public Collection<Registry<AbsorbBlockType>> getBlockTypes() {
+    private void initBlockStates() {
+        while (this.blockTypes.hasWaitingConsumer()) {
+
+        }
+        Collection<Registry<BlockType>> types =
+                new TreeSet<>(Comparator.comparing(type -> type.getResourceKey().asFormatted()));
+        types.addAll(this.blockTypes);
+        int i = 0;
+        for (Registry<BlockType> type : types) {
+            BlockType bType = type.get();
+            bType.setMinimumBlockState(i);
+            i = i + bType.getBlockStates().size();
+        }
+        this.haveBlockStatesBeenInit = true;
+    }
+
+    public boolean isReady() {
+        return this.haveBlockStatesBeenInit;
+    }
+
+    public Collection<Registry<BlockType>> getBlockTypes() {
         return Collections.unmodifiableCollection(this.blockTypes);
     }
 
-    public Registry<AbsorbBlockType> getBlockType(@NotNull AbsorbKey key) {
+    public Registry<BlockType> getBlockType(@NotNull AbsorbKey key) {
         return this.get(key, this.blockTypes);
     }
 
@@ -104,7 +127,15 @@ public class RegistryManager {
         return collection.parallelStream().map(Supplier::get).filter(regId -> regId.getNetworkId()==id).findAny().orElseThrow(() -> new IllegalArgumentException("Unknown id of " + id));
     }
 
+    public static <T extends Identifiable> Set<Registry<T>> getVanillaRegisters(Class<T> classType) {
+        return getVanillaValues(classType, Registry.class).parallelStream().map(reg -> (Registry<T>) reg).collect(Collectors.toSet());
+    }
+
     public static <T> Set<T> getVanillaValues(Class<T> classType) {
+        return getVanillaValues(classType, classType);
+    }
+
+    public static <T> Set<T> getVanillaValues(Class<?> classType, Class<T> asClass) {
         Typed t = classType.getAnnotation(Typed.class);
         if (t==null) {
             throw new IllegalArgumentException("Provided class of " + classType.getSimpleName() + " is not annotated " +
@@ -115,7 +146,7 @@ public class RegistryManager {
                 .filter(field -> Modifier.isStatic(field.getModifiers()))
                 .filter(field -> Modifier.isPublic(field.getModifiers()))
                 .filter(field -> Modifier.isFinal(field.getModifiers()))
-                .filter(field -> classType.isAssignableFrom(field.getType()))
+                .filter(field -> asClass.isAssignableFrom(field.getType()))
                 .map(field -> {
                     try {
                         return (T) field.get(null);
