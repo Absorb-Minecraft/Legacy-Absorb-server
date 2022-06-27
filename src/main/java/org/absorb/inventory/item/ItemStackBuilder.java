@@ -4,6 +4,7 @@ import org.absorb.inventory.item.data.StackData;
 import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -33,6 +34,10 @@ public class ItemStackBuilder implements Builder<ItemStack> {
 
     public Collection<StackData<?, ?>> getData() {
         return this.data;
+    }
+
+    public ItemStackBuilder addData(StackData<?, ?>... array) {
+        return this.addData(Arrays.asList(array));
     }
 
     public ItemStackBuilder addData(Collection<? extends StackData<?, ?>> collection) {

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 public class NBTCompoundKeys {
 
+    public static final NBTCompoundKey.Type<Integer> ITEM_DAMAGE = new NBTCompoundKey.Type<>(TagType.INT, "damage");
     public static final NBTCompoundKey.Type<Integer> BLOCK_SEARCH_EXTENT = new NBTCompoundKey.Type<>(TagType.INT,
             "block_search_extent");
     public static final NBTCompoundKey.Type<Double> OFFSET = new NBTCompoundKey.Type<>(TagType.DOUBLE, "offset");

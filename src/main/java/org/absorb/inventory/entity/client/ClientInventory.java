@@ -1,4 +1,4 @@
-package org.absorb.inventory.entity.player;
+package org.absorb.inventory.entity.client;
 
 import org.absorb.inventory.Inventory;
 import org.absorb.inventory.InventoryType;
@@ -8,27 +8,33 @@ import org.absorb.utils.colllection.ConnectedCollection;
 import java.util.Collection;
 import java.util.Optional;
 
-public class PlayerInventory implements Inventory {
+public class ClientInventory implements Inventory {
 
-    private PlayerHotbar hotbar;
-    private PlayerCraftingInventory crafting;
-    private MainPlayerInventory main;
+    private final ClientHotbar hotbar;
+    private final ClientCraftingInventory crafting;
+    private final ClientMainInventory main;
+    private final ClientEquipment equipment;
 
-    public PlayerInventory() {
-        this.crafting = new PlayerCraftingInventory(this);
-        this.hotbar = new PlayerHotbar(this);
-        this.main = new MainPlayerInventory(this);
+    public ClientInventory() {
+        this.crafting = new ClientCraftingInventory(this);
+        this.hotbar = new ClientHotbar(this);
+        this.main = new ClientMainInventory(this);
+        this.equipment = new ClientEquipment(this);
     }
 
-    public PlayerHotbar getHotbar() {
+    public ClientEquipment getEquipment() {
+        return this.equipment;
+    }
+
+    public ClientHotbar getHotbar() {
         return this.hotbar;
     }
 
-    public PlayerCraftingInventory getCrafting() {
+    public ClientCraftingInventory getCrafting() {
         return this.crafting;
     }
 
-    public MainPlayerInventory getMain() {
+    public ClientMainInventory getMain() {
         return this.main;
     }
 
@@ -43,6 +49,7 @@ public class PlayerInventory implements Inventory {
         slots.addConnection(this.crafting.getChildren());
         slots.addConnection(this.hotbar.getChildren());
         slots.addConnection(this.main.getChildren());
+        slots.addConnection(this.equipment.getChildren());
         return slots;
     }
 
@@ -57,6 +64,7 @@ public class PlayerInventory implements Inventory {
         slots.addConnection(this.crafting.getImmediateSlots());
         slots.addConnection(this.hotbar.getImmediateSlots());
         slots.addConnection(this.main.getImmediateSlots());
+        slots.addConnection(this.equipment.getImmediateSlots());
         return slots;
     }
 

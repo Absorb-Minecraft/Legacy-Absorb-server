@@ -31,5 +31,15 @@ public interface Inventory {
         return Collections.unmodifiableCollection(slots);
     }
 
+    default Slot getSlot(int index) {
+        return this
+                .getSlots()
+                .parallelStream()
+                .filter(slot -> slot.getIndex().isPresent())
+                .filter(slot -> slot.getIndex().getAsInt()==index)
+                .findAny()
+                .orElseThrow(() -> new IndexOutOfBoundsException("No slot with index of '" + index + "' can be found in this inventory"));
+    }
+
 
 }

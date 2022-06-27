@@ -1,4 +1,4 @@
-package org.absorb.inventory.entity.player;
+package org.absorb.inventory.entity.client;
 
 import org.absorb.inventory.Inventory;
 import org.absorb.inventory.InventoryType;
@@ -6,27 +6,38 @@ import org.absorb.inventory.grid.GridInventory;
 import org.absorb.inventory.slot.AbstractSlot;
 import org.absorb.inventory.slot.Slot;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.math.vector.Vector2i;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
-public class MainPlayerInventory implements GridInventory {
+public class ClientHotbar implements GridInventory {
 
-    private final @NotNull AbstractSlot[] slots;
-    private final @NotNull PlayerInventory parent;
+    private final Slot[] slots;
+    private byte selected;
+    private final ClientInventory parent;
 
-    public MainPlayerInventory(@NotNull PlayerInventory inventory) {
-        this.parent = inventory;
-        this.slots = new AbstractSlot[this.getSize()];
-        for (int i = 0; i < this.slots.length; i++) {
-            this.slots[i] = new AbstractSlot(i + 9, inventory);
+    public ClientHotbar(@NotNull ClientInventory parent) {
+        this.parent = parent;
+        this.slots = new Slot[9];
+        for (int i = 0; i < 9; i++) {
+            this.slots[i] = new AbstractSlot(36 + i, parent, null, new Vector2i(i, 0));
         }
+    }
+
+    public byte getSelected() {
+        return this.selected;
+    }
+
+    public ClientHotbar setSelected(byte selected) {
+        this.selected = selected;
+        return this;
     }
 
     @Override
     public int getSize() {
-        return 27;
+        return 9;
     }
 
     @Override
@@ -51,7 +62,7 @@ public class MainPlayerInventory implements GridInventory {
 
     @Override
     public int getHeight() {
-        return 3;
+        return 1;
     }
 
     @Override
@@ -61,7 +72,9 @@ public class MainPlayerInventory implements GridInventory {
 
     @Override
     public Slot getSlot(int x, int y) {
-        int index = (x * this.getWidth()) + y;
-        return this.slots[index];
+        if (x!=0) {
+            throw new IndexOutOfBoundsException("X cannot be anything other then 0");
+        }
+        return this.slots[y];
     }
 }

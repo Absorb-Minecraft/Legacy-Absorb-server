@@ -43,6 +43,7 @@ public class RegistryManager {
                 .map(data -> (StackDataKey<?, ?>) data)
                 .map(MemoryBuilderRegistry::of)
                 .collect(Collectors.toUnmodifiableSet()));
+        this.itemTypes.addAll(RegistryManager.getVanillaRegisters(ItemType.class));
         this.blockTypes.addAll(RegistryManager.getVanillaRegisters(BlockType.class));
         new Thread(this::initBlockStates).start();
     }
