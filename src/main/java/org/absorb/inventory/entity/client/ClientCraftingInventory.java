@@ -21,8 +21,11 @@ public class ClientCraftingInventory implements Inventory {
     public ClientCraftingInventory(@NotNull ClientInventory parent) {
         this.parent = parent;
         this.result = new OutputSlot(0, parent);
-        this.craftingSlot = new Grid2x2Inventory(parent, new InputSlot(1, parent), new InputSlot(2, parent),
-                new InputSlot(3, parent), new InputSlot(4, parent));
+        this.craftingSlot = new Grid2x2Inventory(parent,
+                new InputSlot(1, parent),
+                new InputSlot(2, parent),
+                new InputSlot(3, parent),
+                new InputSlot(4, parent));
     }
 
 

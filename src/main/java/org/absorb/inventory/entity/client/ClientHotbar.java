@@ -6,6 +6,7 @@ import org.absorb.inventory.grid.GridInventory;
 import org.absorb.inventory.slot.AbstractSlot;
 import org.absorb.inventory.slot.Slot;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.math.vector.Vector2i;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,7 +22,7 @@ public class ClientHotbar implements GridInventory {
         this.parent = parent;
         this.slots = new Slot[9];
         for (int i = 0; i < 9; i++) {
-            this.slots[i] = new AbstractSlot(i, parent);
+            this.slots[i] = new AbstractSlot(36 + i, parent, null, new Vector2i(i, 0));
         }
     }
 

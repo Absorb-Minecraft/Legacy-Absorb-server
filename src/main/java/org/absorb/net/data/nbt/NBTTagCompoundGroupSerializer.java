@@ -2,6 +2,7 @@ package org.absorb.net.data.nbt;
 
 import me.nullicorn.nedit.NBTInputStream;
 import me.nullicorn.nedit.NBTOutputStream;
+import me.nullicorn.nedit.exception.NBTParseException;
 import me.nullicorn.nedit.type.NBTCompound;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.Serializer;
@@ -16,12 +17,19 @@ public class NBTTagCompoundGroupSerializer implements Serializer<NBTCompound> {
     @Override
     public NetEntryData<NBTCompound> read(int position, ByteBuffer bytes) {
         byte[] bytesArray = bytes.array();
-        MarkedByteArrayInputStream markedIS = new MarkedByteArrayInputStream(Arrays.copyOfRange(bytesArray, position,
-                bytesArray.length));
+        bytesArray = Arrays.copyOfRange(bytesArray, position, bytesArray.length);
+        MarkedByteArrayInputStream markedIS = new MarkedByteArrayInputStream(bytesArray);
         NBTInputStream is = new NBTInputStream(markedIS);
         NBTCompound compound;
         try {
-            compound = is.readCompound();
+            compound = is.readFully();
+        } catch (NBTParseException e) {
+            try {
+                int tagId = is.read();
+                throw new IllegalStateException("Cannot read TagType with ID of " + tagId, e);
+            } catch (IOException ex) {
+                throw new IllegalStateException(e);
+            }
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

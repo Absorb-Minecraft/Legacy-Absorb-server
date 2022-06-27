@@ -11,6 +11,7 @@ import org.absorb.entity.living.human.Gamemodes;
 import org.absorb.entity.living.human.Human;
 import org.absorb.entity.living.human.tab.PlayerTab;
 import org.absorb.entity.living.human.tab.PlayerTabBuilder;
+import org.absorb.inventory.Inventory;
 import org.absorb.inventory.entity.client.ClientInventory;
 import org.absorb.message.MessagePosition;
 import org.absorb.net.packet.PacketState;
@@ -46,6 +47,7 @@ public class Client implements CommandSender {
     private final @NotNull Socket socket;
     private @Nullable WorldEntity entity;
     private final @NotNull ClientInventory inventory = new ClientInventory();
+    private @Nullable Inventory openInventory;
     private @Nullable Locale locale;
     private byte viewDistance = 2;
     private @NotNull ChatMode chatMode = ChatMode.HIDDEN;
@@ -62,6 +64,18 @@ public class Client implements CommandSender {
     public Client(@NotNull Socket socket) throws IOException {
         this.lastPacketSent = LocalDateTime.now();
         this.socket = socket;
+    }
+
+    public Optional<Inventory> getOpenInventory() {
+        return Optional.ofNullable(this.openInventory);
+    }
+
+    public void requestInventoryClose() {
+        this.requestInventoryClose(true);
+    }
+
+    public void requestInventoryClose(boolean send) {
+        this.openInventory = null;
     }
 
     public void updateChunks() {

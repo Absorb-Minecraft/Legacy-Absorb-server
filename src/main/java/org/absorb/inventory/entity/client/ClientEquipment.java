@@ -36,7 +36,7 @@ public class ClientEquipment implements Inventory {
 
     @Override
     public Collection<Inventory> getChildren() {
-        return Arrays.asList(this.armorSlot, this.feetSlot, this.packSlot, this.helmetSlot, this.feetSlot);
+        return Arrays.asList(this.armorSlot, this.feetSlot, this.packSlot, this.helmetSlot, this.feetSlot, this.leggingSlot);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ClientEquipment implements Inventory {
 
     @Override
     public Collection<Slot> getImmediateSlots() {
-        return Arrays.asList(this.armorSlot, this.feetSlot, this.packSlot, this.helmetSlot, this.feetSlot);
+        return Arrays.asList(this.armorSlot, this.feetSlot, this.packSlot, this.helmetSlot, this.feetSlot, this.leggingSlot);
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.absorb.block.type.BlockType;
 import org.absorb.inventory.item.data.StackDataKey;
 import org.absorb.inventory.item.properties.ItemTypeProperty;
 import org.absorb.register.AbsorbKey;
+import org.absorb.register.Typed;
 import org.absorb.utils.NetworkIdentifiable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+@Typed(getTypesClass = ItemTypes.class)
 public class ItemType implements NetworkIdentifiable {
 
     private final int networkId;

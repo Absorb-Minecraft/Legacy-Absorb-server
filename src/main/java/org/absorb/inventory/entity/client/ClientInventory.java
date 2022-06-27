@@ -10,14 +10,20 @@ import java.util.Optional;
 
 public class ClientInventory implements Inventory {
 
-    private ClientHotbar hotbar;
-    private ClientCraftingInventory crafting;
-    private ClientMainInventory main;
+    private final ClientHotbar hotbar;
+    private final ClientCraftingInventory crafting;
+    private final ClientMainInventory main;
+    private final ClientEquipment equipment;
 
     public ClientInventory() {
         this.crafting = new ClientCraftingInventory(this);
         this.hotbar = new ClientHotbar(this);
         this.main = new ClientMainInventory(this);
+        this.equipment = new ClientEquipment(this);
+    }
+
+    public ClientEquipment getEquipment() {
+        return this.equipment;
     }
 
     public ClientHotbar getHotbar() {
@@ -43,6 +49,7 @@ public class ClientInventory implements Inventory {
         slots.addConnection(this.crafting.getChildren());
         slots.addConnection(this.hotbar.getChildren());
         slots.addConnection(this.main.getChildren());
+        slots.addConnection(this.equipment.getChildren());
         return slots;
     }
 
@@ -57,6 +64,7 @@ public class ClientInventory implements Inventory {
         slots.addConnection(this.crafting.getImmediateSlots());
         slots.addConnection(this.hotbar.getImmediateSlots());
         slots.addConnection(this.main.getImmediateSlots());
+        slots.addConnection(this.equipment.getImmediateSlots());
         return slots;
     }
 

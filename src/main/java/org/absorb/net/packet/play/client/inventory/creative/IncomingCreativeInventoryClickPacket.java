@@ -6,6 +6,7 @@ import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.processor.NetProcess;
+import org.absorb.net.processor.play.entity.player.inventory.click.creative.CreativeClickInventoryProcessor;
 import org.jetbrains.annotations.NotNull;
 
 public class IncomingCreativeInventoryClickPacket implements IncomingPacket {
@@ -30,7 +31,7 @@ public class IncomingCreativeInventoryClickPacket implements IncomingPacket {
 
     @Override
     public @NotNull <P extends IncomingPacket> NetProcess<P> getProcess() {
-        return null;
+        return (NetProcess<P>) new CreativeClickInventoryProcessor();
     }
 
     @Override
