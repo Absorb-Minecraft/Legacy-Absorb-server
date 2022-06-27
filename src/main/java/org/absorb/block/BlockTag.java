@@ -1,6 +1,6 @@
 package org.absorb.block;
 
-import org.absorb.block.type.AbsorbBlockType;
+import org.absorb.block.type.BlockType;
 import org.absorb.register.AbsorbKey;
 import org.absorb.register.Typed;
 import org.absorb.register.registry.Registry;
@@ -14,12 +14,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Typed(getTypesClass = BlockTags.class)
-public interface BlockTag extends Tag<AbsorbBlockType> {
+public interface BlockTag extends Tag<BlockType> {
 
-    @NotNull Registry<AbsorbBlockType>[] getBlockTypes();
+    @NotNull Registry<BlockType>[] getBlockTypes();
 
     @Override
-    default @NotNull Collection<AbsorbBlockType> getRegistered() {
+    default @NotNull Collection<BlockType> getRegistered() {
         return Arrays.stream(this.getBlockTypes()).map(Supplier::get).collect(Collectors.toUnmodifiableSet());
     }
 

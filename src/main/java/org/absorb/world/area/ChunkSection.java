@@ -1,9 +1,9 @@
 package org.absorb.world.area;
 
+import org.absorb.block.locatable.BlockData;
 import org.absorb.block.pallet.BlockPallet;
 import org.absorb.block.pallet.SinglePallet;
-import org.absorb.block.state.FullBlockState;
-import org.absorb.block.type.AbsorbBlockTypes;
+import org.absorb.block.type.BlockTypes;
 import org.absorb.net.data.SerializerUtils;
 import org.absorb.net.data.Serializers;
 import org.jetbrains.annotations.NotNull;
@@ -52,13 +52,13 @@ public class ChunkSection {
     }
 
     public ByteBuffer write() {
-        Collection<FullBlockState> blocks = this
+        Collection<BlockData> blocks = this
                 .blockPallets
                 .stream()
                 .flatMap(blockPallet -> blockPallet.getBlocks().values().parallelStream())
-                .filter(entry -> !AbsorbBlockTypes.AIR.isEqual(entry.getState().getType()))
-                .filter(entry -> !AbsorbBlockTypes.CAVE_AIR.isEqual(entry.getState().getType()))
-                .filter(entry -> !AbsorbBlockTypes.VOID_AIR.isEqual(entry.getState().getType()))
+                .filter(entry -> !BlockTypes.AIR.isEqual(entry.getState().getType()))
+                .filter(entry -> !BlockTypes.CAVE_AIR.isEqual(entry.getState().getType()))
+                .filter(entry -> !BlockTypes.VOID_AIR.isEqual(entry.getState().getType()))
                 .collect(Collectors.toList());
 
         System.out.println("Writing Chunk Section");
@@ -82,7 +82,7 @@ public class ChunkSection {
             for (int i = 0; i < (BLOCK_STATES_LIMIT - sizeBefore); i++) {
                 blockBuffers.add(
                         new SinglePallet(
-                                AbsorbBlockTypes.AIR.get().getDefaultBlockState().asFull(),
+                                BlockTypes.AIR.get().getDefaultBlockState().asBlockData(),
                                 new Vector3i(i, i, i)
                         ).write());
             }
@@ -101,7 +101,7 @@ public class ChunkSection {
             for (int i = 0; i < (BIOME_STATES_LIMIT - sizeBefore); i++) {
                 biomeBuffers.add(
                         new SinglePallet(
-                                AbsorbBlockTypes.AIR.get().getDefaultBlockState().asFull(),
+                                BlockTypes.AIR.get().getDefaultBlockState().asBlockData(),
                                 new Vector3i(i, i, i)).write());
             }
         }

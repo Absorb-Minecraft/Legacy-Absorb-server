@@ -1,7 +1,6 @@
 package org.absorb.block.pallet;
 
-import org.absorb.block.locatable.LocatableBlock;
-import org.absorb.block.state.FullBlockState;
+import org.absorb.block.locatable.BlockData;
 import org.spongepowered.math.vector.Vector3i;
 
 import java.nio.ByteBuffer;
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
 
 public interface BlockPallet {
 
-    Map<Vector3i, FullBlockState> getBlocks();
+    Map<Vector3i, BlockData> getBlocks();
 
     ByteBuffer write();
 

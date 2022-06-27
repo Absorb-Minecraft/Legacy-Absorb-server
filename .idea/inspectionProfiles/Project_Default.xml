@@ -18,7 +18,7 @@
     <inspection_tool class="ConstantMathCall" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="CustomSecurityManager" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DefaultNotLastCaseInSwitch" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
-    <inspection_tool class="DuplicateStringLiteralInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+    <inspection_tool class="DuplicateStringLiteralInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
       <option name="MIN_STRING_LENGTH" value="5" />
       <option name="IGNORE_PROPERTY_KEYS" value="false" />
     </inspection_tool>
@@ -28,7 +28,7 @@
     <inspection_tool class="ErrorRethrown" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="ExtendsUtilityClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="FieldMayBeStatic" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
-    <inspection_tool class="HardCodedStringLiteral" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+    <inspection_tool class="HardCodedStringLiteral" enabled="false" level="WEAK WARNING" enabled_by_default="false">
       <option name="ignoreForAssertStatements" value="true" />
       <option name="ignoreForExceptionConstructors" value="true" />
       <option name="ignoreForSpecifiedExceptionConstructors" value="" />

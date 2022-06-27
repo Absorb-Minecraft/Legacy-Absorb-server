@@ -1,6 +1,6 @@
 package org.absorb.block;
 
-import org.absorb.block.type.AbsorbBlockType;
+import org.absorb.block.type.BlockType;
 import org.absorb.register.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 
 public class CustomBlockTag implements BlockTag {
 
-    private Registry<AbsorbBlockType>[] blockTypes;
+    private Registry<BlockType>[] blockTypes;
     private @NotNull String host;
     private @NotNull String key;
     private @NotNull String name;
 
     @SafeVarargs
     public CustomBlockTag(@NotNull String host, @NotNull String key, @NotNull String name,
-                   Registry<AbsorbBlockType>... blockTypes) {
+                   Registry<BlockType>... blockTypes) {
         this.blockTypes = blockTypes;
         this.host = host;
         this.key = key;
@@ -26,11 +26,11 @@ public class CustomBlockTag implements BlockTag {
     }
 
     @Override
-    public Collection<AbsorbBlockType> getRegistered() {
+    public Collection<BlockType> getRegistered() {
         return Arrays.stream(this.getBlockTypes()).map(Supplier::get).collect(Collectors.toUnmodifiableSet());
     }
 
-    public Registry<AbsorbBlockType>[] getBlockTypes() {
+    public Registry<BlockType>[] getBlockTypes() {
         return this.blockTypes;
     }
 

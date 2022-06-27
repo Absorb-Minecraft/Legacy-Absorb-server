@@ -1,21 +1,20 @@
 package org.absorb.block.locatable;
 
-import org.absorb.block.state.FullBlockState;
 import org.absorb.world.location.Locatable;
 import org.absorb.world.location.Location;
 import org.jetbrains.annotations.NotNull;
 
 public class LocatableBlock implements Locatable, Comparable<LocatableBlock> {
 
-    private final @NotNull FullBlockState state;
+    private final @NotNull BlockData state;
     private final @NotNull Location location;
 
-    public LocatableBlock(@NotNull FullBlockState state, @NotNull Location location) {
+    public LocatableBlock(@NotNull BlockData state, @NotNull Location location) {
         this.location = location;
         this.state = state;
     }
 
-    public @NotNull FullBlockState getState() {
+    public @NotNull BlockData getState() {
         return this.state;
     }
 
