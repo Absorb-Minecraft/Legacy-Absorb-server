@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="org.absorb.Main" />
-    <module name="CustomMCServer" />
-    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+    <module name="Absorb" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Server" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
