@@ -13,6 +13,7 @@ import org.absorb.world.biome.Biome;
 import org.absorb.world.type.PlayerWorldTypeView;
 import org.absorb.world.type.WorldType;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -23,8 +24,19 @@ import java.util.stream.Collectors;
 
 public class OngoingJoinPacketTest {
 
+    public boolean canFindFile() {
+        try {
+            NBTReader.read(Main.class.getResourceAsStream("/1.18.2_dim_codec.nbt"));
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     @Test
     public void testBiomeCodec() {
+        Assumptions.assumeTrue(this.canFindFile());
+
         NBTCompound expectedCompound;
         try {
             expectedCompound = NBTReader.read(Main.class.getResourceAsStream("/1.18.2_dim_codec.nbt"));
@@ -64,6 +76,9 @@ public class OngoingJoinPacketTest {
 
     @Test
     public void testBiomeCodecExtra() {
+        Assumptions.assumeTrue(this.canFindFile());
+
+
         NBTCompound expectedCompound;
         try {
             expectedCompound = NBTReader.read(Main.class.getResourceAsStream("/1.18.2_dim_codec.nbt"));
