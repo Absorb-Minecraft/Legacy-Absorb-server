@@ -1,4 +1,4 @@
-package org.absorb.inventory.entity.player;
+package org.absorb.inventory.entity.client;
 
 import org.absorb.inventory.Inventory;
 import org.absorb.inventory.InventoryType;
@@ -11,32 +11,22 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
-public class PlayerHotbar implements GridInventory {
+public class ClientMainInventory implements GridInventory {
 
-    private final Slot[] slots;
-    private byte selected;
-    private final PlayerInventory parent;
+    private final @NotNull AbstractSlot[] slots;
+    private final @NotNull ClientInventory parent;
 
-    public PlayerHotbar(@NotNull PlayerInventory parent) {
-        this.parent = parent;
-        this.slots = new Slot[9];
-        for (int i = 0; i < 9; i++) {
-            this.slots[i] = new AbstractSlot(i, parent);
+    public ClientMainInventory(@NotNull ClientInventory inventory) {
+        this.parent = inventory;
+        this.slots = new AbstractSlot[this.getSize()];
+        for (int i = 0; i < this.slots.length; i++) {
+            this.slots[i] = new AbstractSlot(i + 9, inventory);
         }
-    }
-
-    public byte getSelected() {
-        return this.selected;
-    }
-
-    public PlayerHotbar setSelected(byte selected) {
-        this.selected = selected;
-        return this;
     }
 
     @Override
     public int getSize() {
-        return 9;
+        return 27;
     }
 
     @Override
@@ -61,7 +51,7 @@ public class PlayerHotbar implements GridInventory {
 
     @Override
     public int getHeight() {
-        return 1;
+        return 3;
     }
 
     @Override
@@ -71,9 +61,7 @@ public class PlayerHotbar implements GridInventory {
 
     @Override
     public Slot getSlot(int x, int y) {
-        if (x!=0) {
-            throw new IndexOutOfBoundsException("X cannot be anything other then 0");
-        }
-        return this.slots[y];
+        int index = (x * this.getWidth()) + y;
+        return this.slots[index];
     }
 }

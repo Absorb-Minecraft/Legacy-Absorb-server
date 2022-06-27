@@ -7,6 +7,7 @@ import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.login.handshake.IncomingHandshakePacketBuilder;
 import org.absorb.net.packet.login.pre.IncomingPreLoginPacketBuilder;
 import org.absorb.net.packet.play.channel.incoming.IncomingPluginMessagePacketBuilder;
+import org.absorb.net.packet.play.client.inventory.creative.IncomingCreativeInventoryClickPacketBuilder;
 import org.absorb.net.packet.play.entity.player.abilities.IncomingChangeAbilityPacketBuilder;
 import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayerMovementPacketBuilder;
 import org.absorb.net.packet.play.entity.player.movement.incoming.basic.IncomingBasicPlayerMovementPacketBuilder;
@@ -69,6 +70,7 @@ public class NetManager {
         this.registerIncomingPacketBuilder(new IncomingChangeAbilityPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingRotationPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingMessagePacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingCreativeInventoryClickPacketBuilder());
     }
 
     public NetHandler getHandler() {

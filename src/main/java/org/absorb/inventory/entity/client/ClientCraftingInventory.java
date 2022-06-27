@@ -1,4 +1,4 @@
-package org.absorb.inventory.entity.player;
+package org.absorb.inventory.entity.client;
 
 import org.absorb.inventory.Inventory;
 import org.absorb.inventory.InventoryType;
@@ -12,13 +12,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
-public class PlayerCraftingInventory implements Inventory {
+public class ClientCraftingInventory implements Inventory {
 
     private final @NotNull Grid2x2Inventory craftingSlot;
     private final @NotNull OutputSlot result;
-    private final @NotNull PlayerInventory parent;
+    private final @NotNull ClientInventory parent;
 
-    public PlayerCraftingInventory(@NotNull PlayerInventory parent) {
+    public ClientCraftingInventory(@NotNull ClientInventory parent) {
         this.parent = parent;
         this.result = new OutputSlot(0, parent);
         this.craftingSlot = new Grid2x2Inventory(parent, new InputSlot(1, parent), new InputSlot(2, parent),

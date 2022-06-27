@@ -1,4 +1,4 @@
-package org.absorb.inventory.entity.player;
+package org.absorb.inventory.entity.client;
 
 import org.absorb.inventory.Inventory;
 import org.absorb.inventory.InventoryType;
@@ -8,27 +8,27 @@ import org.absorb.utils.colllection.ConnectedCollection;
 import java.util.Collection;
 import java.util.Optional;
 
-public class PlayerInventory implements Inventory {
+public class ClientInventory implements Inventory {
 
-    private PlayerHotbar hotbar;
-    private PlayerCraftingInventory crafting;
-    private MainPlayerInventory main;
+    private ClientHotbar hotbar;
+    private ClientCraftingInventory crafting;
+    private ClientMainInventory main;
 
-    public PlayerInventory() {
-        this.crafting = new PlayerCraftingInventory(this);
-        this.hotbar = new PlayerHotbar(this);
-        this.main = new MainPlayerInventory(this);
+    public ClientInventory() {
+        this.crafting = new ClientCraftingInventory(this);
+        this.hotbar = new ClientHotbar(this);
+        this.main = new ClientMainInventory(this);
     }
 
-    public PlayerHotbar getHotbar() {
+    public ClientHotbar getHotbar() {
         return this.hotbar;
     }
 
-    public PlayerCraftingInventory getCrafting() {
+    public ClientCraftingInventory getCrafting() {
         return this.crafting;
     }
 
-    public MainPlayerInventory getMain() {
+    public ClientMainInventory getMain() {
         return this.main;
     }
 
