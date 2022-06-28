@@ -3,9 +3,9 @@ package org.absorb.inventory.recipe.shapeless;
 import org.absorb.inventory.recipe.RecipeBuilder;
 import org.absorb.inventory.slot.Slot;
 import org.absorb.inventory.slot.UnknownSlot;
-import org.absorb.net.data.ListSerializer;
+import org.absorb.net.data.NetList;
 import org.absorb.net.data.NetEntryData;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetSerializers;
 import org.absorb.register.AbsorbKey;
 import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
@@ -109,12 +109,12 @@ public class ShapelessRecipeBuilder implements RecipeBuilder<ShapelessRecipe> {
 
     @Override
     public RecipeBuilder<ShapelessRecipe> from(ByteBuffer data) {
-        NetEntryData<AbsorbKey> type = Serializers.RESOURCE_KEY.read(0, data);
-        NetEntryData<AbsorbKey> id = Serializers.RESOURCE_KEY.read(type.endingPosition(), data);
-        NetEntryData<String> groupName = Serializers.STRING.read(id.endingPosition(), data);
+        NetEntryData<AbsorbKey> type = NetSerializers.RESOURCE_KEY.read(0, data);
+        NetEntryData<AbsorbKey> id = NetSerializers.RESOURCE_KEY.read(type.endingPosition(), data);
+        NetEntryData<String> groupName = NetSerializers.STRING.read(id.endingPosition(), data);
         NetEntryData<List<List<Slot>>> ingredients =
-                new ListSerializer<>(new ListSerializer<>(Serializers.SLOT)).read(groupName.endingPosition(), data);
-        NetEntryData<Slot> result = Serializers.SLOT.read(ingredients.endingPosition(), data);
+                new NetList<>(new NetList<>(NetSerializers.SLOT)).read(groupName.endingPosition(), data);
+        NetEntryData<Slot> result = NetSerializers.SLOT.read(ingredients.endingPosition(), data);
 
         if (!id.value().value().equals(ShapelessRecipe.SHAPELESS)) {
             throw new IllegalStateException("Cannot accept type " + id.value().value() + " on Shapeless");

@@ -1,8 +1,8 @@
 package org.absorb.net.packet.status.pong;
 
 import org.absorb.net.Client;
-import org.absorb.net.data.SerializerUtils;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetUtils;
+import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
@@ -25,9 +25,9 @@ public class OutgoingPongPacket implements OutgoingPacket {
     @Override
     public ByteBuffer toBytes(Client stream) {
         if (this.usePlay) {
-            return SerializerUtils.createPacket(PLAY_ID, Serializers.INTEGER.write((int) this.payload));
+            return NetUtils.createPacket(PLAY_ID, NetSerializers.INTEGER.write((int) this.payload));
         }
-        return SerializerUtils.createPacket(ID, Serializers.LONG.write(this.payload));
+        return NetUtils.createPacket(ID, NetSerializers.LONG.write(this.payload));
     }
 
     @Override

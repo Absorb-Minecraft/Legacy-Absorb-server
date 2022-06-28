@@ -15,9 +15,9 @@ import org.absorb.inventory.Inventory;
 import org.absorb.inventory.entity.client.ClientInventory;
 import org.absorb.message.MessagePosition;
 import org.absorb.net.packet.PacketState;
-import org.absorb.net.packet.play.chunk.OutgoingChunkUpdatePacketBuilder;
-import org.absorb.net.packet.play.client.disconnect.OutgoingCloseConnectionPacketBuilder;
-import org.absorb.net.packet.play.message.chat.OutgoingChatMessagePacketBuilder;
+import org.absorb.net.packet.play.outgoing.client.channel.chat.OutgoingChatMessagePacketBuilder;
+import org.absorb.net.packet.play.outgoing.client.disconnect.OutgoingCloseConnectionPacketBuilder;
+import org.absorb.net.packet.play.outgoing.world.chunk.data.OutgoingChunkUpdatePacketBuilder;
 import org.absorb.threaded.SimpleDataPoint;
 import org.absorb.threaded.ThreadedDataPoint;
 import org.absorb.world.AbsorbWorld;
@@ -397,6 +397,6 @@ public class Client implements CommandSender {
 
     @Override
     public void sendMessage(@Nullable UUID uuid, @NotNull Component component) {
-        new OutgoingChatMessagePacketBuilder().setMessage(component).setPosition(MessagePosition.CHAT).setFrom(uuid).build().writeToAsync(this);
+        new OutgoingChatMessagePacketBuilder().setDisplayMessage(component).setPosition(MessagePosition.CHAT).setFrom(uuid).build().writeToAsync(this);
     }
 }

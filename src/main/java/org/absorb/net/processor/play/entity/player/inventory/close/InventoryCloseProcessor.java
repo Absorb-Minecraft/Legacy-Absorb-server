@@ -1,7 +1,7 @@
 package org.absorb.net.processor.play.entity.player.inventory.close;
 
 import org.absorb.net.Client;
-import org.absorb.net.packet.play.client.inventory.close.IncomingCloseInventoryPacket;
+import org.absorb.net.packet.play.incoming.client.inventory.close.IncomingCloseInventoryPacket;
 import org.absorb.net.processor.NetProcess;
 
 import java.io.IOException;

@@ -2,7 +2,7 @@ package org.absorb.entity.living.human;
 
 import org.absorb.entity.EntityType;
 import org.absorb.net.Client;
-import org.absorb.net.packet.play.settings.ability.OutgoingAbilityPacketBuilder;
+import org.absorb.net.packet.play.outgoing.entity.ability.OutgoingAbilityPacketBuilder;
 import org.absorb.utils.Identifiable;
 import org.jetbrains.annotations.NotNull;
 

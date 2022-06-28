@@ -5,9 +5,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.absorb.net.Client;
 import org.absorb.net.packet.PacketState;
-import org.absorb.net.packet.login.handshake.HandshakeState;
-import org.absorb.net.packet.login.handshake.IncomingHandshakePacket;
-import org.absorb.net.packet.play.client.disconnect.OutgoingCloseConnectionPacketBuilder;
+import org.absorb.net.packet.handshake.HandshakeState;
+import org.absorb.net.packet.handshake.IncomingHandshakePacket;
+import org.absorb.net.packet.play.outgoing.client.disconnect.OutgoingCloseConnectionPacketBuilder;
 import org.absorb.net.processor.NetProcess;
 import org.absorb.version.MCVersion;
 

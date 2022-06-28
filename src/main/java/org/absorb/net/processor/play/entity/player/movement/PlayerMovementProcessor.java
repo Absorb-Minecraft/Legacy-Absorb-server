@@ -2,8 +2,8 @@ package org.absorb.net.processor.play.entity.player.movement;
 
 import org.absorb.net.Client;
 import org.absorb.net.PlayingState;
-import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayerMovementPacket;
-import org.absorb.net.packet.play.entity.player.movement.outgoing.OutgoingPlayerMovementPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.movement.IncomingPlayerMovementPacket;
+import org.absorb.net.packet.play.outgoing.client.movement.OutgoingPlayerMovementPacketBuilder;
 import org.absorb.net.processor.NetProcess;
 import org.absorb.world.location.Location;
 import org.spongepowered.math.vector.Vector2i;

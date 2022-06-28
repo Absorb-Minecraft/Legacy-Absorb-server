@@ -1,6 +1,7 @@
 package org.absorb.files.nbt.compound;
 
 import me.nullicorn.nedit.type.NBTCompound;
+import me.nullicorn.nedit.type.NBTList;
 import me.nullicorn.nedit.type.TagType;
 import org.absorb.world.biome.BiomeCategory;
 import org.absorb.world.biome.properties.BiomeWeather;
@@ -30,9 +31,12 @@ public class NBTCompoundKeys {
             new NBTCompoundKey.Type<>(TagType.COMPOUND, "minecraft:dimension_type");
     public static final NBTCompoundKey.Type<NBTCompound> WORLD_GEN_BIOME =
             new NBTCompoundKey.Type<>(TagType.COMPOUND, "minecraft:worldgen/biome");
+    public static final NBTCompoundKey.Type<NBTCompound> CHAT_TYPES = new NBTCompoundKey.Type<>(TagType.COMPOUND,
+            "minecraft:chat_type");
 
     public static final NBTCompoundKey.BiomeValue BIOMES = new NBTCompoundKey.BiomeValue("value");
     public static final NBTCompoundKey.Type<String> COMPOUND_TYPE = new NBTCompoundKey.Type<>(TagType.STRING, "type");
+    public static final NBTCompoundKey.Type<NBTList> VALUE_LIST = new NBTCompoundKey.Type<>(TagType.LIST, "value");
 
     public static final NBTCompoundKey.Boolean PIGLIN_SAFE =
             new NBTCompoundKey.Boolean("piglin_safe");

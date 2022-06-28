@@ -4,7 +4,6 @@ import org.absorb.net.packet.IncomingPacket;
 import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
-import org.absorb.net.packet.login.handshake.IncomingHandshakePacketBuilder;
 import org.absorb.net.processor.NetProcess;
 import org.absorb.net.processor.NetProcessors;
 

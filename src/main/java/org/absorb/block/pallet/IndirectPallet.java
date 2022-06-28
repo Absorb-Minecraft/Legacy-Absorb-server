@@ -1,8 +1,8 @@
 package org.absorb.block.pallet;
 
 import org.absorb.block.locatable.BlockData;
-import org.absorb.net.data.SerializerUtils;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetUtils;
+import org.absorb.net.data.NetSerializers;
 import org.spongepowered.math.vector.Vector3i;
 
 import java.nio.ByteBuffer;
@@ -55,14 +55,14 @@ public class IndirectPallet implements BlockPallet {
 
     @Override
     public ByteBuffer write() {
-        ByteBuffer bitsPerEntryBuffer = Serializers.BYTE.write(this.bitsPerEntry);
-        ByteBuffer paletteSize = Serializers.VAR_INTEGER.write(this.mappings.size());
-        ByteBuffer paletteBuffer = SerializerUtils
+        ByteBuffer bitsPerEntryBuffer = NetSerializers.BYTE.write(this.bitsPerEntry);
+        ByteBuffer paletteSize = NetSerializers.VAR_INTEGER.write(this.mappings.size());
+        ByteBuffer paletteBuffer = NetUtils
                 .collect(
                         this
                                 .mappings
                                 .stream()
-                                .map(mappings -> Serializers.VAR_INTEGER
+                                .map(mappings -> NetSerializers.VAR_INTEGER
                                         .write(mappings
                                                 .getState()
                                                 .getState()
@@ -70,6 +70,6 @@ public class IndirectPallet implements BlockPallet {
                                 .toList());
 
 
-        return SerializerUtils.collect(Arrays.asList(bitsPerEntryBuffer, paletteSize, paletteBuffer));
+        return NetUtils.collect(Arrays.asList(bitsPerEntryBuffer, paletteSize, paletteBuffer));
     }
 }

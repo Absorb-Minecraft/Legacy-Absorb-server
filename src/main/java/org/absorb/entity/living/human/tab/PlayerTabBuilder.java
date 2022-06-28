@@ -18,6 +18,36 @@ public class PlayerTabBuilder implements Builder<PlayerTab> {
     private int ping;
     private Component displayName;
     private final Collection<PlayerTabProperty> properties = new HashSet<>();
+    private Long timestamp;
+    private byte[] publicKey = new byte[0];
+    private byte[] sig = new byte[0];
+
+    public Long getTimestamp() {
+        return this.timestamp;
+    }
+
+    public PlayerTabBuilder setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    public byte[] getPublicKey() {
+        return this.publicKey;
+    }
+
+    public PlayerTabBuilder setPublicKey(byte[] publicKey) {
+        this.publicKey = publicKey;
+        return this;
+    }
+
+    public byte[] getSignature() {
+        return this.sig;
+    }
+
+    public PlayerTabBuilder setSignature(byte[] sig) {
+        this.sig = sig;
+        return this;
+    }
 
     public Collection<PlayerTabProperty> getProperties() {
         return Collections.unmodifiableCollection(this.properties);

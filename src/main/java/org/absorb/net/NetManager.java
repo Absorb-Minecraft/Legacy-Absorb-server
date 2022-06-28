@@ -4,19 +4,19 @@ import org.absorb.net.handler.NetHandler;
 import org.absorb.net.packet.IncomingPacket;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketState;
-import org.absorb.net.packet.login.handshake.IncomingHandshakePacketBuilder;
-import org.absorb.net.packet.login.pre.IncomingPreLoginPacketBuilder;
-import org.absorb.net.packet.play.channel.incoming.IncomingPluginMessagePacketBuilder;
-import org.absorb.net.packet.play.client.inventory.close.IncomingCloseInventoryPacketBuilder;
-import org.absorb.net.packet.play.client.inventory.creative.IncomingCreativeInventoryClickPacketBuilder;
-import org.absorb.net.packet.play.entity.player.abilities.IncomingChangeAbilityPacketBuilder;
-import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayerMovementPacketBuilder;
-import org.absorb.net.packet.play.entity.player.movement.incoming.basic.IncomingBasicPlayerMovementPacketBuilder;
-import org.absorb.net.packet.play.entity.player.movement.incoming.rotation.IncomingRotationPacketBuilder;
-import org.absorb.net.packet.play.entity.player.teleport.confirm.IncomingTeleportConfirmPacketBuilder;
-import org.absorb.net.packet.play.message.IncomingMessagePacketBuilder;
-import org.absorb.net.packet.play.recipe.craft.IncomingRecipeRequestPacketBuilder;
-import org.absorb.net.packet.play.settings.client.IncomingClientSettingsPacketBuilder;
+import org.absorb.net.packet.handshake.IncomingHandshakePacketBuilder;
+import org.absorb.net.packet.login.start.IncomingLoginStartPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.channel.plugin.IncomingPluginMessagePacketBuilder;
+import org.absorb.net.packet.play.incoming.client.inventory.close.IncomingCloseInventoryPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.inventory.creative.IncomingCreativeInventoryClickPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.ability.IncomingChangeAbilityPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.movement.IncomingPlayerMovementPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.movement.basic.IncomingBasicPlayerMovementPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.movement.rotation.IncomingRotationPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.movement.teleport.confirm.IncomingTeleportConfirmPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.channel.chat.IncomingMessagePacketBuilder;
+import org.absorb.net.packet.play.incoming.client.recipe.IncomingRecipeRequestPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.settings.IncomingClientSettingsPacketBuilder;
 import org.absorb.net.packet.status.ping.IncomingPingPacketBuilder;
 import org.absorb.net.packet.status.request.IncomingStatusRequestPacketBuilder;
 
@@ -58,7 +58,7 @@ public class NetManager {
 
     private void registerPacketBuilders() {
         this.registerIncomingPacketBuilder(new IncomingHandshakePacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingPreLoginPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingLoginStartPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingStatusRequestPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingPingPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingPingPacketBuilder().setUsePlay(true));

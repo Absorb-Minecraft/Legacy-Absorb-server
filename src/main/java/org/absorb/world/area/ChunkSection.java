@@ -4,8 +4,8 @@ import org.absorb.block.locatable.BlockData;
 import org.absorb.block.pallet.BlockPallet;
 import org.absorb.block.pallet.SinglePallet;
 import org.absorb.block.type.BlockTypes;
-import org.absorb.net.data.SerializerUtils;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetUtils;
+import org.absorb.net.data.NetSerializers;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
@@ -64,7 +64,7 @@ public class ChunkSection {
         System.out.println("Writing Chunk Section");
         short blockCount =
                 (short) blocks.size();
-        ByteBuffer blockCountBuffer = Serializers.SHORT.write(blockCount);
+        ByteBuffer blockCountBuffer = NetSerializers.SHORT.write(blockCount);
         System.out.println("\tBlockCount: " + blockCount + " " + Arrays.toString(blockCountBuffer.array()));
         List<ByteBuffer> blockBuffers =
                 this
@@ -87,7 +87,7 @@ public class ChunkSection {
                         ).write());
             }
         }
-        ByteBuffer blockBuffer = SerializerUtils.collect(blockBuffers);
+        ByteBuffer blockBuffer = NetUtils.collect(blockBuffers);
         System.out.println("\tOriginalBuffer: " + blockBuffers.stream().map(byteBuffer -> Arrays.toString(byteBuffer.array())).collect(Collectors.joining("")));
         System.out.println("\tBlockBuffer: (" + blockBuffers.size() + ") " + Arrays.toString(blockBuffer.array()));
         List<ByteBuffer> biomeBuffers =
@@ -106,7 +106,7 @@ public class ChunkSection {
             }
         }
 
-        ByteBuffer biomeBuffer = SerializerUtils.collect(biomeBuffers);
+        ByteBuffer biomeBuffer = NetUtils.collect(biomeBuffers);
         System.out.println("\tBiomeBuffer: (" + biomeBuffers.size() + ")" + Arrays.toString(biomeBuffer.array()));
 
 

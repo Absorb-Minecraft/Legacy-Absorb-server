@@ -11,17 +11,9 @@ import org.absorb.entity.living.human.tab.PlayerTab;
 import org.absorb.net.Client;
 import org.absorb.net.PlayingState;
 import org.absorb.net.packet.PacketState;
-import org.absorb.net.packet.login.post.OutgoingLoginSuccessfulPacketBuilder;
-import org.absorb.net.packet.login.pre.IncomingPreLoginPacket;
-import org.absorb.net.packet.play.command.declare.OutgoingDeclaredCommandsPacketBuilder;
-import org.absorb.net.packet.play.difficulty.OutgoingServerDifficultyPacketBuilder;
-import org.absorb.net.packet.play.entity.player.compass.OutgoingSpawnPositionPacketBuilder;
-import org.absorb.net.packet.play.entity.player.movement.outgoing.OutgoingPlayerMovementPacketBuilder;
-import org.absorb.net.packet.play.entity.player.tab.add.OutgoingPlayerTabUpdateAddPlayerPacketBuilder;
-import org.absorb.net.packet.play.entity.player.view.OutgoingUpdateViewPacketBuilder;
-import org.absorb.net.packet.play.entity.status.OutgoingEntityStatusUpdatePacketBuilder;
-import org.absorb.net.packet.play.join.OutgoingJoinPacketBuilder;
-import org.absorb.net.packet.play.settings.ability.OutgoingAbilityPacketBuilder;
+import org.absorb.net.packet.login.start.IncomingLoginStartPacket;
+import org.absorb.net.packet.login.success.OutgoingLoginSuccessfulPacketBuilder;
+import org.absorb.net.packet.play.outgoing.client.join.OutgoingJoinPacketBuilder;
 import org.absorb.net.processor.NetProcess;
 import org.absorb.world.AbsorbWorld;
 import org.absorb.world.area.AbsorbChunk;
@@ -35,9 +27,9 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
+public class PreLoginProcess implements NetProcess<IncomingLoginStartPacket> {
     @Override
-    public void onProcess(Client info, IncomingPreLoginPacket packet) throws IOException {
+    public void onProcess(Client info, IncomingLoginStartPacket packet) throws IOException {
         info.setUsername(packet.getUsername());
         String name = packet.getUsername();
         if (name.isBlank()) {
@@ -88,7 +80,8 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
                 .build()
                 .writeTo(info);
 
-        new OutgoingDeclaredCommandsPacketBuilder().walkAllCommands(AbsorbManagers.getCommandManager().getRootCommand()).build().writeToAsync(info);
+        //new OutgoingDeclaredCommandsPacketBuilder().walkAllCommands(AbsorbManagers.getCommandManager()
+        // .getRootCommand()).build().writeToAsync(info);
 
         /*new OutgoingAbilityPacketBuilder()
                 .setFlyingAllowed(true)
@@ -100,11 +93,11 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
                 .build()
                 .writeTo(info);*/
 
-        new OutgoingServerDifficultyPacketBuilder()
+        /*new OutgoingServerDifficultyPacketBuilder()
                 .setDifficulty(world.getWorldData().getDifficulty())
                 .setLocked(true)
                 .build()
-                .writeTo(info);
+                .writeTo(info);*/
 
         /*new OutgoingSwapHotbarPacketBuilder().setNewSlot((byte) 0).build().writeTo(info);
 
@@ -129,7 +122,8 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
                 .writeTo(info);*/
 
         for (EntityEffect<?> effect : playerEntity.getEffects()) {
-            new OutgoingEntityStatusUpdatePacketBuilder().setEffect(effect).setEntityId(worldHuman.getInstanceId()).build().writeTo(info);
+            //new OutgoingEntityStatusUpdatePacketBuilder().setEffect(effect).setEntityId(worldHuman.getInstanceId())
+            // .build().writeTo(info);
         }
 
         /*new OutgoingSwapHotbarPacketBuilder().setNewSlot(connection.getInventory().getHotbar().getSelected()).build
@@ -147,29 +141,31 @@ public class PreLoginProcess implements NetProcess<IncomingPreLoginPacket> {
                         .map(Client::createTab)
                         .collect(Collectors.toSet());
 
-        new OutgoingPlayerTabUpdateAddPlayerPacketBuilder().addTabs(tabs).build().writeTo(info);
+        //new OutgoingPlayerTabUpdateAddPlayerPacketBuilder().addTabs(tabs).build().writeTo(info);
 
-        new OutgoingSpawnPositionPacketBuilder().setAngle(0).setLocation(worldHuman.getWorld().getWorldData().getCompassPoint())
-                .build().writeTo(info);
+        /*new OutgoingSpawnPositionPacketBuilder().setAngle(0).setLocation(worldHuman.getWorld().getWorldData()
+        .getCompassPoint())
+
+                .build().writeTo(info);*/
 
         AbsorbChunk chunk = world.generateChunkAtBlock(info.getEntity().getPosition().floorX(),
                 info.getEntity().getPosition().floorZ());
         //ChunkPart part = chunk.getPartWithBlockHeight(2);
         //Set<ChunkSection> set = Set.of(part.asSection());
 
-        info.updateChunks();
+        //info.updateChunks();
 
         /*new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(set)
                 .build().writeToAsync(info);*/
 
-        new OutgoingUpdateViewPacketBuilder().setChunk(chunk).build().writeToAsync(info);
+        //new OutgoingUpdateViewPacketBuilder().setChunk(chunk).build().writeToAsync(info);
 
         info.setPlayingState(PlayingState.LOGIN_PRE_DATA);
 
-        new OutgoingAbilityPacketBuilder().fromClient(info).build().writeTo(info);
+        //new OutgoingAbilityPacketBuilder().fromClient(info).build().writeTo(info);
 
         id = info.newTeleportId();
         info.registerTeleportId(id);
-        new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).setTeleportId(id).build().writeTo(info);
+        //new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).setTeleportId(id).build().writeTo(info);
     }
 }

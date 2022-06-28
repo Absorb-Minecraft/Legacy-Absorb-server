@@ -2,7 +2,7 @@ package org.absorb.schedule.schedules;
 
 import org.absorb.AbsorbManagers;
 import org.absorb.net.PlayingState;
-import org.absorb.net.packet.play.entity.player.world.time.OutgoingTimeUpdatePacketBuilder;
+import org.absorb.net.packet.play.outgoing.world.time.OutgoingTimeUpdatePacketBuilder;
 import org.absorb.schedule.Schedule;
 import org.absorb.world.AbsorbWorldData;
 

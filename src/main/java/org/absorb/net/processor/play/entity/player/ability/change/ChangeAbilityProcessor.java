@@ -3,9 +3,9 @@ package org.absorb.net.processor.play.entity.player.ability.change;
 import org.absorb.entity.Entity;
 import org.absorb.entity.EntityType;
 import org.absorb.net.Client;
-import org.absorb.net.packet.play.entity.player.abilities.IncomingChangeAbilityPacket;
-import org.absorb.net.packet.play.entity.player.abilities.PlayerAbilities;
-import org.absorb.net.packet.play.settings.ability.OutgoingAbilityPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.ability.IncomingChangeAbilityPacket;
+import org.absorb.net.packet.play.incoming.client.ability.PlayerAbilities;
+import org.absorb.net.packet.play.outgoing.entity.ability.OutgoingAbilityPacketBuilder;
 import org.absorb.net.processor.NetProcess;
 
 import java.io.IOException;

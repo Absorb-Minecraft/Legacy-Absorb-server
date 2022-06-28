@@ -1,6 +1,6 @@
 package org.absorb.net.packet.status.ping;
 
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
@@ -33,10 +33,10 @@ public class IncomingPingPacketBuilder implements IncomingPacketBuilder<Incoming
     @Override
     public IncomingPingPacketBuilder from(ByteBuffer packetBytes) {
         if (this.usePlay) {
-            this.payload = Serializers.INTEGER.read(0, packetBytes).value();
+            this.payload = NetSerializers.INTEGER.read(0, packetBytes).value();
             return this;
         }
-        this.payload = Serializers.LONG.read(0, packetBytes).value();
+        this.payload = NetSerializers.LONG.read(0, packetBytes).value();
         return this;
     }
 

@@ -4,7 +4,7 @@ import org.absorb.inventory.entity.client.ClientInventory;
 import org.absorb.inventory.slot.AbstractSlot;
 import org.absorb.inventory.slot.Slot;
 import org.absorb.net.Client;
-import org.absorb.net.packet.play.client.inventory.creative.IncomingCreativeInventoryClickPacket;
+import org.absorb.net.packet.play.incoming.client.inventory.creative.IncomingCreativeInventoryClickPacket;
 import org.absorb.net.processor.NetProcess;
 
 import java.io.IOException;

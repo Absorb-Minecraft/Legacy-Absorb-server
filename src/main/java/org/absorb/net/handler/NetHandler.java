@@ -4,7 +4,7 @@ import org.absorb.AbsorbManagers;
 import org.absorb.Main;
 import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 
 import java.io.IOException;
@@ -57,9 +57,9 @@ public class NetHandler {
 
         private boolean processPacket() throws IOException {
             ByteBuffer data = ByteBuffer.wrap(this.data);
-            NetEntryData<Integer> lengthEntry = Serializers.VAR_INTEGER.read(0, data);
+            NetEntryData<Integer> lengthEntry = NetSerializers.VAR_INTEGER.read(0, data);
             NetEntryData<Integer> packetId =
-                    Serializers.VAR_INTEGER.read(lengthEntry.endingPosition(), data);
+                    NetSerializers.VAR_INTEGER.read(lengthEntry.endingPosition(), data);
 
             Optional<IncomingPacketBuilder<? extends org.absorb.net.packet.IncomingPacket>> builder =
                     AbsorbManagers.getNetManager().getIncomingPacketBuilder(packetId.value(),
@@ -107,7 +107,7 @@ public class NetHandler {
                     netInfo.setLastPacketSentTime(LocalDateTime.now());
                     addByte(b);
                     try {
-                        length = Serializers.VAR_INTEGER.read(0, ByteBuffer.wrap(data)).value();
+                        length = NetSerializers.VAR_INTEGER.read(0, ByteBuffer.wrap(data)).value();
                     } catch (IndexOutOfBoundsException e) {
                         System.err.println("Problem reading: skipping:");
                         System.err.println("\t" + e.getMessage());
@@ -144,12 +144,12 @@ public class NetHandler {
             NetEntryData<Integer> idEntry;
             try {
                 lengthEntry =
-                        Serializers.VAR_INTEGER.read(0, buffer);
+                        NetSerializers.VAR_INTEGER.read(0, buffer);
             } catch (IndexOutOfBoundsException e) {
                 return;
             }
             try {
-                idEntry = Serializers.VAR_INTEGER.read(lengthEntry.endingPosition(), buffer);
+                idEntry = NetSerializers.VAR_INTEGER.read(lengthEntry.endingPosition(), buffer);
             } catch (IndexOutOfBoundsException e) {
                 System.err.println("Failed to read id");
                 System.err.println("Length: " + lengthEntry);

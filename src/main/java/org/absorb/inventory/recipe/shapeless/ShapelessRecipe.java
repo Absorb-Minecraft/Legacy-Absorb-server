@@ -4,8 +4,8 @@ import org.absorb.inventory.recipe.Recipe;
 import org.absorb.inventory.recipe.RecipeBuilder;
 import org.absorb.inventory.slot.Slot;
 import org.absorb.inventory.slot.UnknownSlot;
-import org.absorb.net.data.ListSerializer;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetList;
+import org.absorb.net.data.NetSerializers;
 import org.absorb.register.AbsorbKey;
 import org.absorb.utils.Identifiable;
 import org.jetbrains.annotations.NotNull;
@@ -65,16 +65,16 @@ public class ShapelessRecipe implements Recipe {
 
     @Override
     public ByteBuffer write() {
-        ByteBuffer type = Serializers.RESOURCE_KEY.write(this.getType());
-        ByteBuffer id = Serializers.RESOURCE_KEY.write(this.getResourceKey());
-        ByteBuffer group = Serializers.STRING.write(this.getGroupName());
-        ByteBuffer ingredients = new ListSerializer<>(new ListSerializer<>(Serializers.SLOT))
+        ByteBuffer type = NetSerializers.RESOURCE_KEY.write(this.getType());
+        ByteBuffer id = NetSerializers.RESOURCE_KEY.write(this.getResourceKey());
+        ByteBuffer group = NetSerializers.STRING.write(this.getGroupName());
+        ByteBuffer ingredients = new NetList<>(new NetList<>(NetSerializers.SLOT))
                 .write(this
                         .getIngredients()
                         .parallelStream()
                         .map(i -> Arrays.stream(i).map(slot -> (Slot) slot).collect(Collectors.toList()))
                         .toList());
-        ByteBuffer result = Serializers.SLOT.write(this.getResult());
+        ByteBuffer result = NetSerializers.SLOT.write(this.getResult());
 
         ByteBuffer ret =
                 ByteBuffer.allocate(type.limit() + id.limit() + group.limit() + ingredients.limit() + result.limit());

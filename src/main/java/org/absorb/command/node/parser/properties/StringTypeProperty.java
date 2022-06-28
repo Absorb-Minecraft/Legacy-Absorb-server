@@ -1,6 +1,6 @@
 package org.absorb.command.node.parser.properties;
 
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetSerializers;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -35,6 +35,6 @@ public class StringTypeProperty implements CommandParserProperty<String> {
 
     @Override
     public ByteBuffer write() {
-        return Serializers.BYTE.write((byte) this.type.getNetworkId());
+        return NetSerializers.BYTE.write((byte) this.type.getNetworkId());
     }
 }

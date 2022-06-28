@@ -1,9 +1,9 @@
 package org.absorb.net.processor.play.entity.player.movement;
 
 import org.absorb.net.Client;
-import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayerMovementPacket;
-import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayerMovementPacketBuilder;
-import org.absorb.net.packet.play.entity.player.movement.incoming.basic.IncomingBasicPlayerMovementPacket;
+import org.absorb.net.packet.play.incoming.client.movement.IncomingPlayerMovementPacket;
+import org.absorb.net.packet.play.incoming.client.movement.IncomingPlayerMovementPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.movement.basic.IncomingBasicPlayerMovementPacket;
 import org.absorb.net.processor.NetProcess;
 
 import java.io.IOException;
