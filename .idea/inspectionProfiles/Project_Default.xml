@@ -107,7 +107,7 @@
       <option name="m_reportCollectionMethods" value="true" />
       <option name="m_ignorePrivateMethods" value="false" />
     </inspection_tool>
-    <inspection_tool class="RuntimeExec" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="RuntimeExec" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="RuntimeExecWithNonConstantString" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SSBasedInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <searchConfiguration name="Missing Event" suppressId="missing-event" problemDescriptor="Missing Event" text="@HEvent&#10;$ReturnType$ $Method$();" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="member">
@@ -198,6 +198,8 @@
       <option name="ADD_APPLET_TO_ENTRIES" value="true" />
       <option name="ADD_SERVLET_TO_ENTRIES" value="true" />
       <option name="ADD_NONJAVA_TO_ENTRIES" value="true" />
+      <option name="selected" value="true" />
+      <option name="MIXIN_ENTRY_POINT" value="true" />
     </inspection_tool>
   </profile>
 </component>

@@ -12,16 +12,25 @@ import java.util.Optional;
 public class SimpleNode<T> implements Node<T> {
 
     private final Object[] node;
+    private final Class<T> clazz;
     private final boolean isRequired;
     private final ThrowableFunction<? super ConfigurationNode, ? extends T, ? extends SerializationException> from;
     private final ThrowableBiConsumer<? super ConfigurationNode, ? super T, ? extends SerializationException> to;
 
-    public SimpleNode(boolean isRequired, ThrowableFunction<? super ConfigurationNode, ? extends T, ? extends SerializationException> function,
-                      ThrowableBiConsumer<? super ConfigurationNode, ? super T, ? extends SerializationException> consumer, Object... node){
+    public SimpleNode(boolean isRequired, Class<T> clazz,
+                      ThrowableFunction<? super ConfigurationNode, ? extends T, ? extends SerializationException> function,
+                      ThrowableBiConsumer<? super ConfigurationNode, ? super T, ? extends SerializationException> consumer,
+                      Object... node) {
         this.from = function;
         this.to = consumer;
         this.node = node;
         this.isRequired = isRequired;
+        this.clazz = clazz;
+    }
+
+    @Override
+    public @NotNull Class<T> getTypeClass() {
+        return this.clazz;
     }
 
     @Override
@@ -36,7 +45,7 @@ public class SimpleNode<T> implements Node<T> {
 
     @Override
     public void setValue(@NotNull ConfigurationNode node, @Nullable T value) throws SerializationException {
-        if (value==null) {
+        if (value == null) {
             node.node(this.node).set(null);
             return;
         }
@@ -48,16 +57,16 @@ public class SimpleNode<T> implements Node<T> {
         return this.isRequired;
     }
 
-    public static SimpleNode<Boolean> asBoolean(boolean isRequired, Object... node){
-        return new SimpleNode<>(isRequired, ConfigurationNode::getBoolean, ConfigurationNode::set, node);
+    public static SimpleNode<Boolean> asBoolean(boolean isRequired, Object... node) {
+        return new SimpleNode<>(isRequired, boolean.class, ConfigurationNode::getBoolean, ConfigurationNode::set, node);
     }
 
-    public static SimpleNode<Integer> asInteger(boolean isRequired, Object... node){
-        return new SimpleNode<>(isRequired, ConfigurationNode::getInt, ConfigurationNode::set, node);
+    public static SimpleNode<Integer> asInteger(boolean isRequired, Object... node) {
+        return new SimpleNode<>(isRequired, int.class, ConfigurationNode::getInt, ConfigurationNode::set, node);
     }
 
-    public static SimpleNode<String> asString(boolean isRequired, Object... node){
-        return new SimpleNode<>(isRequired, ConfigurationNode::getString, ConfigurationNode::set, node);
+    public static SimpleNode<String> asString(boolean isRequired, Object... node) {
+        return new SimpleNode<>(isRequired, String.class, ConfigurationNode::getString, ConfigurationNode::set, node);
     }
 
 

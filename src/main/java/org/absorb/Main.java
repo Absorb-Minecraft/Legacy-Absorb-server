@@ -1,5 +1,6 @@
 package org.absorb;
 
+import com.simtechdata.waifupnp.UPnP;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.absorb.command.CommandManager;
@@ -31,7 +32,12 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
 import java.io.*;
+import java.net.BindException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -45,24 +51,30 @@ import java.util.stream.Collectors;
 public class Main {
 
     public static boolean IS_RUNNING;
+    public static final String ARGUMENT_SELF_UPDATE = "-Self-Update";
     public static final ModuleVersion VERSION;
 
     static {
         LocalDateTime date = LocalDateTime.now(Clock.systemUTC());
-        ModuleVersion version = new StandardVersion(date.getYear(), date.getDayOfYear(),
-                date.get(ChronoField.SECOND_OF_DAY), StandardVersion.DEV);
+        ModuleVersion version = new StandardVersion(date.getYear(),
+                                                    date.getDayOfYear(),
+                                                    date.get(ChronoField.SECOND_OF_DAY),
+                                                    StandardVersion.DEV);
 
         InputStream stream = Main.class.getClassLoader().getResourceAsStream("META-INF/absorb_version.csv");
-        if (stream!=null) {
+        if (stream != null) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             String line = reader.lines().collect(Collectors.joining(""));
             String[] split = line.split(",");
-            if (split.length==3) {
-                version = new StandardVersion(Integer.parseInt(split[0]), Integer.parseInt(split[1]),
-                        Integer.parseInt(split[2]));
+            if (split.length == 3) {
+                version = new StandardVersion(Integer.parseInt(split[0]),
+                                              Integer.parseInt(split[1]),
+                                              Integer.parseInt(split[2]));
             } else {
-                version = new StandardVersion(Integer.parseInt(split[1]), Integer.parseInt(split[2]),
-                        Integer.parseInt(split[3]), split[0]);
+                version = new StandardVersion(Integer.parseInt(split[1]),
+                                              Integer.parseInt(split[2]),
+                                              Integer.parseInt(split[3]),
+                                              split[0]);
             }
         }
 
@@ -86,18 +98,21 @@ public class Main {
 
 
         AbsorbManagers.instance.properties = new ServerProperties();
-        AbsorbWorld world =
-                new AbsorbWorldBuilder()
-                        .setBlockMax(new Vector3i(600, 20, 600))
-                        .setBlockMin(new Vector3i(-200, 0, -200))
-                        .setWorldData(new AbsorbWorldData()
-                                .setType(WorldTypes.FLAT)
-                                .setSeed(0)
-                                .setKey(new AbsorbKey(Identifiable.MINECRAFT_HOST, "temp")))
-                        .build();
+        AbsorbManagers.instance.properties.updateFile();
+
+        AbsorbWorld world = new AbsorbWorldBuilder()
+                .setBlockMax(new Vector3i(600, 20, 600))
+                .setBlockMin(new Vector3i(-200, 0, -200))
+                .setWorldData(new AbsorbWorldData()
+                                      .setType(WorldTypes.FLAT)
+                                      .setSeed(0)
+                                      .setKey(new AbsorbKey(Identifiable.MINECRAFT_HOST, "temp")))
+                .build();
         AbsorbManagers.instance.worldManager = new AbsorbWorldManager(world);
 
-        AbsorbManagers.getConsole().sendMessage(Component.text("Loaded world: " + world.getWorldData().getKey().asFormatted()));
+        AbsorbManagers
+                .getConsole()
+                .sendMessage(Component.text("Loaded world: " + world.getWorldData().getKey().asFormatted()));
         AbsorbManagers.getConsole().sendProgress(1, 4);
 
         AbsorbModuleLoader absorbModuleLoader = ModuleLoaders.ABSORB_MODULE;
@@ -127,19 +142,45 @@ public class Main {
             }
         });
 
+        InetAddress address = AbsorbManagers.getProperties().getIpAddress();
+        int port = AbsorbManagers.getProperties().getPort();
+        ServerSocket socket;
+        try {
+            socket = new ServerSocket(port, -1, address);
+        } catch (BindException e) {
+            System.err.println("Host: " + address.toString());
+            System.err.println("Port: " + port);
+            System.err.println("This is typically caused due to another program using the port specified. Either "
+                                       + "close the program using the port (check for other servers) or change the port"
+                                       + " number");
+            throw e;
+        }
 
-        ServerSocket socket = new ServerSocket(AbsorbManagers.getProperties().getPort());
+        if (AbsorbManagers.getProperties().isUsingPlugAndPlay()) {
+            AbsorbManagers.getConsole().sendMessage(Component.text("uPnP opening port: " + port));
+            if (UPnP.openPortTCP(port)) {
+                AbsorbManagers.getConsole().sendMessage(Component.text("uPnP opened port: " + port));
+            } else {
+                AbsorbManagers
+                        .getConsole()
+                        .sendMessage(Component.text("uPnP failed to open port: " + port).color(NamedTextColor.RED));
+
+            }
+        }
 
         NetHandler handler = new NetHandler(socket);
         AbsorbManagers.instance.netManager = new NetManager(handler);
 
         AbsorbManagers.getConsole().runCommandRunner();
-while(!AbsorbManagers.getRegistryManager().isReady()){
+        while (!AbsorbManagers.getRegistryManager().isReady()) {
 
-}
+        }
         AbsorbManagers.getConsole().sendMessage(Component.text("Ready to accept players").color(NamedTextColor.GREEN));
         handler.start();
-        RegistryManager.getVanillaValues(Schedule.class).parallelStream().forEach(schedule -> AbsorbManagers.instance.scheduleManager.register(schedule));
+        RegistryManager
+                .getVanillaValues(Schedule.class)
+                .parallelStream()
+                .forEach(schedule -> AbsorbManagers.instance.scheduleManager.register(schedule));
         AbsorbManagers.getScheduleManager().runSchedulers();
     }
 
@@ -169,6 +210,17 @@ while(!AbsorbManagers.getRegistryManager().isReady()){
         AbsorbManagers.getConsole().sendMessage(Component.text("Shutting down network"));
         AbsorbManagers.getNetManager().getHandler().end();
         AbsorbManagers.getConsole().sendMessage(Component.text("Disconnecting threads"));
+        if (AbsorbManagers.getProperties().isUsingPlugAndPlay()) {
+            int port = AbsorbManagers.getProperties().getPort();
+            AbsorbManagers.getConsole().sendMessage(Component.text("uPnP closing port: " + port));
+            if (UPnP.openPortTCP(port)) {
+                AbsorbManagers.getConsole().sendMessage(Component.text("uPnP closed port: " + port));
+            } else {
+                AbsorbManagers
+                        .getConsole()
+                        .sendMessage(Component.text("uPnP failed to close port: " + port).color(NamedTextColor.RED));
+            }
+        }
         while (true) {
             LocalTime time = LocalTime.now();
             if (time.isAfter(exitAt)) {
@@ -179,10 +231,68 @@ while(!AbsorbManagers.getRegistryManager().isReady()){
     }
 
     public static void main(String[] args) {
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase(ARGUMENT_SELF_UPDATE)) {
+                runUpdateCommand(args);
+                return;
+            }
+        }
+
+        File updateFile = new File("Updates/Absorb.jar");
+        if (updateFile.exists() && updateFile.canExecute()) {
+            try {
+                Runtime.getRuntime().exec("java -jar " + updateFile.getPath());
+                return;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
         try {
             init(args);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void runUpdateCommand(String... args) {
+        String[] argsWithoutUpdate = new String[args.length - 1];
+        boolean pastUpdate = false;
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.equalsIgnoreCase(ARGUMENT_SELF_UPDATE)) {
+                pastUpdate = true;
+                continue;
+            }
+            int a = pastUpdate ? i - 1 : i;
+            argsWithoutUpdate[a] = arg;
+        }
+
+        URL url = Main.class.getProtectionDomain().getCodeSource().getLocation();
+        File file = new File(url.getFile());
+        if (!file.getParentFile().getName().equalsIgnoreCase("Update")) {
+            throw new RuntimeException("Cannot self update (Updated file cannot find its own location)");
+        }
+        File[] files = file
+                .getParentFile()
+                .listFiles((file1, s) -> s.toLowerCase().startsWith("absorb") && s.toLowerCase().endsWith(".jar"));
+        if (files == null || files.length != 1) {
+            throw new RuntimeException("Cannot self update (Cannot find the file to update)");
+        }
+
+        File oldVersion = files[0];
+
+        try {
+            Files.copy(file.toPath(), oldVersion.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        oldVersion.setExecutable(true);
+        file.deleteOnExit();
+
+        System.out.println("Absorb updated, can run again (press the up key and then enter)");
+        System.exit(0);
     }
 }
