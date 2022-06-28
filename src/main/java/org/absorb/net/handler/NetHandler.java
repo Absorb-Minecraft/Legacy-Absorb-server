@@ -23,22 +23,6 @@ public class NetHandler {
     private final ServerSocket server;
     private ConnectionHandler currentlyRunning;
 
-    public NetHandler(ServerSocket server) {
-        this.server = server;
-    }
-
-    public void start() {
-        this.currentlyRunning = new ConnectionHandler();
-        new Thread(this.currentlyRunning).start();
-        //this.currentlyRunning.run();
-    }
-
-    public void end() {
-        if (this.currentlyRunning!=null) {
-            this.currentlyRunning.stop();
-        }
-    }
-
     private static final class IncomingPacket implements Runnable {
 
         private final Client netInfo;
@@ -46,37 +30,6 @@ public class NetHandler {
 
         private IncomingPacket(Client client) {
             this.netInfo = client;
-        }
-
-        private void addByte(int b) {
-            byte[] newData = new byte[data.length + 1];
-            System.arraycopy(data, 0, newData, 0, data.length);
-            newData[data.length] = (byte) b;
-            data = newData;
-        }
-
-        private boolean processPacket() throws IOException {
-            ByteBuffer data = ByteBuffer.wrap(this.data);
-            NetEntryData<Integer> lengthEntry = Serializers.VAR_INTEGER.read(0, data);
-            NetEntryData<Integer> packetId =
-                    Serializers.VAR_INTEGER.read(lengthEntry.endingPosition(), data);
-
-            Optional<IncomingPacketBuilder<? extends org.absorb.net.packet.IncomingPacket>> builder =
-                    AbsorbManagers.getNetManager().getIncomingPacketBuilder(packetId.value(),
-                            netInfo.getState());
-            if (builder.isEmpty()) {
-                System.err.println("User found to have sent a unknown packet, potentionally cheating. " +
-                        "Kicking to be safe(Id: " + packetId.value() + "(" + Integer.toHexString(packetId.value()) +
-                        ")" + " State: " + netInfo.getState().name() +
-                        ")");
-                netInfo.getSocket().close();
-                return false;
-            }
-            byte[] packetData = Arrays.copyOfRange(this.data, packetId.endingPosition(), this.data.length);
-
-            org.absorb.net.packet.IncomingPacket packet = builder.get().from(ByteBuffer.wrap(packetData)).build();
-            packet.getProcess().onProcess(this.netInfo, packet);
-            return true;
         }
 
         @Override
@@ -90,16 +43,17 @@ public class NetHandler {
             }
             int length = 100;
             try {
-                while (netInfo.getSocket().isConnected() && !netInfo.getSocket().isClosed() && netInfo.getLastPacketSentTime().plus(30,
-                        ChronoUnit.SECONDS
-                ).isAfter(LocalDateTime.now())) {
+                while (netInfo.getSocket().isConnected() && !netInfo.getSocket().isClosed() && netInfo
+                        .getLastPacketSentTime()
+                        .plus(30, ChronoUnit.SECONDS)
+                        .isAfter(LocalDateTime.now())) {
                     if (this.data.length > length) {
                         this.data = new byte[0];
                         System.err.println("Cleared cache");
                     }
                     int b = is.read();
-                    if (b==-1) {
-                        if (data.length!=0) {
+                    if (b == -1) {
+                        if (data.length != 0) {
                             addByte(0);
                         }
                         continue;
@@ -136,15 +90,14 @@ public class NetHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (data.length==0) {
+            if (data.length == 0) {
                 return;
             }
             System.err.println("Data was left in cache");
             NetEntryData<Integer> lengthEntry;
             NetEntryData<Integer> idEntry;
             try {
-                lengthEntry =
-                        Serializers.VAR_INTEGER.read(0, buffer);
+                lengthEntry = Serializers.VAR_INTEGER.read(0, buffer);
             } catch (IndexOutOfBoundsException e) {
                 return;
             }
@@ -159,6 +112,34 @@ public class NetHandler {
             System.err.println("Id: " + idEntry.value());
             System.err.println("Data left: " + (data.length - idEntry.endingPosition()));
         }
+
+        private void addByte(int b) {
+            byte[] newData = new byte[data.length + 1];
+            System.arraycopy(data, 0, newData, 0, data.length);
+            newData[data.length] = (byte) b;
+            data = newData;
+        }
+
+        private boolean processPacket() throws IOException {
+            ByteBuffer data = ByteBuffer.wrap(this.data);
+            NetEntryData<Integer> lengthEntry = Serializers.VAR_INTEGER.read(0, data);
+            NetEntryData<Integer> packetId = Serializers.VAR_INTEGER.read(lengthEntry.endingPosition(), data);
+
+            Optional<IncomingPacketBuilder<? extends org.absorb.net.packet.IncomingPacket>> builder = AbsorbManagers
+                    .getNetManager()
+                    .getIncomingPacketBuilder(packetId.value(), netInfo.getState());
+            if (builder.isEmpty()) {
+                System.err.println("User found to have sent a unknown packet, potentionally cheating. " + "Kicking to be safe(Id: " + packetId.value() + "(" + Integer.toHexString(
+                        packetId.value()) + ")" + " State: " + netInfo.getState().name() + ")");
+                netInfo.getSocket().close();
+                return false;
+            }
+            byte[] packetData = Arrays.copyOfRange(this.data, packetId.endingPosition(), this.data.length);
+
+            org.absorb.net.packet.IncomingPacket packet = builder.get().from(ByteBuffer.wrap(packetData)).build();
+            packet.getProcess().onProcess(this.netInfo, packet);
+            return true;
+        }
     }
 
     private final class ConnectionHandler implements Runnable {
@@ -171,7 +152,7 @@ public class NetHandler {
 
         @Override
         public void run() {
-            while (this.running || Main.IS_RUNNING) {
+            while (this.running && Main.IS_RUNNING) {
                 try {
                     Socket clientSocket = server.accept();
                     //clientSocket.setReuseAddress(true);
@@ -184,6 +165,22 @@ public class NetHandler {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    public NetHandler(ServerSocket server) {
+        this.server = server;
+    }
+
+    public void start() {
+        this.currentlyRunning = new ConnectionHandler();
+        new Thread(this.currentlyRunning).start();
+        //this.currentlyRunning.run();
+    }
+
+    public void end() {
+        if (this.currentlyRunning != null) {
+            this.currentlyRunning.stop();
         }
     }
 }
