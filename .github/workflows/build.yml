@@ -14,22 +14,22 @@ jobs:
     name: Running Tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      id: test
-      run: mvn clean test
-    - name: Create Test Reports
-      if: always() && (steps.test.outcome == 'failure')
-      uses: actions/upload-artifact@v2
-      with:
-        name: "TestReport"
-        path: "target/surefire-reports/*.xml"
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        id: test
+        run: mvn clean test
+      - name: Create Test Reports
+        if: always() && (steps.test.outcome == 'failure')
+        uses: actions/upload-artifact@v2
+        with:
+          name: "TestReport"
+          path: "target/surefire-reports/*.xml"
 
   build:
     name: Compiling code
@@ -37,23 +37,54 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Create version file
-      uses: "finnp/create-file-action@master"
-      env:
-        FILE_NAME: "src/main/resources/META-INF/absorb_version.csv"
-        FILE_DATA: "GITHUB,0,0,${{github.run_number}}"
-    - name: Build with Maven
-      run: mvn clean package
-    - uses: actions/upload-artifact@v2
-      with:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Create version file
+        uses: "finnp/create-file-action@master"
+        env:
+          FILE_NAME: "src/main/resources/META-INF/absorb_version.csv"
+          FILE_DATA: "GITHUB,0,0,${{github.run_number}}"
+      - name: Build with Maven
+        run: mvn clean package
+      - uses: actions/upload-artifact@v2
+        with:
           name: "Absorb-Server"
           path: "target/*jar-with-dependencies.jar"
+          if-no-files-found: error
+  linux-spec-build:
+    name: Build exe
+    needs: build
+    runs-on: linux-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Create version file
+        uses: "finnp/create-file-action@master"
+        env:
+          FILE_NAME: "src/main/resources/META-INF/absorb_version.csv"
+          FILE_DATA: "GITHUB,0,0,${{github.run_number}}"
+      - name: Build with Maven
+        run: mvn clean package
+      - name: make linux build folder
+        run: "mkdirs linux-build"
+      - name: Copy built file
+        run: "cp target/*dependencies.jar linux-build/Absorb.jar"
+      - name: jpackage
+        run: "jpackage --type app-image --main-jar Absorb.jar --input ./linux-build --copyright 'Apache-2.0 license' --dest ./app-image --name Absorb.app-image --vendor Absorb"
+      - name: upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: "Linux App-Image"
+          path: "app-image/Absorb.app-image/bin/*"
           if-no-files-found: error
           

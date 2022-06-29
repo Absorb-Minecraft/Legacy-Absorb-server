@@ -62,9 +62,9 @@ public class ServerProperties {
 
     private final DefaultNode<Boolean> usePlugAndPlay = SimpleDefaultNode.asBoolean(
             "uPnP (Universal Plug and Play) is a feature that will port forward this server"
-                    + " for you, as well as close the port when your done. Please note that "
+                    + " for you, as well as close the port when you're done. Please note that "
                     + "uPnP is only supported by some routers and is typically disabled "
-                    + "by default for security reasons (any program on your network (wifi,"
+                    + "by default for security reasons (any program on your network (Wi-Fi,"
                     + " ethernet, etc) can open a port and then let anything in). While the "
                     + "security risk is on the routers side and not on the servers side, we "
                     + "have disabled it by default for peace of mind. While we recommend manually "

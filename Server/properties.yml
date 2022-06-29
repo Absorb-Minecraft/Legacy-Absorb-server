@@ -1,0 +1,22 @@
+Game:
+  Ticks:
+    # The amount of Minecraft ticks per second. This is typically 20, however you can
+    # increase this to increase the game speed or decrease it to slow down the game speed.
+    # Please note unlike vanilla Minecraft whereby if the tick speed goes below 20,
+    # Player's start to lag, Absorb does not connect the players to tick speed, meaning
+    # that lowering this will only change the games speed.
+    PerSecond: 20
+Network:
+  # uPnP (Universal Plug and Play) is a feature that will port forward this server for you,
+  # as well as close the port when you're done. Please note that uPnP is only supported by
+  # some routers and is typically disabled by default for security reasons (any program
+  # on your network (Wi-Fi, ethernet, etc) can open a port and then let anything in).
+  # While the security risk is on the routers side and not on the servers side, we have
+  # disabled it by default for peace of mind. While we recommend manually port forwarding,
+  # this option is here for those who can't port forward, those who trust every program on
+  # the network or really don't care about the security risk of having it enabled on the router.
+  uPnP: false
+  # This must be above the number 0 and a whole number. The port number allows you to run multiple
+  # servers on the same computer whereby to join a specified server, you include the port number
+  # after the IP/Hostname such as 'localhost:25555'
+  Port: 25565

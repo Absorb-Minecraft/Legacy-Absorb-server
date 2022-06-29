@@ -1,6 +1,7 @@
 target/
 .idea/*
 !.idea/inspectionProfiles/
-Server
+Server/*
+!Server/properties.yml
 src/main/resources/META-INF/absorb_version.csv
 *.iml
