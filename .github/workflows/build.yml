@@ -57,9 +57,9 @@ jobs:
           path: "target/*jar-with-dependencies.jar"
           if-no-files-found: error
   linux-spec-build:
-    name: Build exe
+    name: Build app-image
     needs: build
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
