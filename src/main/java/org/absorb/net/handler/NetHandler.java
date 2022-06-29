@@ -90,10 +90,9 @@ public class NetHandler {
             }
             int length = 100;
             try {
-                while (netInfo.getSocket().isConnected() && !netInfo.getSocket().isClosed() && netInfo.getLastPacketSentTime().plus(30,
-                        ChronoUnit.SECONDS
-                ).isAfter(LocalDateTime.now())) {
-                    if (this.data.length > length) {
+                while (netInfo.getSocket().isConnected() && !netInfo.getSocket().isClosed() && netInfo.getLastPacketSentTime().plus(30, ChronoUnit.SECONDS).isAfter(LocalDateTime.now())){
+
+                if (this.data.length > length) {
                         this.data = new byte[0];
                         System.err.println("Cleared cache");
                     }

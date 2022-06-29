@@ -9,6 +9,19 @@ import java.util.Optional;
 
 public interface Node<T> {
 
+    @NotNull Class<T> getTypeClass();
+
+    default boolean isAllowedNulls() {
+        Class<T> clazz = this.getTypeClass();
+        if (Number.class.isAssignableFrom(clazz)) {
+            return false;
+        }
+        if (clazz.isPrimitive()) {
+            return false;
+        }
+        return !this.isRequired();
+    }
+
     @NotNull Object[] getNodePath();
 
     Optional<T> getValue(@NotNull ConfigurationNode node) throws SerializationException;
