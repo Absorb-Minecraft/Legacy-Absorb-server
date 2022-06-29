@@ -76,7 +76,7 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
       - name: make linux build folder
-        run: "mkdirs linux-build"
+        run: "mkdir linux-build"
       - name: Copy built file
         run: "cp target/*dependencies.jar linux-build/Absorb.jar"
       - name: jpackage
