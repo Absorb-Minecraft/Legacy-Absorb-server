@@ -12,6 +12,13 @@ public interface Schedules {
             new ScheduleBuilder().setRepeating(true).setAllowedParallelRun(false).setNext(Duration.ofMillis(1L))
             .setTaskToRun(new PingPlayerRunner()).build();*/
 
+    Schedule KEEP_ALIVE = new ScheduleBuilder()
+            .setRepeating(true)
+            .setNext(Duration.ofSeconds(5))
+            .setAllowedParallelRun(true)
+            .setTaskToRun(new KeepAliveRunner())
+            .build();
+
     Schedule UPDATE_PLAYER_TIME = new ScheduleBuilder()
             .setRepeating(true)
             .setAllowedParallelRun(false)

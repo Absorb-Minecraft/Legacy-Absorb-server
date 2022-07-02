@@ -1,5 +1,6 @@
 package org.absorb.net.packet.play.incoming.client.channel.plugin;
 
+import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
@@ -48,15 +49,10 @@ public class IncomingPluginMessagePacketBuilder implements IncomingPacketBuilder
     }
 
     @Override
-    public PacketBuilder<IncomingPluginMessagePacket> from(ByteBuffer packetBytes) {
+    public PacketBuilder<IncomingPluginMessagePacket> from(Client client, ByteBuffer packetBytes) {
         NetEntryData<AbsorbKey> channelBuffer = NetSerializers.RESOURCE_KEY.read(0, packetBytes);
         this.channel = channelBuffer.value();
         return this;
-    }
-
-    @Override
-    public @NotNull IncomingPluginMessagePacket build() {
-        return new IncomingPluginMessagePacket(this);
     }
 
     @Override
@@ -69,5 +65,10 @@ public class IncomingPluginMessagePacketBuilder implements IncomingPacketBuilder
     @Override
     public IncomingPacketBuilder<IncomingPluginMessagePacket> copy() {
         return new IncomingPluginMessagePacketBuilder().setChannel(this.channel).setData(this.data);
+    }
+
+    @Override
+    public @NotNull IncomingPluginMessagePacket build() {
+        return new IncomingPluginMessagePacket(this);
     }
 }

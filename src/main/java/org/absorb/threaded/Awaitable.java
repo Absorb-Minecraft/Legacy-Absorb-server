@@ -7,6 +7,16 @@ public class Awaitable<T> {
 
     private final Supplier<T> getter;
 
+
+    public Awaitable(Supplier<T> getter, T value) {
+        this(() -> {
+            while (!getter.get().equals(value)) {
+
+            }
+            return value;
+        });
+    }
+
     public Awaitable(Supplier<T> getter) {
         this.getter = getter;
     }

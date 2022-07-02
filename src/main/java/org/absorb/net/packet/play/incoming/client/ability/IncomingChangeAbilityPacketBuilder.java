@@ -1,5 +1,6 @@
 package org.absorb.net.packet.play.incoming.client.ability;
 
+import org.absorb.net.Client;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
@@ -13,29 +14,23 @@ public class IncomingChangeAbilityPacketBuilder implements IncomingPacketBuilder
 
     private @Nullable PlayerAbilities ability;
 
-    public IncomingChangeAbilityPacketBuilder setAbility(@Nullable PlayerAbilities ability){
+    public PlayerAbilities getAbility() {
+        return this.ability;
+    }
+
+    public IncomingChangeAbilityPacketBuilder setAbility(@Nullable PlayerAbilities ability) {
         this.ability = ability;
         return this;
     }
 
-    public PlayerAbilities getAbility(){
-        return this.ability;
-    }
-
-
     @Override
-    public PacketBuilder<IncomingChangeAbilityPacket> from(ByteBuffer packetBytes) {
+    public PacketBuilder<IncomingChangeAbilityPacket> from(Client client, ByteBuffer packetBytes) {
         byte packet = NetSerializers.BYTE.read(0, packetBytes).value();
-        if(packet != 0) {
+        if (packet != 0) {
             this.ability = PlayerAbilities.getValueOf(packet);
             System.out.println("Change ability: " + this.ability.name());
         }
         return this;
-    }
-
-    @Override
-    public @NotNull IncomingChangeAbilityPacket build() {
-        return new IncomingChangeAbilityPacket(this);
     }
 
     @Override
@@ -47,6 +42,11 @@ public class IncomingChangeAbilityPacketBuilder implements IncomingPacketBuilder
     @Override
     public IncomingPacketBuilder<IncomingChangeAbilityPacket> copy() {
         return new IncomingChangeAbilityPacketBuilder().setAbility(this.ability);
+    }
+
+    @Override
+    public @NotNull IncomingChangeAbilityPacket build() {
+        return new IncomingChangeAbilityPacket(this);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.absorb.net.packet.play.incoming.client.inventory.close;
 
+import org.absorb.net.Client;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
@@ -22,14 +23,9 @@ public class IncomingCloseInventoryPacketBuilder implements IncomingPacketBuilde
     }
 
     @Override
-    public PacketBuilder<IncomingCloseInventoryPacket> from(ByteBuffer packetBytes) {
+    public PacketBuilder<IncomingCloseInventoryPacket> from(Client client, ByteBuffer packetBytes) {
         this.inventoryId = NetSerializers.BYTE.read(0, packetBytes).value();
         return this;
-    }
-
-    @Override
-    public @NotNull IncomingCloseInventoryPacket build() {
-        return new IncomingCloseInventoryPacket(this);
     }
 
     @Override
@@ -41,6 +37,11 @@ public class IncomingCloseInventoryPacketBuilder implements IncomingPacketBuilde
     @Override
     public @NotNull IncomingCloseInventoryPacketBuilder copy() {
         return new IncomingCloseInventoryPacketBuilder().setInventoryId(this.inventoryId);
+    }
+
+    @Override
+    public @NotNull IncomingCloseInventoryPacket build() {
+        return new IncomingCloseInventoryPacket(this);
     }
 
     @Override

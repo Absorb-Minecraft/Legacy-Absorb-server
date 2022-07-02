@@ -19,7 +19,7 @@ public class OutgoingChatMessagePacketBuilder implements OutgoingPacketBuilder<O
     private Component teamName;
     private long timestamp;
     private long salt;
-    private byte[] messageSign;
+    private byte[] messageSign = new byte[0];
 
 
     public Component getOriginalMessage() {

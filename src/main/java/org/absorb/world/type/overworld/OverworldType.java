@@ -32,6 +32,16 @@ public class OverworldType implements WorldType {
     }
 
     @Override
+    public int getMonsterSpawnLightLevel() {
+        return 0;
+    }
+
+    @Override
+    public int getMonsterSpawnBlockLightLimit() {
+        return 0;
+    }
+
+    @Override
     public int getNetworkId() {
         return 0;
     }

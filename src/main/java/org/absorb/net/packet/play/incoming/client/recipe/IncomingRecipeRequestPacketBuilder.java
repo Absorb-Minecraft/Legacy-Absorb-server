@@ -1,5 +1,6 @@
 package org.absorb.net.packet.play.incoming.client.recipe;
 
+import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
@@ -44,7 +45,7 @@ public class IncomingRecipeRequestPacketBuilder implements IncomingPacketBuilder
     }
 
     @Override
-    public PacketBuilder<IncomingRecipeRequestPacket> from(ByteBuffer packetBytes) {
+    public PacketBuilder<IncomingRecipeRequestPacket> from(Client client, ByteBuffer packetBytes) {
         NetEntryData<Byte> windowId = NetSerializers.BYTE.read(0, packetBytes);
         NetEntryData<AbsorbKey> recipe = NetSerializers.RESOURCE_KEY.read(windowId.endingPosition(), packetBytes);
         NetEntryData<Boolean> makeAll = NetSerializers.BOOLEAN.read(recipe.endingPosition(), packetBytes);
@@ -53,11 +54,6 @@ public class IncomingRecipeRequestPacketBuilder implements IncomingPacketBuilder
         this.recipe = recipe.value();
         this.windowId = windowId.value();
         return this;
-    }
-
-    @Override
-    public @NotNull IncomingRecipeRequestPacket build() {
-        return new IncomingRecipeRequestPacket(this);
     }
 
     @Override
@@ -70,7 +66,15 @@ public class IncomingRecipeRequestPacketBuilder implements IncomingPacketBuilder
 
     @Override
     public IncomingPacketBuilder<IncomingRecipeRequestPacket> copy() {
-        return new IncomingRecipeRequestPacketBuilder().setRecipe(this.recipe).setMakeAll(this.makeAll).setWindowId(this.windowId);
+        return new IncomingRecipeRequestPacketBuilder()
+                .setRecipe(this.recipe)
+                .setMakeAll(this.makeAll)
+                .setWindowId(this.windowId);
+    }
+
+    @Override
+    public @NotNull IncomingRecipeRequestPacket build() {
+        return new IncomingRecipeRequestPacket(this);
     }
 
     @Override

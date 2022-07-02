@@ -11,6 +11,7 @@ import java.util.Optional;
 public class DoubleCommandParser implements CommandParser<Double> {
 
     private final @Nullable MinMaxParserProperty<Double> parser;
+    public static final int ID = 2;
 
     public DoubleCommandParser() {
         this(null);
@@ -23,10 +24,11 @@ public class DoubleCommandParser implements CommandParser<Double> {
 
     @Override
     public @NotNull ParserResult<Double> parse(@NotNull ParserResult<?> previous) throws Exception {
-        ParserResult<String> resultAsString = previous.getNextWord().orElseThrow(() -> new Exception("Could not find " +
-                "any text for double"));
+        ParserResult<String> resultAsString = previous
+                .getNextWord()
+                .orElseThrow(() -> new Exception("Could not find " + "any text for double"));
         double result = Double.parseDouble(resultAsString.getValue());
-        if (this.parser!=null) {
+        if (this.parser != null) {
             if (!this.parser.getMaximum().map(value -> value <= result).orElse(true)) {
                 throw new Exception("Value is too high");
             }
@@ -59,5 +61,10 @@ public class DoubleCommandParser implements CommandParser<Double> {
     @Override
     public @NotNull String getHost() {
         return Identifiable.BRIGADIER_HOST;
+    }
+
+    @Override
+    public int getNetworkId() {
+        return ID;
     }
 }

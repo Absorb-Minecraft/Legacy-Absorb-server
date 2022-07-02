@@ -65,16 +65,16 @@ public class Biome implements Identifiable, NBTCompoundGroupable {
         this.additionsTickChance = builder.getAdditionTickChance();
         this.ambientSound = builder.getAmbientSound();
         this.particle = builder.getParticle();
-        if (this.defaultProperties==null) {
+        if (this.defaultProperties == null) {
             throw new IllegalStateException("DefaultProperties cannot be null");
         }
-        if (this.category==null) {
+        if (this.category == null) {
             throw new IllegalStateException("Category cannot be null");
         }
-        if (this.name==null) {
+        if (this.name == null) {
             throw new IllegalStateException("Name cannot be null");
         }
-        if (this.supplier==null) {
+        if (this.supplier == null) {
             throw new IllegalStateException("Supplier cannot be null");
         }
     }
@@ -88,7 +88,7 @@ public class Biome implements Identifiable, NBTCompoundGroupable {
     }
 
     public OptionalDouble getAdditionsTickChance() {
-        if (this.additionsTickChance==null) {
+        if (this.additionsTickChance == null) {
             return OptionalDouble.empty();
         }
         return OptionalDouble.of(this.additionsTickChance);
@@ -99,14 +99,14 @@ public class Biome implements Identifiable, NBTCompoundGroupable {
     }
 
     public OptionalInt getMusicMinimumDelay() {
-        if (this.musicMinimumDelay==null) {
+        if (this.musicMinimumDelay == null) {
             return OptionalInt.empty();
         }
         return OptionalInt.of(this.musicMinimumDelay);
     }
 
     public OptionalInt getMusicMaximumDelay() {
-        if (this.musicMaximumDelay==null) {
+        if (this.musicMaximumDelay == null) {
             return OptionalInt.empty();
         }
         return OptionalInt.of(this.musicMaximumDelay);
@@ -117,7 +117,7 @@ public class Biome implements Identifiable, NBTCompoundGroupable {
     }
 
     public OptionalDouble getOffset() {
-        if (this.offset==null) {
+        if (this.offset == null) {
             return OptionalDouble.empty();
         }
         return OptionalDouble.of(this.offset);
@@ -128,14 +128,14 @@ public class Biome implements Identifiable, NBTCompoundGroupable {
     }
 
     public OptionalInt getTickDelay() {
-        if (this.tickDelay==null) {
+        if (this.tickDelay == null) {
             return OptionalInt.empty();
         }
         return OptionalInt.of(this.tickDelay);
     }
 
     public OptionalInt getBlockSearchExtent() {
-        if (this.blockSearchExtent==null) {
+        if (this.blockSearchExtent == null) {
             return OptionalInt.empty();
         }
         return OptionalInt.of(this.blockSearchExtent);
@@ -197,10 +197,14 @@ public class Biome implements Identifiable, NBTCompoundGroupable {
         Collection<NBTCompoundEntry<?, ?>> music = new HashSet<>();
         Collection<NBTCompoundEntry<?, ?>> additionsSound = new HashSet<>();
 
-        this.getMusic().ifPresent(musicSound -> music.add(NBTCompoundKeys.SOUND.withValue(musicSound.getResourceKey())));
+        this
+                .getMusic()
+                .ifPresent(musicSound -> music.add(NBTCompoundKeys.SOUND.withValue(musicSound.getResourceKey())));
         this.getMusicMaximumDelay().ifPresent(max -> music.add(NBTCompoundKeys.MAX_DELAY.withValue(max)));
         this.getMusicMinimumDelay().ifPresent(min -> music.add(NBTCompoundKeys.MIN_DELAY.withValue(min)));
-        this.willMusicReplaceCurrent().ifPresent(replace -> music.add(NBTCompoundKeys.REPLACE_CURRENT_MUSIC.withValue(replace)));
+        this
+                .willMusicReplaceCurrent()
+                .ifPresent(replace -> music.add(NBTCompoundKeys.REPLACE_CURRENT_MUSIC.withValue(replace)));
 
         values.add(NBTCompoundKeys.NAME.withValue(this.getResourceKey()));
         values.add(NBTCompoundKeys.ID.withValue(this.getNetworkId()));
@@ -216,28 +220,47 @@ public class Biome implements Identifiable, NBTCompoundGroupable {
         //properties.add(NBTCompoundKeys.SCALE.withValue(this.getScale()));
         properties.add(NBTCompoundKeys.DOWNFALL.withValue(this.getDownfall()));
         properties.add(NBTCompoundKeys.CATEGORY.withValue(this.getCategory()));
-        this.getTemperatureModifier().ifPresent(modifier -> properties.add(NBTCompoundKeys.TEMPERATURE_MODIFIER.withValue(modifier)));
+        this
+                .getTemperatureModifier()
+                .ifPresent(modifier -> properties.add(NBTCompoundKeys.TEMPERATURE_MODIFIER.withValue(modifier)));
 
-        this.getAdditionsSound().ifPresent(sound -> additionsSound.add(NBTCompoundKeys.SOUND.withValue(sound.getResourceKey())));
-        this.getAdditionsTickChance().ifPresent(chance -> additionsSound.add(NBTCompoundKeys.TICK_CHANCE.withValue(chance)));
+        this
+                .getAdditionsSound()
+                .ifPresent(sound -> additionsSound.add(NBTCompoundKeys.SOUND.withValue(sound.getResourceKey())));
+        this
+                .getAdditionsTickChance()
+                .ifPresent(chance -> additionsSound.add(NBTCompoundKeys.TICK_CHANCE.withValue(chance)));
 
         effects.add(NBTCompoundKeys.SKY_COLOR.withValue(this.getDefaultProperties().getSkyColour()));
         effects.add(NBTCompoundKeys.WATER_FOG_COLOR.withValue(this.getDefaultProperties().getWaterFogColour()));
         effects.add(NBTCompoundKeys.FOG_COLOR.withValue(this.getDefaultProperties().getFogColour()));
         effects.add(NBTCompoundKeys.WATER_COLOR.withValue(this.getDefaultProperties().getWaterColour()));
-        this.getDefaultProperties().getFoliageColour().ifPresent(color -> effects.add(NBTCompoundKeys.FOLIAGE_COLOR.withValue(color)));
-        this.getDefaultProperties().getGrassColourModifier().ifPresent(color -> effects.add(NBTCompoundKeys.GRASS_COLOR_MODIFIER.withValue(color)));
-        this.getDefaultProperties().getGrassColour().ifPresent(color -> effects.add(NBTCompoundKeys.GRASS_COLOR.withValue(color)));
+        this
+                .getDefaultProperties()
+                .getFoliageColour()
+                .ifPresent(color -> effects.add(NBTCompoundKeys.FOLIAGE_COLOR.withValue(color)));
+        this
+                .getDefaultProperties()
+                .getGrassColourModifier()
+                .ifPresent(color -> effects.add(NBTCompoundKeys.GRASS_COLOR_MODIFIER.withValue(color)));
+        this
+                .getDefaultProperties()
+                .getGrassColour()
+                .ifPresent(color -> effects.add(NBTCompoundKeys.GRASS_COLOR.withValue(color)));
 
         effects.add(NBTCompoundKeys.MOOD_SOUND.withValue(new NBTCompoundBuilder().addAll(sounds).build()));
         if (!music.isEmpty()) {
             effects.add(NBTCompoundKeys.MUSIC.withValue(new NBTCompoundBuilder().addAll(music).build()));
         }
-        if(!additionsSound.isEmpty()){
-            effects.add(NBTCompoundKeys.ADDITIONS_SOUND.withValue(new NBTCompoundBuilder().addAll(additionsSound).build()));
+        if (!additionsSound.isEmpty()) {
+            effects.add(NBTCompoundKeys.ADDITIONS_SOUND.withValue(new NBTCompoundBuilder()
+                                                                          .addAll(additionsSound)
+                                                                          .build()));
         }
-        this.getAmbientSound().ifPresent(sound -> effects.add(NBTCompoundKeys.AMBIENT_SOUND.withValue(sound.getResourceKey())));
-        if(this.particle != null){
+        this
+                .getAmbientSound()
+                .ifPresent(sound -> effects.add(NBTCompoundKeys.AMBIENT_SOUND.withValue(sound.getResourceKey())));
+        if (this.particle != null) {
             NBTCompound particleCompound = this.particle.toNBT();
             effects.add(NBTCompoundKeys.PARTICLE.withValue(particleCompound));
         }

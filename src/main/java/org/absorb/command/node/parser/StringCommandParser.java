@@ -10,6 +10,7 @@ import java.util.Optional;
 public class StringCommandParser implements CommandParser<String> {
 
     private final StringTypeProperty type;
+    public static final int ID = 5;
 
     public StringCommandParser(@NotNull StringTypeProperty type) {
         this.type = type;
@@ -49,5 +50,10 @@ public class StringCommandParser implements CommandParser<String> {
     @Override
     public @NotNull String getHost() {
         return Identifiable.BRIGADIER_HOST;
+    }
+
+    @Override
+    public int getNetworkId() {
+        return ID;
     }
 }

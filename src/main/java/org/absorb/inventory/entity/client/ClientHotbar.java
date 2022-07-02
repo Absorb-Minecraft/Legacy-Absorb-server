@@ -15,8 +15,8 @@ import java.util.Optional;
 public class ClientHotbar implements GridInventory {
 
     private final Slot[] slots;
-    private byte selected;
     private final ClientInventory parent;
+    private short selected;
 
     public ClientHotbar(@NotNull ClientInventory parent) {
         this.parent = parent;
@@ -26,11 +26,11 @@ public class ClientHotbar implements GridInventory {
         }
     }
 
-    public byte getSelected() {
+    public short getSelected() {
         return this.selected;
     }
 
-    public ClientHotbar setSelected(byte selected) {
+    public ClientHotbar setSelected(short selected) {
         this.selected = selected;
         return this;
     }
@@ -72,7 +72,7 @@ public class ClientHotbar implements GridInventory {
 
     @Override
     public Slot getSlot(int x, int y) {
-        if (x!=0) {
+        if (x != 0) {
             throw new IndexOutOfBoundsException("X cannot be anything other then 0");
         }
         return this.slots[y];

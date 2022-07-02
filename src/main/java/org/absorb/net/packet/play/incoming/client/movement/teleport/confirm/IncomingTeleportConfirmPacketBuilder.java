@@ -1,5 +1,6 @@
 package org.absorb.net.packet.play.incoming.client.movement.teleport.confirm;
 
+import org.absorb.net.Client;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
@@ -22,14 +23,9 @@ public class IncomingTeleportConfirmPacketBuilder implements IncomingPacketBuild
     }
 
     @Override
-    public PacketBuilder<IncomingTeleportConfirmPacket> from(ByteBuffer packetBytes) {
+    public PacketBuilder<IncomingTeleportConfirmPacket> from(Client client, ByteBuffer packetBytes) {
         this.teleportId = NetSerializers.VAR_INTEGER.read(0, packetBytes).value();
         return this;
-    }
-
-    @Override
-    public @NotNull IncomingTeleportConfirmPacket build() {
-        return new IncomingTeleportConfirmPacket(this);
     }
 
     @Override
@@ -41,6 +37,11 @@ public class IncomingTeleportConfirmPacketBuilder implements IncomingPacketBuild
     @Override
     public IncomingPacketBuilder<IncomingTeleportConfirmPacket> copy() {
         return new IncomingTeleportConfirmPacketBuilder().setTeleportId(this.teleportId);
+    }
+
+    @Override
+    public @NotNull IncomingTeleportConfirmPacket build() {
+        return new IncomingTeleportConfirmPacket(this);
     }
 
     @Override

@@ -11,14 +11,13 @@ import java.nio.ByteBuffer;
 
 public class OutgoingAbilityPacket implements OutgoingPacket {
 
-    public static final int ID = 0x2F;
-
     private final boolean isInvulnerable;
     private final boolean isFlying;
     private final boolean isFlyingAllowed;
     private final boolean isInstantBreak;
     private final float flyingSpeed;
     private final float fieldOfView;
+    public static final int ID = 0x2F;
 
     public OutgoingAbilityPacket(@NotNull OutgoingAbilityPacketBuilder builder) {
         this.isInstantBreak = builder.isInstantBreak();
@@ -66,6 +65,10 @@ public class OutgoingAbilityPacket implements OutgoingPacket {
         ByteBuffer abilities = NetSerializers.BYTE.write((byte) total);
         ByteBuffer flyingSpeed = NetSerializers.FLOAT.write(this.flyingSpeed);
         ByteBuffer fov = NetSerializers.FLOAT.write(this.fieldOfView);
+
+        System.out.println("Total: " + total);
+        System.out.println("Flying Speed: " + this.flyingSpeed);
+        System.out.println("FOV: " + this.fieldOfView);
         return NetUtils.createPacket(ID, abilities, flyingSpeed, fov);
 
     }

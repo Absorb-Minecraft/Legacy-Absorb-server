@@ -17,6 +17,7 @@ import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketState;
 import org.absorb.register.AbsorbKey;
+import org.absorb.world.AbsorbWorld;
 import org.absorb.world.biome.Biome;
 import org.absorb.world.location.Location;
 import org.absorb.world.type.PlayerWorldTypeView;
@@ -33,8 +34,6 @@ public class OutgoingJoinPacket implements OutgoingPacket {
 
     //TODO chat registry
 
-    public static final int ID = 0x23;
-
     private final int entityId;
     private final long seed;
     private final boolean isHardcore;
@@ -49,13 +48,14 @@ public class OutgoingJoinPacket implements OutgoingPacket {
     private final boolean isFlatWorld;
     private final @Nullable Location deathLocation;
     private final @NotNull Collection<PlayerWorldTypeView> worldTypes;
-    private final @NotNull PlayerWorldTypeView currentWorldType;
+    private final @NotNull AbsorbWorld currentWorld;
     private final @NotNull SortedSet<Biome> biomes = new TreeSet<>(Comparator.comparing(Biome::getNetworkId));
+    public static final int ID = 0x23;
 
 
     public OutgoingJoinPacket(@NotNull OutgoingJoinPacketBuilder builder) {
         this.blockViewDistance = builder.getBlockViewDistance();
-        this.currentWorldType = builder.getCurrentWorldType();
+        this.currentWorld = builder.getCurrentWorld();
         this.biomes.addAll(builder.getBiomes());
         this.entityId = builder.getEntityId();
         this.entityViewDistance = builder.getEntityViewDistance();
@@ -70,13 +70,13 @@ public class OutgoingJoinPacket implements OutgoingPacket {
         this.seed = builder.getSeed();
         this.worldTypes = builder.getWorldTypes();
         this.deathLocation = builder.getDeathLocation();
-        if (this.worldTypes==null || this.worldTypes.isEmpty()) {
+        if (this.worldTypes == null || this.worldTypes.isEmpty()) {
             throw new IllegalArgumentException("No worldtype specified");
         }
-        if (this.currentWorldType==null) {
-            throw new IllegalArgumentException("Current worldType must be specified");
+        if (this.currentWorld == null) {
+            throw new IllegalArgumentException("Current world must be specified");
         }
-        if (this.gameMode==null) {
+        if (this.gameMode == null) {
             throw new IllegalArgumentException("Gamemode must be specified");
         }
     }
@@ -137,98 +137,12 @@ public class OutgoingJoinPacket implements OutgoingPacket {
         return this.worldTypes;
     }
 
-    public @NotNull PlayerWorldTypeView getCurrentWorldType() {
-        return this.currentWorldType;
+    public @NotNull AbsorbWorld getCurrentWorld() {
+        return this.currentWorld;
     }
 
     public @NotNull Collection<Biome> getBiomes() {
         return this.biomes;
-    }
-
-    @Override
-    public ByteBuffer toBytes(@NotNull Client stream) {
-        ByteBuffer playerEntityId = NetSerializers.INTEGER.write(this.entityId);
-        ByteBuffer hardcore = NetSerializers.BOOLEAN.write(this.isHardcore);
-        ByteBuffer gamemode = NetSerializers.BYTE.write((byte) this.gameMode.getNetworkId());
-        ByteBuffer previousGamemode = NetSerializers.BYTE.write(this.previousGamemode==null ? -1:
-                (byte) this.previousGamemode.getNetworkId());
-        //ByteBuffer worldCount = Serializers.VAR_INTEGER.write(this.worldTypes.size());
-        List<AbsorbKey> worldTypes = this
-                .worldTypes
-                .stream()
-                .map(t -> t.getType().getResourceKey())
-                .collect(Collectors.toList());
-        ByteBuffer worldTypeIds =
-                new NetList<>(NetSerializers.RESOURCE_KEY)
-                        .write(worldTypes);
-        NBTCompoundEntry<NBTList, Collection<PlayerWorldTypeView>> types =
-                NBTCompoundKeys.DIMENSION.withValue(this.worldTypes);
-        NBTCompound worldTypeCompoundGroup = new NBTCompoundBuilder()
-                .addAll(types, NBTCompoundKeys.COMPOUND_TYPE.withValue("minecraft:dimension_type"))
-                .build();
-        NBTCompoundEntry<NBTList, Collection<Biome>> biomes = NBTCompoundKeys.BIOMES.withValue(this.biomes);
-        NBTCompound biomesCompoundGroup = new NBTCompoundBuilder()
-                .addAll(biomes,
-                        NBTCompoundKeys.COMPOUND_TYPE.withValue(
-                                "minecraft:worldgen/biome"))
-                .build();
-
-        NBTCompound chatTypes = new NBTCompoundBuilder()
-                .addAll(NBTCompoundKeys.COMPOUND_TYPE.withValue("minecraft:chat_type"),
-                        NBTCompoundKeys.VALUE_LIST.withValue(new NBTList(TagType.COMPOUND))).build();
-
-        NBTCompound biomeCodec =
-                new NBTCompoundBuilder()
-                        .addAll(NBTCompoundKeys.DIMENSION_TYPE.withValue(worldTypeCompoundGroup),
-                                NBTCompoundKeys.WORLD_GEN_BIOME.withValue(biomesCompoundGroup),
-                                NBTCompoundKeys.CHAT_TYPES.withValue(chatTypes))
-                        .build();
-
-
-        ByteBuffer mainWorldTypeId = NetSerializers.RESOURCE_KEY.write(this.currentWorldType.getType().getResourceKey());
-        ByteBuffer seed = NetSerializers.LONG.write(this.seed);
-        ByteBuffer maxPlayers = NetSerializers.VAR_INTEGER.write(this.maxPlayers);
-        ByteBuffer viewDistance = NetSerializers.VAR_INTEGER.write(this.blockViewDistance);
-        ByteBuffer simDistance = NetSerializers.VAR_INTEGER.write(this.entityViewDistance);
-        ByteBuffer reducedDebug = NetSerializers.BOOLEAN.write(this.reduceDebug);
-        ByteBuffer respawnScreen = NetSerializers.BOOLEAN.write(this.respawnScreen);
-        ByteBuffer isDebugWorld = NetSerializers.BOOLEAN.write(this.isDebugWorld);
-        ByteBuffer isFlat = NetSerializers.BOOLEAN.write(this.isFlatWorld);
-        ByteBuffer hasDeathLocation = NetSerializers.BOOLEAN.write(this.deathLocation!=null);
-        ByteBuffer deathDimension = ByteBuffer.allocate(0);
-        ByteBuffer deathPosition = ByteBuffer.allocate(0);
-        if (this.deathLocation!=null) {
-            deathPosition = NetSerializers.POSITION.write(this.deathLocation.getPosition().toInt());
-            deathDimension = NetSerializers.RESOURCE_KEY.write(this.deathLocation.getWorld().getKey());
-        }
-
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            NBTOutputStream nbtOs = new NBTOutputStream(os, false);
-            nbtOs.write(playerEntityId.array());
-            nbtOs.write(hardcore.array());
-            nbtOs.write(gamemode.array());
-            nbtOs.write(previousGamemode.array());
-            nbtOs.write(worldTypeIds.array());
-            nbtOs.writeFully(biomeCodec);
-            nbtOs.writeFully(this.currentWorldType.toTypeNBT());
-            nbtOs.write(mainWorldTypeId.array());
-            nbtOs.write(seed.array());
-            nbtOs.write(maxPlayers.array());
-            nbtOs.write(viewDistance.array());
-            nbtOs.write(simDistance.array());
-            nbtOs.write(reducedDebug.array());
-            nbtOs.write(respawnScreen.array());
-            nbtOs.write(isDebugWorld.array());
-            nbtOs.write(isFlat.array());
-            nbtOs.write(hasDeathLocation.array());
-            nbtOs.write(deathDimension.array());
-            nbtOs.write(deathPosition.array());
-            os.flush();
-            return NetUtils.createPacket(ID, ByteBuffer.wrap(os.toByteArray()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -251,8 +165,98 @@ public class OutgoingJoinPacket implements OutgoingPacket {
                 .setFlatWorld(this.isFlatWorld)
                 .setGameMode(this.gameMode)
                 .setBiomes(this.biomes)
-                .setCurrentWorldType(this.currentWorldType)
+                .setCurrentWorld(this.currentWorld)
                 .setRespawnScreen(this.respawnScreen)
                 .setDeathLocation(this.deathLocation);
+    }
+
+    @Override
+    public ByteBuffer toBytes(@NotNull Client stream) {
+        ByteBuffer playerEntityId = NetSerializers.INTEGER.write(this.entityId);
+        ByteBuffer hardcore = NetSerializers.BOOLEAN.write(this.isHardcore);
+        ByteBuffer gamemode = NetSerializers.BYTE.write((byte) this.gameMode.getNetworkId());
+        ByteBuffer previousGamemode = NetSerializers.BYTE.write(
+                this.previousGamemode == null ? -1 : (byte) this.previousGamemode.getNetworkId());
+        //ByteBuffer worldCount = Serializers.VAR_INTEGER.write(this.worldTypes.size());
+        List<AbsorbKey> worldTypes = this.worldTypes
+                .stream()
+                .map(t -> t.getType().getResourceKey())
+                .collect(Collectors.toList());
+        ByteBuffer worldTypeIds = new NetList<>(NetSerializers.RESOURCE_KEY).write(worldTypes);
+        NBTCompoundEntry<NBTList, Collection<PlayerWorldTypeView>> types = NBTCompoundKeys.DIMENSION.withValue(this.worldTypes);
+        NBTCompound worldTypeCompoundGroup = new NBTCompoundBuilder()
+                .addAll(types, NBTCompoundKeys.COMPOUND_TYPE.withValue("minecraft:dimension_type"))
+                .build();
+        NBTCompoundEntry<NBTList, Collection<Biome>> biomes = NBTCompoundKeys.BIOMES.withValue(this.biomes);
+        NBTCompound biomesCompoundGroup = new NBTCompoundBuilder()
+                .addAll(biomes, NBTCompoundKeys.COMPOUND_TYPE.withValue("minecraft:worldgen/biome"))
+                .build();
+
+        NBTList chatType = new NBTList(TagType.COMPOUND);
+        //chatType.addAll(AbsorbManagers.getMessageManager().getAllChatTypes());
+
+        NBTCompound chatTypes = new NBTCompoundBuilder()
+                .addAll(NBTCompoundKeys.COMPOUND_TYPE.withValue("minecraft:chat_type"),
+                        NBTCompoundKeys.VALUE_LIST.withValue(chatType))
+                .build();
+
+        NBTCompound biomeCodec = new NBTCompoundBuilder()
+                .addAll(NBTCompoundKeys.DIMENSION_TYPE.withValue(worldTypeCompoundGroup),
+                        NBTCompoundKeys.WORLD_GEN_BIOME.withValue(biomesCompoundGroup),
+                        NBTCompoundKeys.CHAT_TYPES.withValue(chatTypes))
+                .build();
+
+
+        ByteBuffer mainWorldTypeId = NetSerializers.RESOURCE_KEY.write(this.currentWorld
+                                                                               .getWorldData()
+                                                                               .getType()
+                                                                               .getResourceKey());
+        ByteBuffer mainWorldName = NetSerializers.RESOURCE_KEY.write(this.currentWorld.getKey());
+        ByteBuffer seed = NetSerializers.LONG.write(this.seed);
+        ByteBuffer maxPlayers = NetSerializers.VAR_INTEGER.write(this.maxPlayers);
+        ByteBuffer viewDistance = NetSerializers.VAR_INTEGER.write(this.blockViewDistance);
+        ByteBuffer simDistance = NetSerializers.VAR_INTEGER.write(this.entityViewDistance);
+        ByteBuffer reducedDebug = NetSerializers.BOOLEAN.write(this.reduceDebug);
+        ByteBuffer respawnScreen = NetSerializers.BOOLEAN.write(this.respawnScreen);
+        ByteBuffer isDebugWorld = NetSerializers.BOOLEAN.write(this.isDebugWorld);
+        ByteBuffer isFlat = NetSerializers.BOOLEAN.write(this.isFlatWorld);
+        ByteBuffer hasDeathLocation = NetSerializers.BOOLEAN.write(this.deathLocation != null);
+        ByteBuffer deathDimension = ByteBuffer.allocate(0);
+        ByteBuffer deathPosition = ByteBuffer.allocate(0);
+        if (this.deathLocation != null) {
+            deathPosition = NetSerializers.POSITION.write(this.deathLocation.getPosition().toInt());
+            deathDimension = NetSerializers.RESOURCE_KEY.write(this.deathLocation.getWorld().getKey());
+        }
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            NBTOutputStream nbtOs = new NBTOutputStream(os, false);
+            nbtOs.write(playerEntityId.array());
+            nbtOs.write(hardcore.array());
+            nbtOs.write(gamemode.array());
+            nbtOs.write(previousGamemode.array());
+            nbtOs.write(worldTypeIds.array());
+            nbtOs.writeFully(biomeCodec);
+            //nbtOs.writeFully(this.currentWorldType.toTypeNBT());
+            nbtOs.write(mainWorldTypeId.array());
+
+            nbtOs.write(mainWorldName.array());
+
+            nbtOs.write(seed.array());
+            nbtOs.write(maxPlayers.array());
+            nbtOs.write(viewDistance.array());
+            nbtOs.write(simDistance.array());
+            nbtOs.write(reducedDebug.array());
+            nbtOs.write(respawnScreen.array());
+            nbtOs.write(isDebugWorld.array());
+            nbtOs.write(isFlat.array());
+            nbtOs.write(hasDeathLocation.array());
+            nbtOs.write(deathDimension.array());
+            nbtOs.write(deathPosition.array());
+            os.flush();
+            return NetUtils.createPacket(ID, ByteBuffer.wrap(os.toByteArray()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

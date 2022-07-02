@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.client.join;
 import org.absorb.entity.living.human.Gamemode;
 import org.absorb.entity.living.human.Gamemodes;
 import org.absorb.utils.Builder;
+import org.absorb.world.AbsorbWorld;
 import org.absorb.world.biome.Biome;
 import org.absorb.world.location.Location;
 import org.absorb.world.type.PlayerWorldTypeView;
@@ -26,7 +27,7 @@ public class OutgoingJoinPacketBuilder implements Builder<OutgoingJoinPacket> {
     private boolean isDebugWorld;
     private boolean isFlatWorld;
     private Collection<PlayerWorldTypeView> worldTypes;
-    private PlayerWorldTypeView currentWorldType;
+    private AbsorbWorld currentWorld;
     private Collection<Biome> biomes;
     private Location deathLocation;
 
@@ -160,12 +161,12 @@ public class OutgoingJoinPacketBuilder implements Builder<OutgoingJoinPacket> {
         return this;
     }
 
-    public PlayerWorldTypeView getCurrentWorldType() {
-        return this.currentWorldType;
+    public AbsorbWorld getCurrentWorld() {
+        return this.currentWorld;
     }
 
-    public OutgoingJoinPacketBuilder setCurrentWorldType(PlayerWorldTypeView currentWorldType) {
-        this.currentWorldType = currentWorldType;
+    public OutgoingJoinPacketBuilder setCurrentWorld(AbsorbWorld currentWorld) {
+        this.currentWorld = currentWorld;
         return this;
     }
 
@@ -198,7 +199,7 @@ public class OutgoingJoinPacketBuilder implements Builder<OutgoingJoinPacket> {
         this.gameMode = Gamemodes.CREATIVE;
         this.worldTypes = Collections.emptyList();
         this.biomes = Collections.emptyList();
-        this.currentWorldType = null;
+        this.currentWorld = null;
         this.deathLocation = null;
         return this;
     }

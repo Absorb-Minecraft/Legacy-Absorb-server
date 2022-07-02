@@ -10,24 +10,19 @@ import org.jetbrains.annotations.NotNull;
 
 public class IncomingMessagePacket implements IncomingPacket {
 
-    public static final int ID = 0x04;
-
     private final String message;
     private final long timestamp;
     private final byte[] sign;
     private final boolean preview;
+    public static final int ID = 0x04;
 
     public IncomingMessagePacket(IncomingMessagePacketBuilder builder) {
         this.message = builder.getMessage();
         this.timestamp = builder.getTimestamp();
         this.preview = builder.isPreview();
 
-        Byte[] sign = builder.getSignature();
-        this.sign = new byte[sign.length];
-        for (int i = 0; i < sign.length; i++) {
-            this.sign[i] = sign[i];
-        }
-        if (this.message==null) {
+        this.sign = builder.getSignature();
+        if (this.message == null) {
             throw new RuntimeException("Message must be set");
         }
     }

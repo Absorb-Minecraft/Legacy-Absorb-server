@@ -18,8 +18,6 @@ import java.util.UUID;
 
 public class OutgoingChatMessagePacket implements OutgoingPacket {
 
-    public static final int ID = 0x30;
-
     private final @Nullable Component message;
     private final @NotNull Component originalMessage;
     private final @NotNull MessagePosition position;
@@ -29,6 +27,7 @@ public class OutgoingChatMessagePacket implements OutgoingPacket {
     private final long timestamp;
     private final long salt;
     private final byte[] messageSign;
+    public static final int ID = 0x30;
 
 
     public OutgoingChatMessagePacket(OutgoingChatMessagePacketBuilder builder) {
@@ -41,6 +40,15 @@ public class OutgoingChatMessagePacket implements OutgoingPacket {
         this.salt = builder.getSalt();
         this.messageSign = builder.getMessageSign();
         this.teamName = builder.getTeamName();
+        if (this.fromDisplayName == null) {
+            throw new RuntimeException("From display name cannot be null or blank");
+        }
+        if (this.position == null) {
+            throw new RuntimeException("Message position cannot be null");
+        }
+        if (this.originalMessage == null) {
+            throw new RuntimeException("Original message cannot be null");
+        }
     }
 
     public @NotNull Component getOriginalMessage() {
@@ -107,13 +115,13 @@ public class OutgoingChatMessagePacket implements OutgoingPacket {
         ByteBuffer messageBuffer = NetSerializers.CHAT.write(this.message);
         ByteBuffer positionBuffer = NetSerializers.BYTE.write((byte) this.position.getNetworkId());
         ByteBuffer fromBuffer = NetSerializers.LONG.write(0L);
-        if (this.from!=null) {
+        if (this.from != null) {
             fromBuffer = NetSerializers.UUID.write(this.from);
         }
         ByteBuffer fromName = NetSerializers.CHAT.write(this.fromDisplayName);
-        ByteBuffer hasTeamName = NetSerializers.BOOLEAN.write(this.teamName!=null);
+        ByteBuffer hasTeamName = NetSerializers.BOOLEAN.write(this.teamName != null);
         ByteBuffer teamName = ByteBuffer.allocate(0);
-        if (this.teamName!=null) {
+        if (this.teamName != null) {
             teamName = NetSerializers.CHAT.write(this.teamName);
         }
         ByteBuffer timestamp = NetSerializers.LONG.write(this.timestamp);
@@ -121,14 +129,14 @@ public class OutgoingChatMessagePacket implements OutgoingPacket {
         ByteBuffer sign = ByteBuffer.wrap(this.messageSign);
 
         return NetUtils.createPacket(ID,
-                messageBuffer,
-                positionBuffer,
-                fromBuffer,
-                fromName,
-                hasTeamName,
-                teamName,
-                timestamp,
-                salt,
-                sign);
+                                     messageBuffer,
+                                     positionBuffer,
+                                     fromBuffer,
+                                     fromName,
+                                     hasTeamName,
+                                     teamName,
+                                     timestamp,
+                                     salt,
+                                     sign);
     }
 }

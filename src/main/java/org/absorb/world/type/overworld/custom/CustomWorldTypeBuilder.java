@@ -26,6 +26,8 @@ public class CustomWorldTypeBuilder implements Builder<CustomWorldType> {
     private AbsorbKey infiBurn;
     private boolean isRespawnAnchorUsed;
     private Long fixedTime;
+    private int monsterSpawnLightLevel;
+    private int monsterSpawnBlockLightLimit;
 
     public String getName() {
         return this.name;
@@ -228,5 +230,13 @@ public class CustomWorldTypeBuilder implements Builder<CustomWorldType> {
 
     public void setFixedTime(Long l) {
         this.fixedTime = l;
+    }
+
+    public int getMonsterSpawnBlockLightLimit() {
+        return this.monsterSpawnLightLevel;
+    }
+
+    public int getMonsterSpawnLightLevel() {
+        return this.monsterSpawnBlockLightLimit;
     }
 }

@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.incoming.client.settings;
 import org.absorb.entity.living.human.ChatMode;
 import org.absorb.entity.living.human.Hand;
 import org.absorb.entity.living.human.SkinParts;
+import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
@@ -11,15 +12,18 @@ import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Locale;
+import java.util.Set;
 
 public class IncomingClientSettingsPacketBuilder implements IncomingPacketBuilder<IncomingClientSettingsPacket> {
 
+    private final Set<SkinParts> parts = EnumSet.noneOf(SkinParts.class);
     private Locale locale;
     private byte viewDistance;
     private ChatMode chatMode;
     private boolean chatColorEnabled;
-    private final Set<SkinParts> parts = EnumSet.noneOf(SkinParts.class);
     private Hand mainHand;
     private boolean showOnList;
 
@@ -63,7 +67,7 @@ public class IncomingClientSettingsPacketBuilder implements IncomingPacketBuilde
         return this.parts;
     }
 
-    public IncomingClientSettingsPacketBuilder addParts(Collection<SkinParts> parts){
+    public IncomingClientSettingsPacketBuilder addParts(Collection<SkinParts> parts) {
         this.parts.addAll(parts);
         return this;
     }
@@ -87,11 +91,12 @@ public class IncomingClientSettingsPacketBuilder implements IncomingPacketBuilde
     }
 
     @Override
-    public PacketBuilder<IncomingClientSettingsPacket> from(ByteBuffer packetBytes) {
+    public PacketBuilder<IncomingClientSettingsPacket> from(Client client, ByteBuffer packetBytes) {
         NetEntryData<String> localeString = NetSerializers.STRING.read(0, packetBytes);
         NetEntryData<Byte> viewDistance = NetSerializers.BYTE.read(localeString.endingPosition(), packetBytes);
         NetEntryData<Integer> chatModeId = NetSerializers.VAR_INTEGER.read(viewDistance.endingPosition(), packetBytes);
-        NetEntryData<Boolean> chatColoursEnabled = NetSerializers.BOOLEAN.read(chatModeId.endingPosition(), packetBytes);
+        NetEntryData<Boolean> chatColoursEnabled = NetSerializers.BOOLEAN.read(chatModeId.endingPosition(),
+                                                                               packetBytes);
         NetEntryData<Byte> skinPartsId = NetSerializers.BYTE.read(chatColoursEnabled.endingPosition(), packetBytes);
         NetEntryData<Integer> mainHandId = NetSerializers.VAR_INTEGER.read(skinPartsId.endingPosition(), packetBytes);
         NetEntryData<Boolean> textFiltering = NetSerializers.BOOLEAN.read(mainHandId.endingPosition(), packetBytes);
@@ -104,11 +109,6 @@ public class IncomingClientSettingsPacketBuilder implements IncomingPacketBuilde
         this.mainHand = Hand.fromNetworkId(mainHandId.value());
         this.showOnList = showOnList.value();
         return this;
-    }
-
-    @Override
-    public @NotNull IncomingClientSettingsPacket build() {
-        return new IncomingClientSettingsPacket(this);
     }
 
     @Override
@@ -132,6 +132,11 @@ public class IncomingClientSettingsPacketBuilder implements IncomingPacketBuilde
                 .setLocale(this.locale)
                 .setViewDistance(this.viewDistance)
                 .setShowOnList(this.showOnList);
+    }
+
+    @Override
+    public @NotNull IncomingClientSettingsPacket build() {
+        return new IncomingClientSettingsPacket(this);
     }
 
     @Override

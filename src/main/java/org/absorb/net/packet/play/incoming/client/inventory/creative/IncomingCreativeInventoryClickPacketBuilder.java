@@ -1,6 +1,7 @@
 package org.absorb.net.packet.play.incoming.client.inventory.creative;
 
 import org.absorb.inventory.slot.Slot;
+import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
@@ -10,7 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
 
-public class IncomingCreativeInventoryClickPacketBuilder implements IncomingPacketBuilder<IncomingCreativeInventoryClickPacket> {
+public class IncomingCreativeInventoryClickPacketBuilder
+        implements IncomingPacketBuilder<IncomingCreativeInventoryClickPacket> {
 
     private short slot;
     private Slot item;
@@ -34,18 +36,13 @@ public class IncomingCreativeInventoryClickPacketBuilder implements IncomingPack
     }
 
     @Override
-    public PacketBuilder<IncomingCreativeInventoryClickPacket> from(ByteBuffer packetBytes) {
+    public PacketBuilder<IncomingCreativeInventoryClickPacket> from(Client client, ByteBuffer packetBytes) {
         NetEntryData<Short> slotEntry = NetSerializers.SHORT.read(0, packetBytes);
         NetEntryData<Slot> itemEntry = NetSerializers.SLOT.read(slotEntry.endingPosition(), packetBytes);
 
         this.item = itemEntry.value();
         this.slot = slotEntry.value();
         return this;
-    }
-
-    @Override
-    public @NotNull IncomingCreativeInventoryClickPacket build() {
-        return new IncomingCreativeInventoryClickPacket(this);
     }
 
     @Override
@@ -57,7 +54,14 @@ public class IncomingCreativeInventoryClickPacketBuilder implements IncomingPack
 
     @Override
     public IncomingPacketBuilder<IncomingCreativeInventoryClickPacket> copy() {
-        return new IncomingCreativeInventoryClickPacketBuilder().setInventorySlot(this.getInventorySlot()).setItem(this.getItem());
+        return new IncomingCreativeInventoryClickPacketBuilder()
+                .setInventorySlot(this.getInventorySlot())
+                .setItem(this.getItem());
+    }
+
+    @Override
+    public @NotNull IncomingCreativeInventoryClickPacket build() {
+        return new IncomingCreativeInventoryClickPacket(this);
     }
 
     @Override

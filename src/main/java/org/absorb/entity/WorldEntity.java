@@ -4,6 +4,7 @@ import org.absorb.AbsorbManagers;
 import org.absorb.net.Client;
 import org.absorb.net.PlayingState;
 import org.absorb.world.AbsorbWorld;
+import org.absorb.world.area.AbsorbChunk;
 import org.absorb.world.location.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,12 +17,12 @@ import java.util.Optional;
 
 public class WorldEntity {
 
+    private final int instanceId;
     private @NotNull Entity entity;
     private @Nullable Vector3d fellFrom;
     private @Nullable Vector3d landedOn;
     private @NotNull Vector3d position;
     private @NotNull AbsorbWorld world;
-    private final int instanceId;
 
     public WorldEntity(WorldEntityBuilder builder) {
         this.entity = builder.getEntity();
@@ -30,6 +31,13 @@ public class WorldEntity {
         this.position = builder.getPosition();
         this.world = builder.getWorld();
         this.instanceId = builder.getInstanceId();
+    }
+
+    public AbsorbChunk getChunk() {
+        Vector2i chunkPosition = this.getLocation().getChunkPosition();
+        return this.world
+                .getLoadedChunk(chunkPosition)
+                .orElseThrow(() -> new IllegalStateException("Entity is no longer in a loaded chunk"));
     }
 
     public Location getLocation() {
@@ -41,7 +49,7 @@ public class WorldEntity {
                 .getNetManager()
                 .getClients()
                 .parallelStream()
-                .filter(client -> client.getPlayingState()==PlayingState.PLAYING)
+                .filter(client -> client.getPlayingState() == PlayingState.PLAYING)
                 .filter(client -> client.getEntity().equals(WorldEntity.this))
                 .findAny();
     }

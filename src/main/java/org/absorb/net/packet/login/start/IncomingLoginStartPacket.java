@@ -13,34 +13,27 @@ import java.util.OptionalLong;
 
 public class IncomingLoginStartPacket implements IncomingPacket {
 
-    public static final int ID = 0x00;
-
     private final @NotNull String username;
     private final @Nullable Long timestamp;
-    private final @Nullable byte[] publicKey;
-    private final @Nullable byte[] publicSign;
+    private final byte[] publicKey;
+    private final byte[] publicSign;
+    public static final int ID = 0x00;
 
     public IncomingLoginStartPacket(IncomingLoginStartPacketBuilder builder) {
         this.username = builder.getUsername();
         this.timestamp = builder.getTimestamp();
-        Byte[] publicKey = builder.getPublicKey();
-        if (publicKey==null) {
-            publicKey = new Byte[0];
+        byte[] publicKey = builder.getPublicKey();
+        if (publicKey == null) {
+            publicKey = new byte[0];
         }
-        this.publicKey = new byte[publicKey.length];
-        for (int i = 0; i < publicKey.length; i++) {
-            this.publicKey[i] = publicKey[i];
-        }
+        this.publicKey = publicKey;
 
 
-        Byte[] publicSign = builder.getPublicSignature();
-        if (publicSign==null) {
-            publicSign = new Byte[0];
+        byte[] publicSign = builder.getPublicSignature();
+        if (publicSign == null) {
+            publicSign = new byte[0];
         }
-        this.publicSign = new byte[publicSign.length];
-        for (int i = 0; i < publicSign.length; i++) {
-            this.publicSign[i] = publicSign[i];
-        }
+        this.publicSign = publicSign;
     }
 
     public @NotNull String getUsername() {
@@ -48,7 +41,7 @@ public class IncomingLoginStartPacket implements IncomingPacket {
     }
 
     public OptionalLong getTimestamp() {
-        if (this.timestamp==null) {
+        if (this.timestamp == null) {
             return OptionalLong.empty();
         }
         return OptionalLong.of(this.timestamp);

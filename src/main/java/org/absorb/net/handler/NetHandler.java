@@ -74,9 +74,9 @@ public class NetHandler {
                     }
 
                     boolean cont = this.processPacket();
-                    if (!cont) {
+                    /*if (!cont) {
                         break;
-                    }
+                    }*/
                     length = 100;
                     this.data = new byte[0];
                 }
@@ -134,12 +134,15 @@ public class NetHandler {
                         "User found to have sent a unknown packet, potentially cheating. Kicking to be safe(Id: "
                                 + packetId.value() + "(" + Integer.toHexString(packetId.value()) + ") State: "
                                 + this.netInfo.getState().name() + ")");
-                this.netInfo.getSocket().close();
+                //this.netInfo.getSocket().close();
                 return false;
             }
             byte[] packetData = Arrays.copyOfRange(this.data, packetId.endingPosition(), this.data.length);
 
-            org.absorb.net.packet.IncomingPacket packet = builder.get().from(ByteBuffer.wrap(packetData)).build();
+            org.absorb.net.packet.IncomingPacket packet = builder
+                    .get()
+                    .from(this.netInfo, ByteBuffer.wrap(packetData))
+                    .build();
             packet.getProcess().onProcess(this.netInfo, packet);
             return true;
         }

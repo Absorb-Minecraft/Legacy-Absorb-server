@@ -27,7 +27,7 @@ public class AbsorbWorld {
     private final LinkedTransferQueue<AbsorbChunk> chunks = new LinkedTransferQueue<>();
 
     public AbsorbWorld(AbsorbWorldBuilder builder) {
-        if (builder.getWorldData()==null) {
+        if (builder.getWorldData() == null) {
             throw new IllegalStateException("No WorldData provided");
         }
         this.worldData = builder.getWorldData();
@@ -50,13 +50,11 @@ public class AbsorbWorld {
                 .setPosition(spawnAt)
                 .setInstanceId(this.getEntities().size() + 1)
                 .build();
-        AbsorbChunk chunk =
-                this
-                        .chunks
-                        .parallelStream()
-                        .filter(chunkStream -> chunkStream.getArea().includes(spawnAt))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalStateException("Chunk has not loaded"));
+        AbsorbChunk chunk = this.chunks
+                .parallelStream()
+                .filter(chunkStream -> chunkStream.getArea().includes(spawnAt))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Chunk has not loaded"));
         ChunkPart part = chunk.getPartWithBlockHeight((int) spawnAt.y());
         part.registerEntity(worldEntity);
         return worldEntity;
@@ -87,7 +85,11 @@ public class AbsorbWorld {
     }
 
     public Optional<AbsorbChunk> getLoadedChunk(int x, int z) {
-        return this.chunks.stream().filter(chunk -> chunk.getPosition().x()==x).filter(chunk -> chunk.getPosition().y()==z).findAny();
+        return this.chunks
+                .stream()
+                .filter(chunk -> chunk.getPosition().x() == x)
+                .filter(chunk -> chunk.getPosition().y() == z)
+                .findAny();
     }
 
     public Optional<AbsorbChunk> loadGeneratedChunkAtBlock(int x, int z) {
@@ -130,7 +132,10 @@ public class AbsorbWorld {
     }
 
     public ConnectedCollection<WorldEntity> getEntities() {
-        return new ConnectedCollection<>(this.chunks.parallelStream().map(AbsorbChunk::getEntities).toArray(Collection[]::new));
+        return new ConnectedCollection<>(this.chunks
+                                                 .parallelStream()
+                                                 .map(AbsorbChunk::getEntities)
+                                                 .toArray(Collection[]::new));
     }
 
     public AbsorbChunk generateChunk(Vector2i chunkPos) {

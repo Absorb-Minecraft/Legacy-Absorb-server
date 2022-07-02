@@ -11,6 +11,8 @@ public interface CommandNode {
 
     byte getNodeTypeId();
 
+    int getDepth();
+
     List<? extends NameableCommandNode> getChildren();
 
     default List<? extends NameableCommandNode> getChildren(@NotNull CommandSender sender) {

@@ -1,5 +1,6 @@
 package org.absorb.net.packet.play.incoming.client.movement.rotation;
 
+import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
@@ -43,7 +44,7 @@ public class IncomingRotationPacketBuilder implements IncomingPacketBuilder<Inco
     }
 
     @Override
-    public PacketBuilder<IncomingRotationPacket> from(ByteBuffer packetBytes) {
+    public PacketBuilder<IncomingRotationPacket> from(Client client, ByteBuffer packetBytes) {
         NetEntryData<Float> yaw = NetSerializers.FLOAT.read(0, packetBytes);
         NetEntryData<Float> pitch = NetSerializers.FLOAT.read(yaw.endingPosition(), packetBytes);
         NetEntryData<Boolean> isOnGround = NetSerializers.BOOLEAN.read(pitch.endingPosition(), packetBytes);
@@ -52,11 +53,6 @@ public class IncomingRotationPacketBuilder implements IncomingPacketBuilder<Inco
         this.yaw = yaw.value();
         this.isOnGround = isOnGround.value();
         return this;
-    }
-
-    @Override
-    public @NotNull IncomingRotationPacket build() {
-        return new IncomingRotationPacket(this);
     }
 
     @Override
@@ -70,6 +66,11 @@ public class IncomingRotationPacketBuilder implements IncomingPacketBuilder<Inco
     @Override
     public IncomingPacketBuilder<IncomingRotationPacket> copy() {
         return new IncomingRotationPacketBuilder().setOnGround(this.isOnGround).setPitch(this.pitch).setYaw(this.yaw);
+    }
+
+    @Override
+    public @NotNull IncomingRotationPacket build() {
+        return new IncomingRotationPacket(this);
     }
 
     @Override

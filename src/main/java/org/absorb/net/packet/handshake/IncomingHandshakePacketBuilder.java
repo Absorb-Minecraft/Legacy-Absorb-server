@@ -1,5 +1,6 @@
 package org.absorb.net.packet.handshake;
 
+import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
@@ -32,11 +33,6 @@ public class IncomingHandshakePacketBuilder implements IncomingPacketBuilder<Inc
         return this.state;
     }
 
-    public IncomingHandshakePacketBuilder setState(HandshakeState state) {
-        this.state = state;
-        return this;
-    }
-
     public int getPacketVersion() {
         return this.packetVersion;
     }
@@ -56,27 +52,8 @@ public class IncomingHandshakePacketBuilder implements IncomingPacketBuilder<Inc
     }
 
     @Override
-    public PacketState getState() {
-        return PacketState.HANDSHAKE;
-    }
-
-    @Override
     public IncomingHandshakePacket build() {
         return new IncomingHandshakePacket(this);
-    }
-
-    @Override
-    public IncomingHandshakePacketBuilder reset() {
-        this.joiningFrom = null;
-        this.packetVersion = 0;
-        this.port = 25565;
-        this.state = HandshakeState.STATUS;
-        return this;
-    }
-
-    @Override
-    public IncomingHandshakePacketBuilder copy() {
-        return new IncomingHandshakePacketBuilder().setPacketVersion(this.packetVersion).setJoiningFrom(this.joiningFrom).setPort(this.port).setState(this.state);
     }
 
     @Override
@@ -85,7 +62,17 @@ public class IncomingHandshakePacketBuilder implements IncomingPacketBuilder<Inc
     }
 
     @Override
-    public PacketBuilder<IncomingHandshakePacket> from(ByteBuffer packetBytes) {
+    public PacketState getState() {
+        return PacketState.HANDSHAKE;
+    }
+
+    public IncomingHandshakePacketBuilder setState(HandshakeState state) {
+        this.state = state;
+        return this;
+    }
+
+    @Override
+    public PacketBuilder<IncomingHandshakePacket> from(Client client, ByteBuffer packetBytes) {
         NetEntryData<Integer> mcVersion = NetSerializers.VAR_INTEGER.read(0, packetBytes);
         NetEntryData<String> ip = NetSerializers.STRING.read(mcVersion.endingPosition(), packetBytes);
         NetEntryData<Short> port;
@@ -101,5 +88,23 @@ public class IncomingHandshakePacketBuilder implements IncomingPacketBuilder<Inc
         this.setPort(port.value());
 
         return this;
+    }
+
+    @Override
+    public IncomingHandshakePacketBuilder reset() {
+        this.joiningFrom = null;
+        this.packetVersion = 0;
+        this.port = 25565;
+        this.state = HandshakeState.STATUS;
+        return this;
+    }
+
+    @Override
+    public IncomingHandshakePacketBuilder copy() {
+        return new IncomingHandshakePacketBuilder()
+                .setPacketVersion(this.packetVersion)
+                .setJoiningFrom(this.joiningFrom)
+                .setPort(this.port)
+                .setState(this.state);
     }
 }

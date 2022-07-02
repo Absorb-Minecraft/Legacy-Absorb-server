@@ -40,13 +40,16 @@ import java.util.stream.Collectors;
 
 public class Client implements CommandSender {
 
+    private final @NotNull Socket socket;
+    private final @NotNull ClientInventory inventory = new ClientInventory();
+    private final Collection<Integer> teleportIds = new LinkedTransferQueue<>();
+    private final Collection<ThreadedDataPoint<Integer, Integer>> pings = new LinkedBlockingQueue<>();
+    private final Collection<ThreadedDataPoint<Long, Long>> keepAlive = new LinkedBlockingQueue<>();
     private @NotNull PacketState state = PacketState.HANDSHAKE;
     private @Nullable String username;
     private @Nullable UUID uuid;
     private @NotNull LocalDateTime lastPacketSent;
-    private final @NotNull Socket socket;
     private @Nullable WorldEntity entity;
-    private final @NotNull ClientInventory inventory = new ClientInventory();
     private @Nullable Inventory openInventory;
     private @Nullable Locale locale;
     private byte viewDistance = 2;
@@ -54,10 +57,9 @@ public class Client implements CommandSender {
     private boolean colouredChatMessages;
     private boolean hiddenToList;
     private int lastKnownPing;
-    private final Collection<Integer> teleportIds = new LinkedTransferQueue<>();
-    private final Collection<ThreadedDataPoint<Integer, Integer>> pings = new LinkedBlockingQueue<>();
     private PlayingState playingState = PlayingState.AWAITING;
     private @Nullable Vector3d lastPosition;
+
 
     private static final int NETTY_MAX_CAP = 1500;
 
@@ -84,7 +86,7 @@ public class Client implements CommandSender {
 
     public void updateChunks(Iterable<Vector2i> collection) {
         AbsorbWorld world = this.getEntity().getWorld();
-//will be threaded when its working
+        //will be threaded when its working
         /*collection.forEach(chunkPos -> new Thread(() -> {
             AbsorbChunk chunk = world.generateChunk(chunkPos);
             chunk.generateParts();
@@ -155,6 +157,31 @@ public class Client implements CommandSender {
         return Collections.singleton(currentChunk);
     }
 
+    public long getKeepAliveId() {
+        return this.keepAlive.parallelStream().mapToLong(ThreadedDataPoint::getValue).sum();
+    }
+
+    public void addKeepAliveId(long id) {
+        this.keepAlive.add(new SimpleDataPoint<>(id));
+    }
+
+    public void receivedKeepAliveId(long id) {
+        Optional<ThreadedDataPoint<Long, Long>> opPing = this.keepAlive
+                .parallelStream()
+                .filter(ping -> ping.getValue() == id)
+                .findFirst();
+        if (opPing.isEmpty()) {
+            return;
+        }
+        Set<ThreadedDataPoint<Long, Long>> toRemove = this.keepAlive
+                .parallelStream()
+                .filter(ping -> ping.getTime().isBefore(opPing.get().getTime()))
+                .collect(Collectors.toSet());
+
+        this.keepAlive.removeAll(toRemove);
+        this.keepAlive.remove(opPing.get());
+    }
+
     public int getPingId() {
         return this.pings.parallelStream().mapToInt(ThreadedDataPoint::getValue).sum();
     }
@@ -164,19 +191,23 @@ public class Client implements CommandSender {
     }
 
     public void receivedPingId(int id) {
-        Optional<ThreadedDataPoint<Integer, Integer>> opPing = this.pings.parallelStream().filter(ping -> ping.getValue()==id).findFirst();
+        Optional<ThreadedDataPoint<Integer, Integer>> opPing = this.pings
+                .parallelStream()
+                .filter(ping -> ping.getValue() == id)
+                .findFirst();
         if (opPing.isEmpty()) {
             return;
         }
-        Set<ThreadedDataPoint<Integer, Integer>> toRemove =
-                this.pings.parallelStream().filter(ping -> ping.getTime().isBefore(opPing.get().getTime())).collect(Collectors.toSet());
+        Set<ThreadedDataPoint<Integer, Integer>> toRemove = this.pings
+                .parallelStream()
+                .filter(ping -> ping.getTime().isBefore(opPing.get().getTime()))
+                .collect(Collectors.toSet());
 
         LocalDateTime now = LocalDateTime.now();
         this.lastKnownPing = now.getNano() - opPing.get().getTime().getNano();
 
         this.pings.removeAll(toRemove);
         this.pings.remove(opPing.get());
-
     }
 
     public PlayingState getPlayingState() {
@@ -193,7 +224,7 @@ public class Client implements CommandSender {
     }
 
     public int newTeleportId() {
-        return this.teleportIds.stream().mapToInt((f) -> f).sum();
+        return this.teleportIds.stream().mapToInt((f) -> f).sum() + 1;
     }
 
     public void registerTeleportId(int id) {
@@ -201,14 +232,18 @@ public class Client implements CommandSender {
     }
 
     public void confirmTeleport(int id) {
+        if (id == 0) {
+            return;
+        }
         if (!this.teleportIds.remove(id)) {
-            throw new IllegalStateException("Teleport id of '" + id + "' could not be confirmed: known ids to be " +
-                    "confirmed: " + this.teleportIds);
+            throw new IllegalStateException(
+                    "Teleport id of '" + id + "' could not be confirmed: known ids to be " + "confirmed: "
+                            + this.teleportIds);
         }
     }
 
     public @NotNull WorldEntity getEntity() {
-        if (this.entity==null) {
+        if (this.entity == null) {
             throw new RuntimeException("Packet has not been sent to create the entity yet");
         }
         return this.entity;
@@ -219,7 +254,7 @@ public class Client implements CommandSender {
     }
 
     public @NotNull PlayerTab createTab() {
-        if (this.username==null) {
+        if (this.username == null) {
             throw new RuntimeException("Username has no value, something is out of order");
         }
         Gamemode mode = Gamemodes.CREATIVE;
@@ -252,7 +287,7 @@ public class Client implements CommandSender {
     }
 
     public @NotNull Locale getLocale() {
-        if (this.locale==null) {
+        if (this.locale == null) {
             throw new RuntimeException("Packet has not been sent yet to know this");
         }
         return this.locale;
@@ -304,7 +339,7 @@ public class Client implements CommandSender {
     }
 
     public @NotNull UUID getUuid() {
-        if (this.uuid==null) {
+        if (this.uuid == null) {
             throw new RuntimeException("Packet has not been sent yet to know this");
         }
         return this.uuid;
@@ -312,7 +347,7 @@ public class Client implements CommandSender {
 
 
     public Client setUuid(@NotNull UUID uuid) {
-        if (this.uuid!=null) {
+        if (this.uuid != null) {
             throw new RuntimeException("Cannot change the UUID once set");
         }
         this.uuid = uuid;
@@ -369,7 +404,7 @@ public class Client implements CommandSender {
     }
 
     public @NotNull String getUsername() {
-        if (this.username==null) {
+        if (this.username == null) {
             throw new RuntimeException("Packet has not been sent to know this");
         }
         return this.username;
@@ -385,9 +420,18 @@ public class Client implements CommandSender {
 
     public void disconnect(@NotNull Component component) {
         try {
-            new OutgoingCloseConnectionPacketBuilder().setUsingPlay(this.state==PacketState.PLAY).setMessage(component).build().writeTo(this);
+            new OutgoingCloseConnectionPacketBuilder()
+                    .setUsingPlay(this.state == PacketState.PLAY)
+                    .setMessage(component)
+                    .build()
+                    .writeTo(this);
         } catch (IOException e) {
-            AbsorbManagers.getConsole().sendMessage(Component.text("Failed to disconnect forcing disconnect: ").color(TextColor.color(255, 0, 0)).append(Component.text(this.getUsername())));
+            AbsorbManagers
+                    .getConsole()
+                    .sendMessage(Component
+                                         .text("Failed to disconnect forcing disconnect: ")
+                                         .color(TextColor.color(255, 0, 0))
+                                         .append(Component.text(this.getUsername())));
             e.printStackTrace();
         }
         AbsorbManagers.getNetManager().unregister(this);
@@ -397,6 +441,11 @@ public class Client implements CommandSender {
 
     @Override
     public void sendMessage(@Nullable UUID uuid, @NotNull Component component) {
-        new OutgoingChatMessagePacketBuilder().setDisplayMessage(component).setPosition(MessagePosition.CHAT).setFrom(uuid).build().writeToAsync(this);
+        new OutgoingChatMessagePacketBuilder()
+                .setDisplayMessage(component)
+                .setPosition(MessagePosition.CHAT)
+                .setFrom(uuid)
+                .build()
+                .writeToAsync(this);
     }
 }

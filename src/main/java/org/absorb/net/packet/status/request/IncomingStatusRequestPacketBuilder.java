@@ -1,5 +1,6 @@
 package org.absorb.net.packet.status.request;
 
+import org.absorb.net.Client;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
@@ -8,13 +9,8 @@ import java.nio.ByteBuffer;
 
 public class IncomingStatusRequestPacketBuilder implements IncomingPacketBuilder<IncomingStatusRequestPacket> {
     @Override
-    public PacketBuilder<IncomingStatusRequestPacket> from(ByteBuffer buffer) {
+    public PacketBuilder<IncomingStatusRequestPacket> from(Client client, ByteBuffer buffer) {
         return this;
-    }
-
-    @Override
-    public IncomingStatusRequestPacket build() {
-        return new IncomingStatusRequestPacket();
     }
 
     @Override
@@ -25,6 +21,11 @@ public class IncomingStatusRequestPacketBuilder implements IncomingPacketBuilder
     @Override
     public IncomingStatusRequestPacketBuilder copy() {
         return new IncomingStatusRequestPacketBuilder();
+    }
+
+    @Override
+    public IncomingStatusRequestPacket build() {
+        return new IncomingStatusRequestPacket();
     }
 
     @Override

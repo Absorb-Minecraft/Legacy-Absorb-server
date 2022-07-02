@@ -4,6 +4,7 @@ import org.absorb.command.CommandManager;
 import org.absorb.console.ConsoleSource;
 import org.absorb.event.EventManager;
 import org.absorb.files.ServerProperties;
+import org.absorb.message.MessageManager;
 import org.absorb.message.channel.ChannelManager;
 import org.absorb.module.ModuleManager;
 import org.absorb.net.NetManager;
@@ -14,10 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class AbsorbManagers {
 
-    public static AbsorbManagers instance;
-
     ConsoleSource console;
     NetManager netManager;
+    MessageManager messageManager;
     RegistryManager registryManager;
     AbsorbWorldManager worldManager;
     EventManager eventManager;
@@ -26,6 +26,11 @@ public class AbsorbManagers {
     ScheduleManager scheduleManager;
     ChannelManager channelManager;
     CommandManager commandManager;
+    public static AbsorbManagers instance;
+
+    public static MessageManager getMessageManager() {
+        return get(instance.messageManager);
+    }
 
     public static CommandManager getCommandManager() {
         return get(instance.commandManager);
@@ -68,7 +73,7 @@ public class AbsorbManagers {
     }
 
     private static <T> T get(@Nullable T value) {
-        if (value==null) {
+        if (value == null) {
             throw new RuntimeException("Manager has not booted yet");
         }
         return value;

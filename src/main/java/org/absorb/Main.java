@@ -8,6 +8,7 @@ import org.absorb.command.Commands;
 import org.absorb.console.ConsoleSource;
 import org.absorb.event.EventManager;
 import org.absorb.files.ServerProperties;
+import org.absorb.message.MessageManager;
 import org.absorb.message.channel.ChannelManager;
 import org.absorb.module.ModuleManager;
 import org.absorb.module.loader.ModuleLoaders;
@@ -22,6 +23,7 @@ import org.absorb.register.AbsorbKey;
 import org.absorb.register.RegistryManager;
 import org.absorb.schedule.Schedule;
 import org.absorb.schedule.ScheduleManager;
+import org.absorb.threaded.Awaitable;
 import org.absorb.utils.Identifiable;
 import org.absorb.world.AbsorbWorld;
 import org.absorb.world.AbsorbWorldBuilder;
@@ -81,11 +83,43 @@ public class Main {
         VERSION = version;
     }
 
+    public static void openUPnP(ServerSocket socket) {
+        if (!AbsorbManagers.getProperties().isUsingPlugAndPlay()) {
+            AbsorbManagers
+                    .getConsole()
+                    .sendMessage(Component.text(
+                            "Starting network connection: Allowing from " + socket.getInetAddress().getHostAddress()
+                                    + ":" + socket.getLocalPort()));
+            return;
+        }
+        AbsorbManagers.getConsole().sendMessage(Component.text("uPnP opening port: " + socket.getLocalPort()));
+        if (!UPnP.openPortTCP(socket.getLocalPort())) {
+            AbsorbManagers
+                    .getConsole()
+                    .sendMessage(Component
+                                         .text("uPnP failed to open port: " + socket.getLocalPort())
+                                         .color(NamedTextColor.RED));
+
+            return;
+        }
+        AbsorbManagers.getConsole().sendMessage(Component.text("uPnP opened port: " + socket.getLocalPort()));
+        String external = UPnP.getExternalIP();
+        AbsorbManagers
+                .getConsole()
+                .sendMessage(Component.text(
+                        "Starting network connection: Allowing from " + external + ":" + socket.getLocalPort()));
+
+
+    }
+
     public static void init(String[] args) throws IOException {
         IS_RUNNING = true;
         AbsorbManagers.instance = new AbsorbManagers();
         AbsorbManagers.instance.console = new ConsoleSource();
-        AbsorbManagers.getConsole().sendProgress(0, 5);
+
+        ConsoleSource console = AbsorbManagers.getConsole();
+        console.sendProgress(0, 5);
+        AbsorbManagers.instance.messageManager = new MessageManager();
         AbsorbManagers.instance.registryManager = new RegistryManager();
         AbsorbManagers.instance.eventManager = new EventManager();
         AbsorbManagers.instance.moduleManager = new ModuleManager();
@@ -94,34 +128,24 @@ public class Main {
         AbsorbManagers.instance.commandManager = new CommandManager();
 
         Commands.getAll();
-        AbsorbManagers.getConsole().sendProgress(1, 5);
-
+        console.sendProgress(1, 5);
 
         AbsorbManagers.instance.properties = new ServerProperties();
         AbsorbManagers.instance.properties.updateFile();
 
-        AbsorbWorld world = new AbsorbWorldBuilder()
-                .setBlockMax(new Vector3i(600, 20, 600))
-                .setBlockMin(new Vector3i(-200, 0, -200))
-                .setWorldData(new AbsorbWorldData()
-                                      .setType(WorldTypes.FLAT)
-                                      .setSeed(0)
-                                      .setKey(new AbsorbKey(Identifiable.MINECRAFT_HOST, "temp")))
-                .build();
+        AbsorbWorld world = loadDefaultWorld();
         AbsorbManagers.instance.worldManager = new AbsorbWorldManager(world);
 
-        AbsorbManagers
-                .getConsole()
-                .sendMessage(Component.text("Loaded world: " + world.getWorldData().getKey().asFormatted()));
-        AbsorbManagers.getConsole().sendProgress(1, 4);
+        console.sendMessage(Component.text("Loaded world: " + world.getWorldData().getKey().asFormatted()));
+        console.sendProgress(1, 4);
 
         AbsorbModuleLoader absorbModuleLoader = ModuleLoaders.ABSORB_MODULE;
         if (!AbsorbModuleLoader.MODULE_FOLDER.exists()) {
             AbsorbModuleLoader.MODULE_FOLDER.mkdirs();
         }
         @NotNull Collection<File> canLoad = absorbModuleLoader.getCanLoad();
-        AbsorbManagers.getConsole().sendMessage(Component.text("Found " + canLoad.size() + " compatible files"));
-        AbsorbManagers.getConsole().sendProgress(2, 4);
+        console.sendMessage(Component.text("Found " + canLoad.size() + " compatible files"));
+        console.sendProgress(2, 4);
 
         Set<AbsorbModule> loaded = canLoad.parallelStream().flatMap(load -> {
             try {
@@ -132,7 +156,7 @@ public class Main {
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toSet());
-        AbsorbManagers.getConsole().sendProgress(3, 4);
+        console.sendProgress(3, 4);
 
         loaded.parallelStream().forEach(module -> {
             try {
@@ -142,46 +166,30 @@ public class Main {
             }
         });
 
-        InetAddress address = AbsorbManagers.getProperties().getIpAddress();
+        InetAddress address = AbsorbManagers.getProperties().getIpAddress().orElse(null);
         int port = AbsorbManagers.getProperties().getPort();
         ServerSocket socket;
         try {
             socket = new ServerSocket(port, -1, address);
         } catch (BindException e) {
-            System.err.println("Host: " + address.toString());
-            System.err.println("Port: " + port);
-            System.err.println("This is typically caused due to another program using the port specified. Either "
-                                       + "close the program using the port (check for other servers) or change the port"
-                                       + " number");
+            console.sendMessage(Component
+                                        .text("This is typically caused due to another program using the port "
+                                                      + "specified. Either close the program using the port (check for other servers) or change the port"
+                                                      + " number")
+                                        .color(NamedTextColor.RED));
             throw e;
         }
 
-        if (AbsorbManagers.getProperties().isUsingPlugAndPlay()) {
-            AbsorbManagers.getConsole().sendMessage(Component.text("uPnP opening port: " + port));
-            if (UPnP.openPortTCP(port)) {
-                AbsorbManagers.getConsole().sendMessage(Component.text("uPnP opened port: " + port));
-            } else {
-                AbsorbManagers
-                        .getConsole()
-                        .sendMessage(Component.text("uPnP failed to open port: " + port).color(NamedTextColor.RED));
-
-            }
-        }
+        new Thread(() -> openUPnP(socket)).start();
 
         NetHandler handler = new NetHandler(socket);
         AbsorbManagers.instance.netManager = new NetManager(handler);
 
         AbsorbManagers.getConsole().runCommandRunner();
-        while (!AbsorbManagers.getRegistryManager().isReady()) {
-
-        }
-        AbsorbManagers.getConsole().sendMessage(Component.text("Ready to accept players").color(NamedTextColor.GREEN));
+        new Awaitable<>(() -> AbsorbManagers.getRegistryManager().isReady(), true).await();
+        console.sendMessage(Component.text("Ready to accept players").color(NamedTextColor.GREEN));
         handler.start();
-        RegistryManager
-                .getVanillaValues(Schedule.class)
-                .parallelStream()
-                .forEach(schedule -> AbsorbManagers.instance.scheduleManager.register(schedule));
-        AbsorbManagers.getScheduleManager().runSchedulers();
+        startScheduler();
     }
 
     public static void stop() {
@@ -254,6 +262,25 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static AbsorbWorld loadDefaultWorld() {
+        return new AbsorbWorldBuilder()
+                .setBlockMax(new Vector3i(600, 20, 600))
+                .setBlockMin(new Vector3i(-200, 0, -200))
+                .setWorldData(new AbsorbWorldData()
+                                      .setType(WorldTypes.FLAT)
+                                      .setSeed(0)
+                                      .setKey(new AbsorbKey(Identifiable.MINECRAFT_HOST, "temp")))
+                .build();
+    }
+
+    private static void startScheduler() {
+        RegistryManager
+                .getVanillaValues(Schedule.class)
+                .parallelStream()
+                .forEach(schedule -> AbsorbManagers.instance.scheduleManager.register(schedule));
+        AbsorbManagers.getScheduleManager().runSchedulers();
     }
 
     private static void runUpdateCommand(String... args) {

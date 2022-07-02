@@ -1,5 +1,6 @@
 package org.absorb.net.packet.play.incoming.client.channel.chat;
 
+import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
@@ -13,7 +14,7 @@ public class IncomingMessagePacketBuilder implements IncomingPacketBuilder<Incom
 
     private String message;
     private long timestamp;
-    private Byte[] sign;
+    private byte[] sign;
     private long salt;
     private boolean preview;
 
@@ -36,11 +37,11 @@ public class IncomingMessagePacketBuilder implements IncomingPacketBuilder<Incom
         return this;
     }
 
-    public Byte[] getSignature() {
+    public byte[] getSignature() {
         return this.sign;
     }
 
-    public IncomingMessagePacketBuilder setSignature(Byte... sign) {
+    public IncomingMessagePacketBuilder setSignature(byte... sign) {
         this.sign = sign;
         return this;
     }
@@ -64,13 +65,14 @@ public class IncomingMessagePacketBuilder implements IncomingPacketBuilder<Incom
     }
 
     @Override
-    public PacketBuilder<IncomingMessagePacket> from(ByteBuffer packetBytes) {
+    public @NotNull PacketBuilder<IncomingMessagePacket> from(@NotNull Client client, @NotNull ByteBuffer packetBytes) {
         NetEntryData<String> message = NetSerializers.STRING.read(0, packetBytes);
         NetEntryData<Long> timestamp = NetSerializers.LONG.read(message.endingPosition(), packetBytes);
         NetEntryData<Long> salt = NetSerializers.LONG.read(timestamp.endingPosition(), packetBytes);
         NetEntryData<Integer> signLength = NetSerializers.VAR_INTEGER.read(salt.endingPosition(), packetBytes);
-        NetEntryData<Byte[]> sign = NetSerializers.byteArray(signLength.value()).read(signLength.endingPosition(),
-                packetBytes);
+        NetEntryData<byte[]> sign = NetSerializers
+                .byteArray(signLength.value())
+                .read(signLength.endingPosition(), packetBytes);
         NetEntryData<Boolean> preview = NetSerializers.BOOLEAN.read(sign.endingPosition(), packetBytes);
 
         this.message = message.value();
@@ -82,28 +84,27 @@ public class IncomingMessagePacketBuilder implements IncomingPacketBuilder<Incom
     }
 
     @Override
-    public @NotNull IncomingMessagePacket build() {
-        return new IncomingMessagePacket(this);
-    }
-
-    @Override
-    public IncomingPacketBuilder<IncomingMessagePacket> reset() {
+    public @NotNull IncomingPacketBuilder<IncomingMessagePacket> reset() {
         this.message = null;
         this.preview = false;
         this.salt = 0;
-        this.sign = new Byte[0];
+        this.sign = new byte[0];
         this.timestamp = 0;
         return this;
     }
 
     @Override
-    public IncomingPacketBuilder<IncomingMessagePacket> copy() {
+    public @NotNull IncomingPacketBuilder<IncomingMessagePacket> copy() {
         return new IncomingMessagePacketBuilder()
                 .setMessage(this.message)
                 .setPreview(this.preview)
                 .setSalt(this.salt)
-                .setTimestamp(this.timestamp)
-                ;
+                .setTimestamp(this.timestamp);
+    }
+
+    @Override
+    public @NotNull IncomingMessagePacket build() {
+        return new IncomingMessagePacket(this);
     }
 
     @Override

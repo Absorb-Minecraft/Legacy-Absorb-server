@@ -2,6 +2,7 @@ package org.absorb.files;
 
 import org.absorb.files.json.DefaultNode;
 import org.absorb.files.json.SimpleDefaultNode;
+import org.absorb.files.json.SimpleNode;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.NodeStyle;
@@ -14,43 +15,30 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Optional;
 
 public class ServerProperties {
 
-    private final SimpleDefaultNode<InetAddress> ipAddress = new SimpleDefaultNode<InetAddress>(
-            "The IPAddress to bind to. This can either be a IPv4, IPv6 or a hostname"
-                    + ". Leave blank to use this computers",
-            InetAddress.class,
-            value -> {
-                String stringValue = value.getString();
-                if (stringValue == null) {
-                    throw new SerializationException("Cannot find value");
-                }
-                try {
-                    return InetAddress.getByName(stringValue);
-                } catch (UnknownHostException e) {
-                    throw new SerializationException(e);
-                }
-            },
-            (node, value) -> {
-                try {
-                    if (value.equals(InetAddress.getLocalHost())) {
-                        return;
-                    }
-                } catch (UnknownHostException e) {
-                    throw new RuntimeException(e);
-                }
-                node.set(value.getHostAddress());
-            },
-            () -> {
-                try {
-                    return InetAddress.getLocalHost();
-                } catch (UnknownHostException e) {
-                    throw new RuntimeException(e);
-                }
-            },
-            "Network",
-            "IPAddress");
+    private final SimpleNode<InetAddress> ipAddress = new SimpleNode<InetAddress>(false, InetAddress.class, value -> {
+        String stringValue = value.getString();
+        if (stringValue == null) {
+            throw new SerializationException("Cannot find value");
+        }
+        try {
+            return InetAddress.getByName(stringValue);
+        } catch (UnknownHostException e) {
+            throw new SerializationException(e);
+        }
+    }, (node, value) -> {
+        try {
+            if (value.equals(InetAddress.getLocalHost())) {
+                return;
+            }
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        node.set(value.getHostAddress());
+    }, "Network", "IPAddress");
 
     private final DefaultNode<Integer> port = SimpleDefaultNode.asInt(
             "This must be above the number 0 and a whole number. The port number allows you to run multiple "
@@ -133,8 +121,12 @@ public class ServerProperties {
         this.loader.save(this.rootNode);
     }
 
-    public InetAddress getIpAddress() {
-        return this.ipAddress.getValueOrElse(this.rootNode);
+    public Optional<InetAddress> getIpAddress() {
+        try {
+            return this.ipAddress.getValue(this.rootNode);
+        } catch (SerializationException e) {
+            return Optional.empty();
+        }
     }
 
     public boolean isUsingPlugAndPlay() {

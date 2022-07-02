@@ -23,16 +23,11 @@ import java.util.Optional;
 
 public class OutgoingDeclareCommandPacket implements OutgoingPacket {
 
-    public static final int ID = 0x0F;
-
     private final @NotNull Collection<CommandNode> nodes = new LinkedList<>();
+    public static final int ID = 0x0F;
 
     public OutgoingDeclareCommandPacket(@NotNull OutgoingDeclaredCommandsPacketBuilder builder) {
         this.nodes.addAll(builder.getCommands());
-    }
-
-    private List<CommandNode> optimise(@NotNull CommandSender sender) {
-        return this.nodes.parallelStream().filter(node -> node.canUse(sender)).toList();
     }
 
     @Override
@@ -61,12 +56,7 @@ public class OutgoingDeclareCommandPacket implements OutgoingPacket {
         ByteBuffer sizeBuffer = NetSerializers.VAR_INTEGER.write(list.size());
         List<ByteBuffer> mappedNodes = list.stream().map(node -> (AbstractCommandNode) node).map(node -> {
             byte flags = node.getFlags();
-            List<Integer> children =
-                    node
-                            .getChildren(stream)
-                            .parallelStream()
-                            .map(list::indexOf)
-                            .toList();
+            List<Integer> children = node.getChildren(stream).parallelStream().map(list::indexOf).toList();
             ByteBuffer flagBuffer = NetSerializers.BYTE.write(flags);
             ByteBuffer childrenBuffer = new NetList<>(NetSerializers.VAR_INTEGER).write(children);
             ByteBuffer redirectBuffer = ByteBuffer.allocate(0);
@@ -82,7 +72,7 @@ public class OutgoingDeclareCommandPacket implements OutgoingPacket {
             }
             if (node instanceof ArgumentCommandNode<?> cNode) {
                 @NotNull CommandParser<?> parser = cNode.getParser();
-                parserBuffer = NetSerializers.RESOURCE_KEY.write(parser.getResourceKey());
+                parserBuffer = NetSerializers.VAR_INTEGER.write(parser.getNetworkId());
                 if (parser.getProperty().isPresent()) {
                     CommandParserProperty<?> property = parser.getProperty().get();
                     propertiesBuffer = property.write();
@@ -92,11 +82,20 @@ public class OutgoingDeclareCommandPacket implements OutgoingPacket {
                     suggestionsBuffer = NetSerializers.RESOURCE_KEY.write(opType.get().getResourceKey());
                 }
             }
-            return NetUtils.collect(List.of(flagBuffer, childrenBuffer, redirectBuffer, nameBuffer,
-                    parserBuffer, propertiesBuffer, suggestionsBuffer));
+            return NetUtils.collect(List.of(flagBuffer,
+                                            childrenBuffer,
+                                            redirectBuffer,
+                                            nameBuffer,
+                                            parserBuffer,
+                                            propertiesBuffer,
+                                            suggestionsBuffer));
         }).toList();
         ByteBuffer nodesBuffer = NetUtils.collect(mappedNodes);
         ByteBuffer rootIndexBuffer = NetSerializers.VAR_INTEGER.write(rootIndex);
         return NetUtils.createPacket(ID, sizeBuffer, nodesBuffer, rootIndexBuffer);
+    }
+
+    private List<CommandNode> optimise(@NotNull CommandSender sender) {
+        return this.nodes.parallelStream().filter(node -> node.canUse(sender)).toList();
     }
 }

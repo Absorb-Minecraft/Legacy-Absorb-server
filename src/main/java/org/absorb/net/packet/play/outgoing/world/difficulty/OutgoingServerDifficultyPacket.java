@@ -1,8 +1,8 @@
 package org.absorb.net.packet.play.outgoing.world.difficulty;
 
 import org.absorb.net.Client;
-import org.absorb.net.data.NetUtils;
 import org.absorb.net.data.NetSerializers;
+import org.absorb.net.data.NetUtils;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
@@ -17,7 +17,7 @@ public class OutgoingServerDifficultyPacket implements OutgoingPacket {
     private final @NotNull Difficulty difficulty;
     private final boolean locked;
 
-    public static final int ID = 0x0E;
+    public static final int ID = 0x0B;
 
     public OutgoingServerDifficultyPacket(@NotNull OutgoingServerDifficultyPacketBuilder builder) {
         this.difficulty = builder.getDifficulty();

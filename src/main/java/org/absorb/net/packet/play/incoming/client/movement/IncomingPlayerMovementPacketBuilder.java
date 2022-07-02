@@ -1,5 +1,6 @@
 package org.absorb.net.packet.play.incoming.client.movement;
 
+import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
@@ -74,7 +75,7 @@ public class IncomingPlayerMovementPacketBuilder implements IncomingPacketBuilde
     }
 
     @Override
-    public PacketBuilder<IncomingPlayerMovementPacket> from(ByteBuffer packetBytes) {
+    public PacketBuilder<IncomingPlayerMovementPacket> from(Client client, ByteBuffer packetBytes) {
         NetEntryData<Double> xBuffer = NetSerializers.DOUBLE.read(0, packetBytes);
         NetEntryData<Double> yBuffer = NetSerializers.DOUBLE.read(xBuffer.endingPosition(), packetBytes);
         NetEntryData<Double> zBuffer = NetSerializers.DOUBLE.read(yBuffer.endingPosition(), packetBytes);
@@ -92,11 +93,6 @@ public class IncomingPlayerMovementPacketBuilder implements IncomingPacketBuilde
     }
 
     @Override
-    public @NotNull IncomingPlayerMovementPacket build() {
-        return new IncomingPlayerMovementPacket(this);
-    }
-
-    @Override
     public IncomingPacketBuilder<IncomingPlayerMovementPacket> reset() {
         this.x = 0;
         this.y = 0;
@@ -109,7 +105,18 @@ public class IncomingPlayerMovementPacketBuilder implements IncomingPacketBuilde
 
     @Override
     public IncomingPacketBuilder<IncomingPlayerMovementPacket> copy() {
-        return new IncomingPlayerMovementPacketBuilder().setOnGround(this.isOnGround).setZ(this.z).setY(this.y).setX(this.x).setYaw(this.yaw).setPitch(this.pitch);
+        return new IncomingPlayerMovementPacketBuilder()
+                .setOnGround(this.isOnGround)
+                .setZ(this.z)
+                .setY(this.y)
+                .setX(this.x)
+                .setYaw(this.yaw)
+                .setPitch(this.pitch);
+    }
+
+    @Override
+    public @NotNull IncomingPlayerMovementPacket build() {
+        return new IncomingPlayerMovementPacket(this);
     }
 
     @Override
