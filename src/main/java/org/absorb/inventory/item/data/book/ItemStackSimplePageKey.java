@@ -15,7 +15,7 @@ import java.util.Collections;
 public class ItemStackSimplePageKey implements StackDataKey<NBTList, Collection<String>> {
     @Override
     public NBTCompoundKey<NBTList, Collection<String>> asCompoundKey() {
-        return NBTCompoundKeys.PAGES;
+        return NBTCompoundKeys.SIMPLE_PAGES;
     }
 
     @Override
