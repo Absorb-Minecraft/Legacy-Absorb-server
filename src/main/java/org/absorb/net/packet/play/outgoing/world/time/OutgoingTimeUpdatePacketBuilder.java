@@ -3,7 +3,7 @@ package org.absorb.net.packet.play.outgoing.world.time;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
-import org.absorb.world.AbsorbWorldData;
+import org.absorb.world.WorldData;
 import org.jetbrains.annotations.NotNull;
 
 public class OutgoingTimeUpdatePacketBuilder implements OutgoingPacketBuilder<OutgoingTimeUpdatePacket> {
@@ -15,15 +15,14 @@ public class OutgoingTimeUpdatePacketBuilder implements OutgoingPacketBuilder<Ou
         return this.worldAge;
     }
 
-    public OutgoingTimeUpdatePacketBuilder setWorld(AbsorbWorldData data) {
-        this.timeOfDay = data.getWorldTime();
-        this.worldAge = data.getWorldAge();
+    public OutgoingTimeUpdatePacketBuilder setWorldAge(long worldAge) {
+        this.worldAge = worldAge;
         return this;
     }
 
-
-    public OutgoingTimeUpdatePacketBuilder setWorldAge(long worldAge) {
-        this.worldAge = worldAge;
+    public OutgoingTimeUpdatePacketBuilder setWorld(WorldData data) {
+        this.timeOfDay = data.getWorldTime();
+        this.worldAge = data.getWorldAge();
         return this;
     }
 

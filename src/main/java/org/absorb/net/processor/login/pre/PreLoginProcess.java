@@ -2,7 +2,6 @@ package org.absorb.net.processor.login.pre;
 
 import net.kyori.adventure.text.Component;
 import org.absorb.AbsorbManagers;
-import org.absorb.entity.EntityEffect;
 import org.absorb.entity.WorldEntity;
 import org.absorb.entity.living.human.Gamemodes;
 import org.absorb.entity.living.human.Human;
@@ -17,12 +16,10 @@ import org.absorb.net.packet.play.outgoing.client.channel.command.declare.Outgoi
 import org.absorb.net.packet.play.outgoing.client.compass.OutgoingSpawnPositionPacketBuilder;
 import org.absorb.net.packet.play.outgoing.client.join.OutgoingJoinPacketBuilder;
 import org.absorb.net.packet.play.outgoing.client.movement.OutgoingPlayerMovementPacketBuilder;
-import org.absorb.net.packet.play.outgoing.entity.status.OutgoingEntityStatusUpdatePacketBuilder;
 import org.absorb.net.packet.play.outgoing.entity.tab.add.OutgoingPlayerTabUpdateAddPlayerPacketBuilder;
 import org.absorb.net.packet.play.outgoing.world.difficulty.OutgoingServerDifficultyPacketBuilder;
 import org.absorb.net.processor.NetProcess;
-import org.absorb.world.AbsorbWorld;
-import org.absorb.world.area.AbsorbChunk;
+import org.absorb.world.World;
 import org.absorb.world.type.PlayerWorldTypeView;
 import org.spongepowered.math.vector.Vector3d;
 
@@ -45,7 +42,7 @@ public class PreLoginProcess implements NetProcess<IncomingLoginStartPacket> {
         UUID uuid = UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
         info.setUuid(uuid);
 
-        AbsorbWorld world = AbsorbManagers.getWorldManager().defaultWorld();
+        World world = AbsorbManagers.getWorldManager().defaultWorld();
         Vector3d spawnAt = new Vector3d(0, 0, 0);
         world.generateChunkAtBlock(spawnAt.floorX(), spawnAt.floorZ());
 
@@ -130,13 +127,13 @@ public class PreLoginProcess implements NetProcess<IncomingLoginStartPacket> {
                 .build()
                 .writeTo(info);*/
 
-        for (EntityEffect<?> effect : playerEntity.getEffects()) {
+        /*for (EntityEffect<?> effect : playerEntity.getEffects()) {
             new OutgoingEntityStatusUpdatePacketBuilder()
                     .setEffect(effect)
                     .setEntityId(worldHuman.getInstanceId())
                     .build()
                     .writeTo(info);
-        }
+        }*/
 
         /*new OutgoingSwapHotbarPacketBuilder().setNewSlot(connection.getInventory().getHotbar().getSelected()).build
         ().writeTo(connection);*/
@@ -160,15 +157,7 @@ public class PreLoginProcess implements NetProcess<IncomingLoginStartPacket> {
                 .build()
                 .writeTo(info);
 
-        AbsorbChunk chunk = world.generateChunkAtBlock(info.getEntity().getPosition().floorX(),
-                                                       info.getEntity().getPosition().floorZ());
-        //ChunkPart part = chunk.getPartWithBlockHeight(2);
-        //Set<ChunkSection> set = Set.of(part.asSection());
-
-        //info.updateChunks();
-
-        /*new OutgoingChunkUpdatePacketBuilder().setChunkPart(part).setTrustLightOnEdge(false).addChunkSections(set)
-                .build().writeToAsync(info);*/
+        new Thread(info::updateChunks).start();
 
         //new OutgoingUpdateViewPacketBuilder().setChunk(chunk).build().writeToAsync(info);
 
@@ -178,5 +167,6 @@ public class PreLoginProcess implements NetProcess<IncomingLoginStartPacket> {
         id = info.newTeleportId();
         info.registerTeleportId(id);
         new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).setTeleportId(id).build().writeTo(info);
+
     }
 }

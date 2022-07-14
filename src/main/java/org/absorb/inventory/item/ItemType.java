@@ -1,6 +1,7 @@
 package org.absorb.inventory.item;
 
 import org.absorb.block.type.BlockType;
+import org.absorb.event.events.inventory.client.inventory.item.use.UseItemEvent;
 import org.absorb.inventory.item.data.StackDataKey;
 import org.absorb.inventory.item.properties.ItemTypeProperty;
 import org.absorb.register.AbsorbKey;
@@ -12,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 @Typed(getTypesClass = ItemTypes.class)
 public class ItemType implements NetworkIdentifiable {
@@ -20,12 +23,12 @@ public class ItemType implements NetworkIdentifiable {
     private final @NotNull String name;
     private final @NotNull String key;
     private final @NotNull String host;
-    private @Nullable AbsorbKey blockKey;
-    private @Nullable BlockType block;
     private final @NotNull Collection<StackDataKey<?, ?>> supportedData = new HashSet<>();
     private final @NotNull Collection<ItemTypeProperty> properties = new HashSet<>();
-
+    private final @Nullable Consumer<UseItemEvent.Pre> onUseEvent;
     private final int stackSize;
+    private @Nullable AbsorbKey blockKey;
+    private @Nullable BlockType block;
 
     public ItemType(@NotNull ItemTypeBuilder builder) {
         this.supportedData.addAll(builder.getSupportedData());
@@ -34,6 +37,11 @@ public class ItemType implements NetworkIdentifiable {
         this.networkId = builder.getNetworkId();
         this.stackSize = builder.getStackSize();
         this.name = builder.getName();
+        this.onUseEvent = builder.getOnUseEvent();
+    }
+
+    public Optional<Consumer<UseItemEvent.Pre>> onUseItem() {
+        return Optional.ofNullable(this.onUseEvent);
     }
 
     public Collection<StackDataKey<?, ?>> getSupportedData() {

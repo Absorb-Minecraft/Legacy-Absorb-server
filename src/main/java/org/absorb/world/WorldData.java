@@ -5,7 +5,7 @@ import org.absorb.world.type.WorldType;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
-public class AbsorbWorldData {
+public class WorldData {
 
     private AbsorbKey key;
     private long seed;
@@ -20,7 +20,7 @@ public class AbsorbWorldData {
         return this.worldTime;
     }
 
-    public AbsorbWorldData setWorldTime(long worldTime) {
+    public WorldData setWorldTime(long worldTime) {
         this.worldTime = worldTime;
         return this;
     }
@@ -29,7 +29,7 @@ public class AbsorbWorldData {
         return this.worldAge;
     }
 
-    public AbsorbWorldData setWorldAge(long worldAge) {
+    public WorldData setWorldAge(long worldAge) {
         this.worldAge = worldAge;
         return this;
     }
@@ -38,7 +38,7 @@ public class AbsorbWorldData {
         return this.compassPoint;
     }
 
-    public AbsorbWorldData setCompassPoint(@NotNull Vector3i compassPoint) {
+    public WorldData setCompassPoint(@NotNull Vector3i compassPoint) {
         this.compassPoint = compassPoint;
         return this;
     }
@@ -47,7 +47,7 @@ public class AbsorbWorldData {
         return this.spawnPoint;
     }
 
-    public AbsorbWorldData setSpawnPoint(@NotNull Vector3i spawnPoint) {
+    public WorldData setSpawnPoint(@NotNull Vector3i spawnPoint) {
         this.spawnPoint = spawnPoint;
         return this;
     }
@@ -56,7 +56,7 @@ public class AbsorbWorldData {
         return this.difficulty;
     }
 
-    public AbsorbWorldData setDifficulty(@NotNull Difficulty difficulty) {
+    public WorldData setDifficulty(@NotNull Difficulty difficulty) {
         this.difficulty = difficulty;
         return this;
     }
@@ -65,7 +65,7 @@ public class AbsorbWorldData {
         return this.type;
     }
 
-    public AbsorbWorldData setType(WorldType type) {
+    public WorldData setType(WorldType type) {
         this.type = type;
         return this;
     }
@@ -74,7 +74,7 @@ public class AbsorbWorldData {
         return this.key;
     }
 
-    public AbsorbWorldData setKey(AbsorbKey key) {
+    public WorldData setKey(AbsorbKey key) {
         this.key = key;
         return this;
     }
@@ -83,7 +83,7 @@ public class AbsorbWorldData {
         return this.seed;
     }
 
-    public AbsorbWorldData setSeed(long seed) {
+    public WorldData setSeed(long seed) {
         this.seed = seed;
         return this;
     }

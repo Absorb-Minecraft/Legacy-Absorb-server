@@ -17,7 +17,7 @@ import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketState;
 import org.absorb.register.AbsorbKey;
-import org.absorb.world.AbsorbWorld;
+import org.absorb.world.World;
 import org.absorb.world.biome.Biome;
 import org.absorb.world.location.Location;
 import org.absorb.world.type.PlayerWorldTypeView;
@@ -48,7 +48,7 @@ public class OutgoingJoinPacket implements OutgoingPacket {
     private final boolean isFlatWorld;
     private final @Nullable Location deathLocation;
     private final @NotNull Collection<PlayerWorldTypeView> worldTypes;
-    private final @NotNull AbsorbWorld currentWorld;
+    private final @NotNull World currentWorld;
     private final @NotNull SortedSet<Biome> biomes = new TreeSet<>(Comparator.comparing(Biome::getNetworkId));
     public static final int ID = 0x23;
 
@@ -137,7 +137,7 @@ public class OutgoingJoinPacket implements OutgoingPacket {
         return this.worldTypes;
     }
 
-    public @NotNull AbsorbWorld getCurrentWorld() {
+    public @NotNull World getCurrentWorld() {
         return this.currentWorld;
     }
 

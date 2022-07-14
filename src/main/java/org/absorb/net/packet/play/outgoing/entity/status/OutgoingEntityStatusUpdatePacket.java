@@ -2,8 +2,8 @@ package org.absorb.net.packet.play.outgoing.entity.status;
 
 import org.absorb.entity.EntityEffect;
 import org.absorb.net.Client;
-import org.absorb.net.data.NetUtils;
 import org.absorb.net.data.NetSerializers;
+import org.absorb.net.data.NetUtils;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
@@ -14,10 +14,9 @@ import java.nio.ByteBuffer;
 
 public class OutgoingEntityStatusUpdatePacket implements OutgoingPacket {
 
-    public static final int ID = 0x1B;
-
     private final EntityEffect<?> effect;
     private final int entityId;
+    public static final int ID = 0x1B; //TODO -> UPDATE THIS
 
     public OutgoingEntityStatusUpdatePacket(@NotNull OutgoingEntityStatusUpdatePacketBuilder builder) {
         this.effect = builder.getEffect();

@@ -1,7 +1,10 @@
 package org.absorb.particle;
 
 import me.nullicorn.nedit.type.NBTCompound;
-import org.absorb.files.nbt.compound.*;
+import org.absorb.files.nbt.compound.NBTCompoundBuilder;
+import org.absorb.files.nbt.compound.NBTCompoundEntry;
+import org.absorb.files.nbt.compound.NBTCompoundGroupable;
+import org.absorb.files.nbt.compound.NBTCompoundKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -12,12 +15,12 @@ public class Particle implements NBTCompoundGroupable {
     private final @NotNull ParticleType type;
     private final float probability;
 
-    public Particle(@NotNull ParticleBuilder builder){
+    public Particle(@NotNull ParticleBuilder builder) {
         this.type = builder.getType();
         this.probability = builder.getProbability();
     }
 
-    public ParticleType getType() {
+    public @NotNull ParticleType getType() {
         return this.type;
     }
 

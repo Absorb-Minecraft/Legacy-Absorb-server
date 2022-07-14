@@ -19,14 +19,14 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.LinkedTransferQueue;
 
-public class AbsorbWorld {
+public class World {
 
-    private final AbsorbWorldData worldData;
+    private final WorldData worldData;
     private final Vector3i blockMin;
     private final Vector3i blockMax;
     private final LinkedTransferQueue<AbsorbChunk> chunks = new LinkedTransferQueue<>();
 
-    public AbsorbWorld(AbsorbWorldBuilder builder) {
+    public World(WorldBuilder builder) {
         if (builder.getWorldData() == null) {
             throw new IllegalStateException("No WorldData provided");
         }
@@ -39,7 +39,7 @@ public class AbsorbWorld {
         return new Location(this, x, y, z);
     }
 
-    public AbsorbWorldData getWorldData() {
+    public WorldData getWorldData() {
         return this.worldData;
     }
 
@@ -126,12 +126,16 @@ public class AbsorbWorld {
         return chunk;
     }
 
+    public int getBlockHeight() {
+        return this.getMaxBlock().y() - this.getMinBlock().y();
+    }
+
     public int getChunkLevelHeight() {
-        int blocks = this.getMaxBlock().y() - this.getMinBlock().y();
+        int blocks = this.getBlockHeight();
         return blocks / ChunkPart.CHUNK_PART_HEIGHT;
     }
 
-    public ConnectedCollection<WorldEntity> getEntities() {
+    public Collection<WorldEntity> getEntities() {
         return new ConnectedCollection<>(this.chunks
                                                  .parallelStream()
                                                  .map(AbsorbChunk::getEntities)

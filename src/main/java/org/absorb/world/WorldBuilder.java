@@ -3,17 +3,17 @@ package org.absorb.world;
 import org.absorb.utils.Builder;
 import org.spongepowered.math.vector.Vector3i;
 
-public class AbsorbWorldBuilder implements Builder<AbsorbWorld> {
+public class WorldBuilder implements Builder<World> {
 
     private Vector3i blockMin;
     private Vector3i blockMax;
-    private AbsorbWorldData worldData;
+    private WorldData worldData;
 
-    public AbsorbWorldData getWorldData() {
+    public WorldData getWorldData() {
         return this.worldData;
     }
 
-    public AbsorbWorldBuilder setWorldData(AbsorbWorldData worldData) {
+    public WorldBuilder setWorldData(WorldData worldData) {
         this.worldData = worldData;
         return this;
     }
@@ -22,7 +22,7 @@ public class AbsorbWorldBuilder implements Builder<AbsorbWorld> {
         return this.blockMin;
     }
 
-    public AbsorbWorldBuilder setBlockMin(Vector3i blockMin) {
+    public WorldBuilder setBlockMin(Vector3i blockMin) {
         this.blockMin = blockMin;
         return this;
     }
@@ -31,25 +31,25 @@ public class AbsorbWorldBuilder implements Builder<AbsorbWorld> {
         return this.blockMax;
     }
 
-    public AbsorbWorldBuilder setBlockMax(Vector3i blockMax) {
+    public WorldBuilder setBlockMax(Vector3i blockMax) {
         this.blockMax = blockMax;
         return this;
     }
 
     @Override
-    public AbsorbWorld build() {
-        return new AbsorbWorld(this);
+    public World build() {
+        return new World(this);
     }
 
     @Override
-    public AbsorbWorldBuilder reset() {
+    public WorldBuilder reset() {
         this.blockMax = null;
         this.blockMin = null;
         return this;
     }
 
     @Override
-    public AbsorbWorldBuilder copy() {
-        return new AbsorbWorldBuilder().setBlockMax(this.getBlockMax()).setBlockMin(this.getBlockMin());
+    public WorldBuilder copy() {
+        return new WorldBuilder().setBlockMax(this.getBlockMax()).setBlockMin(this.getBlockMin());
     }
 }

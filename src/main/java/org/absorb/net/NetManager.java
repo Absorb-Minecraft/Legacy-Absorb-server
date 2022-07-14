@@ -13,6 +13,7 @@ import org.absorb.net.packet.play.incoming.client.channel.plugin.IncomingPluginM
 import org.absorb.net.packet.play.incoming.client.inventory.close.IncomingCloseInventoryPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.inventory.creative.IncomingCreativeInventoryClickPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.inventory.hotbar.cooldown.IncomingItemCooldownPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.inventory.hotbar.hand.use.IncomingUseItemPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.inventory.hotbar.selected.IncomingHotbarChangePacketBuilder;
 import org.absorb.net.packet.play.incoming.client.keep.alive.IncomingKeepAlivePacketBuilder;
 import org.absorb.net.packet.play.incoming.client.movement.IncomingPlayerMovementPacketBuilder;
@@ -119,5 +120,6 @@ public class NetManager {
         this.registerIncomingPacketBuilder(new IncomingClientCommandActionPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingEntityQueryPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingKeepAlivePacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingUseItemPacketBuilder());
     }
 }

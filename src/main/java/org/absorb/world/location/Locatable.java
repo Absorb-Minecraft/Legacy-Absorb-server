@@ -1,13 +1,14 @@
 package org.absorb.world.location;
 
-import org.absorb.world.AbsorbWorld;
+import org.absorb.world.World;
 import org.jetbrains.annotations.NotNull;
 
 public interface Locatable {
 
-    @NotNull Location getLocation();
+    @NotNull
+    Location getLocation();
 
-    default @NotNull AbsorbWorld getWorld() {
+    default @NotNull World getWorld() {
         return this.getLocation().getWorld();
     }
 }

@@ -1,8 +1,27 @@
 package org.absorb.net.packet.play.tab.add;
 
+import org.absorb.entity.living.human.Gamemode;
+import org.absorb.entity.living.human.Gamemodes;
+import org.absorb.entity.living.human.tab.PlayerTab;
+import org.absorb.entity.living.human.tab.PlayerTabBuilder;
+import org.absorb.net.Client;
+import org.absorb.net.data.NetEntryData;
+import org.absorb.net.data.NetSerializers;
+import org.absorb.net.packet.play.outgoing.entity.tab.add.OutgoingPlayerTabUpdateAddPlayerPacket;
+import org.absorb.net.packet.play.outgoing.entity.tab.add.OutgoingPlayerTabUpdateAddPlayerPacketBuilder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.UUID;
+
 public class OutgoingPlayerTabAddPacketTest {
 
-    /*@Test
+    @Test
     public void testCanReadWritten() {
         UUID uuid = UUID.randomUUID();
         String name = "Test";
@@ -19,8 +38,9 @@ public class OutgoingPlayerTabAddPacketTest {
 
         PlayerTab tab = new PlayerTabBuilder().setName(name).setPing(ping).setGameMode(mode).setUuid(uuid).build();
 
-        OutgoingPlayerTabUpdateAddPlayerPacket tabPacket =
-                new OutgoingPlayerTabUpdateAddPlayerPacketBuilder().addTabs(Collections.singleton(tab)).build();
+        OutgoingPlayerTabUpdateAddPlayerPacket tabPacket = new OutgoingPlayerTabUpdateAddPlayerPacketBuilder()
+                .addTabs(Collections.singleton(tab))
+                .build();
 
         ByteBuffer buffer = tabPacket.toBytes(client);
 
@@ -32,19 +52,22 @@ public class OutgoingPlayerTabAddPacketTest {
         NetEntryData<Integer> sizeBuffer = NetSerializers.VAR_INTEGER.read(actionBuffer.endingPosition(), buffer);
         NetEntryData<UUID> uuidBuffer = NetSerializers.UUID.read(sizeBuffer.endingPosition(), buffer);
         NetEntryData<String> nameBuffer = NetSerializers.STRING.read(uuidBuffer.endingPosition(), buffer);
-        NetEntryData<Integer> propertiesSizeBuffer = NetSerializers.VAR_INTEGER.read(nameBuffer.endingPosition(), buffer);
+        NetEntryData<Integer> propertiesSizeBuffer = NetSerializers.VAR_INTEGER.read(nameBuffer.endingPosition(),
+                                                                                     buffer);
         NetEntryData<Integer> gamemodeBuffer = NetSerializers.VAR_INTEGER.read(propertiesSizeBuffer.endingPosition(),
-                buffer);
+                                                                               buffer);
         NetEntryData<Integer> pingBuffer = NetSerializers.VAR_INTEGER.read(gamemodeBuffer.endingPosition(), buffer);
         NetEntryData<Boolean> hasDisplayNameBuffer = NetSerializers.BOOLEAN.read(pingBuffer.endingPosition(), buffer);
 
         //assertion
-        int currentLength = Arrays.copyOfRange(buffer.array(), lengthBuffer.endingPosition(), buffer.array().length).length;
+        int currentLength = Arrays.copyOfRange(buffer.array(),
+                                               lengthBuffer.endingPosition(),
+                                               buffer.array().length).length;
         Assertions.assertEquals(currentLength, lengthBuffer.value());
         Assertions.assertEquals(uuid, uuidBuffer.value());
         Assertions.assertEquals(name, nameBuffer.value());
         Assertions.assertEquals(ping, pingBuffer.value());
         Assertions.assertEquals(mode.getNetworkId(), gamemodeBuffer.value());
         Assertions.assertFalse(hasDisplayNameBuffer.value());
-    }*/
+    }
 }

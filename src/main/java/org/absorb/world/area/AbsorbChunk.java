@@ -1,10 +1,13 @@
 package org.absorb.world.area;
 
+import me.nullicorn.nedit.type.NBTCompound;
 import org.absorb.block.locatable.LocatableBlock;
-import org.absorb.block.type.properties.mass.MassType;
 import org.absorb.entity.WorldEntity;
+import org.absorb.files.nbt.compound.NBTCompoundBuilder;
+import org.absorb.files.nbt.compound.NBTCompoundKeys;
+import org.absorb.net.data.NetUtils;
 import org.absorb.utils.colllection.ConnectedCollection;
-import org.absorb.world.AbsorbWorld;
+import org.absorb.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector2i;
 import org.spongepowered.math.vector.Vector3i;
@@ -31,34 +34,58 @@ public interface AbsorbChunk {
 
     @NotNull Vector3i getHighestPoint(int x, int z, Predicate<LocatableBlock> block);
 
-    default byte[] getHeightMap() {
-        byte[] heightmaps = new byte[ChunkPart.CHUNK_WIDTH * ChunkPart.CHUNK_LENGTH];
+    default NBTCompound getHeightMap() {
+        //TODO -> not hard code
+
+        int worldHeight = this.getWorld().getWorldData().getType().getMaximumHeight();
+        int[] motionBlocking = new int[ChunkPart.CHUNK_WIDTH * ChunkPart.CHUNK_LENGTH];
+        int[] worldSurface = new int[ChunkPart.CHUNK_WIDTH * ChunkPart.CHUNK_LENGTH];
         for (int x = 0; x < ChunkPart.CHUNK_WIDTH; x++) {
             for (int z = 0; z < ChunkPart.CHUNK_LENGTH; z++) {
-                int index = z + (x * ChunkPart.CHUNK_WIDTH);
-                heightmaps[index] = (byte) this.getHighestPoint(x, z,
-                        (loc) -> loc.getState().getState().getType().getMassType()==MassType.SOLID).y();
+                motionBlocking[x + z * 16] = 0;
+                worldSurface[x + z * 16] = worldHeight - 1;
             }
         }
-        return heightmaps;
 
-        //long sendingY = (long) Math.ceil(StrictMath.log(maxY + 1) / StrictMath.log(2));
+        final int bitsForHeight = Integer.SIZE - Integer.numberOfLeadingZeros(worldHeight);
 
+        Long[] encodedMotionBlocking = NetUtils.encodeBlocks(motionBlocking, bitsForHeight);
+        Long[] encodedWorldSurface = NetUtils.encodeBlocks(worldSurface, bitsForHeight);
+
+        return new NBTCompoundBuilder()
+                .add(NBTCompoundKeys.MOTION_BLOCKING.withValue(encodedMotionBlocking))
+                .add(NBTCompoundKeys.WORLD_SURFACE.withValue(encodedWorldSurface))
+                .build();
     }
 
-    @NotNull AbsorbWorld getWorld();
+    @NotNull World getWorld();
 
     @NotNull Area getArea();
 
     default @NotNull ChunkPart getPartWithLevel(int level) {
-        return this.getParts().stream().filter(part -> part.getLevel()==level).findAny().orElseGet(() -> this.generatePartWithLevel(level));
+        return this
+                .getParts()
+                .stream()
+                .filter(part -> part.getLevel() == level)
+                .findAny()
+                .orElseGet(() -> this.generatePartWithLevel(level));
     }
 
     default @NotNull ChunkPart getPartWithBlockHeight(int height) {
-        return this.getParts().stream().filter(part -> part.getMinimumBlockHeight() <= height).filter(part -> part.getMaximumBlockHeight() > height).findAny().orElseGet(() -> this.generatePartWithHeight(height));
+        return this
+                .getParts()
+                .stream()
+                .filter(part -> part.getMinimumBlockHeight() <= height)
+                .filter(part -> part.getMaximumBlockHeight() > height)
+                .findAny()
+                .orElseGet(() -> this.generatePartWithHeight(height));
     }
 
     default ConnectedCollection<WorldEntity> getEntities() {
-        return new ConnectedCollection<>(this.getParts().parallelStream().map(ChunkPart::getEntities).toArray(Collection[]::new));
+        return new ConnectedCollection<>(this
+                                                 .getParts()
+                                                 .parallelStream()
+                                                 .map(ChunkPart::getEntities)
+                                                 .toArray(Collection[]::new));
     }
 }

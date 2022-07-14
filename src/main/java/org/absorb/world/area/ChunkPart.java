@@ -1,11 +1,11 @@
 package org.absorb.world.area;
 
+import org.absorb.block.locatable.BlockData;
 import org.absorb.block.locatable.LocatableBlock;
 import org.absorb.block.pallet.SinglePallet;
-import org.absorb.block.locatable.BlockData;
 import org.absorb.entity.WorldEntity;
-import org.absorb.world.AbsorbWorld;
 import org.absorb.world.BlockSetter;
+import org.absorb.world.World;
 import org.absorb.world.type.GeneratedAirChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,15 +20,14 @@ import java.util.function.Predicate;
 
 public class ChunkPart implements BlockSetter {
 
+    private final int level;
+    private final AbsorbChunk chunk;
+    private final Queue<LocatableBlock> changedBlock = new LinkedTransferQueue<>();
+    private final Queue<WorldEntity> entities = new LinkedTransferQueue<>();
+    private @Nullable GeneratedChunk generated;
     public static final int CHUNK_PART_HEIGHT = 16;
     public static final int CHUNK_WIDTH = 16;
     public static final int CHUNK_LENGTH = 16;
-
-    private final int level;
-    private final AbsorbChunk chunk;
-    private @Nullable GeneratedChunk generated;
-    private final Queue<LocatableBlock> changedBlock = new LinkedTransferQueue<>();
-    private final Queue<WorldEntity> entities = new LinkedTransferQueue<>();
 
     public ChunkPart(@NotNull AbsorbChunk chunk, int level) {
         this.chunk = chunk;
@@ -36,7 +35,7 @@ public class ChunkPart implements BlockSetter {
     }
 
     public boolean isGenerated() {
-        return this.generated!=null;
+        return this.generated != null;
     }
 
     public boolean isEmpty() {
@@ -47,37 +46,8 @@ public class ChunkPart implements BlockSetter {
         this.entities.offer(entity);
     }
 
-    public Collection<WorldEntity> getEntities() {
-        return Collections.unmodifiableCollection(this.entities);
-    }
-
-    private Optional<LocatableBlock> getChangedAt(int x, int y, int z) {
-        return this.changedBlock.stream().filter(b -> b.getLocation().getBlockPosition().x()==x).filter(b -> b.getLocation().getBlockPosition().y()==y).filter(b -> b.getLocation().getBlockPosition().z()==z).findAny();
-    }
-
-    @Override
-    public LocatableBlock getBlockAt(int x, int y, int z) {
-        Optional<LocatableBlock> opBlock = this.getChangedAt(x, y, z);
-        if (opBlock.isPresent()) {
-            return opBlock.get();
-        }
-        if (!this.isGenerated()) {
-            System.err.println("Chunk has not generated part yet was being requested for BlockAt(" + x + ", " + y +
-                    ", " + z + "). Please check the timing of your code");
-            this.chunk.generatePartWithLevel(this.level);
-        }
-        while (!this.isGenerated()) {
-
-        }
-        return this.generated.getBlock(x, y, z, this.chunk.getWorld());
-    }
-
     public AbsorbChunk getChunk() {
         return this.chunk;
-    }
-
-    void setGeneratedChunk(@NotNull GeneratedChunk chunk) {
-        this.generated = chunk;
     }
 
     @Override
@@ -100,8 +70,41 @@ public class ChunkPart implements BlockSetter {
     }
 
     @Override
-    public AbsorbWorld getWorld() {
+    public World getWorld() {
         return this.chunk.getWorld();
+    }
+
+    @Override
+    public LocatableBlock getBlockAt(int x, int y, int z) {
+        Optional<LocatableBlock> opBlock = this.getChangedAt(x, y, z);
+        if (opBlock.isPresent()) {
+            return opBlock.get();
+        }
+        if (!this.isGenerated()) {
+            System.err.println(
+                    "Chunk has not generated part yet was being requested for BlockAt(" + x + ", " + y + ", " + z
+                            + "). Please check the timing of your code");
+            this.chunk.generatePartWithLevel(this.level);
+        }
+        while (!this.isGenerated()) {
+
+        }
+        return this.generated.getBlock(x, y, z, this.chunk.getWorld());
+    }
+
+    @Override
+    public Collection<WorldEntity> getEntities() {
+        return Collections.unmodifiableCollection(this.entities);
+    }
+
+    @Override
+    public Vector3i getMaxBlock() {
+        return this.getChunk().getArea().getMax().toInt();
+    }
+
+    @Override
+    public Vector3i getMinBlock() {
+        return this.getChunk().getArea().getMin().toInt();
     }
 
     public Collection<LocatableBlock> getAppliedChanges() {
@@ -110,6 +113,10 @@ public class ChunkPart implements BlockSetter {
 
     public Optional<GeneratedChunk> getGeneratedChunk() {
         return Optional.ofNullable(this.generated);
+    }
+
+    void setGeneratedChunk(@NotNull GeneratedChunk chunk) {
+        this.generated = chunk;
     }
 
     public int getMinimumBlockHeight() {
@@ -142,5 +149,14 @@ public class ChunkPart implements BlockSetter {
             }
         }
         return section;
+    }
+
+    private Optional<LocatableBlock> getChangedAt(int x, int y, int z) {
+        return this.changedBlock
+                .stream()
+                .filter(b -> b.getLocation().getBlockPosition().x() == x)
+                .filter(b -> b.getLocation().getBlockPosition().y() == y)
+                .filter(b -> b.getLocation().getBlockPosition().z() == z)
+                .findAny();
     }
 }

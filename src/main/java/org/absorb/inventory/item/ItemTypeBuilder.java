@@ -1,5 +1,6 @@
 package org.absorb.inventory.item;
 
+import org.absorb.event.events.inventory.client.inventory.item.use.UseItemEvent;
 import org.absorb.inventory.item.data.StackDataKey;
 import org.absorb.inventory.item.properties.ItemTypeProperty;
 import org.absorb.register.AbsorbKey;
@@ -8,18 +9,21 @@ import org.absorb.utils.Identifiable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.function.Consumer;
 
 public class ItemTypeBuilder implements Builder<ItemType> {
 
+    private final @NotNull Collection<StackDataKey<?, ?>> supportedData = new HashSet<>();
+    private final @NotNull Collection<ItemTypeProperty> properties = new HashSet<>();
     private int networkId;
     private String name;
     private String key;
     private String host;
     private @Nullable AbsorbKey blockKey;
-    private final @NotNull Collection<StackDataKey<?, ?>> supportedData = new HashSet<>();
-    private final @NotNull Collection<ItemTypeProperty> properties = new HashSet<>();
+    private Consumer<UseItemEvent.Pre> onUseEvent;
 
     private int stackSize;
 
@@ -36,8 +40,22 @@ public class ItemTypeBuilder implements Builder<ItemType> {
         return this;
     }
 
+    public Consumer<UseItemEvent.Pre> getOnUseEvent() {
+        return this.onUseEvent;
+    }
+
+    public ItemTypeBuilder setOnUseEvent(Consumer<UseItemEvent.Pre> onUseEvent) {
+        this.onUseEvent = onUseEvent;
+        return this;
+    }
+
     public int getStackSize() {
         return this.stackSize;
+    }
+
+    public ItemTypeBuilder setStackSize(int stackSize) {
+        this.stackSize = stackSize;
+        return this;
     }
 
     public String getName() {
@@ -80,13 +98,13 @@ public class ItemTypeBuilder implements Builder<ItemType> {
         return this.supportedData;
     }
 
-    public Collection<ItemTypeProperty> getProperties() {
-        return this.properties;
+    public ItemTypeBuilder addSupportedData(StackDataKey<?, ?>... keys) {
+        this.supportedData.addAll(Arrays.asList(keys));
+        return this;
     }
 
-    public ItemTypeBuilder setStackSize(int stackSize) {
-        this.stackSize = stackSize;
-        return this;
+    public Collection<ItemTypeProperty> getProperties() {
+        return this.properties;
     }
 
     @Override

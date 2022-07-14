@@ -7,6 +7,7 @@ import org.absorb.block.type.properties.BlockTypeProperty;
 import org.absorb.block.type.properties.mass.MassProperty;
 import org.absorb.block.type.properties.mass.MassType;
 import org.absorb.register.AbsorbKey;
+import org.absorb.utils.BuildException;
 import org.absorb.utils.Builder;
 import org.absorb.utils.Identifiable;
 
@@ -14,16 +15,16 @@ import java.util.*;
 
 public class BlockTypeBuilder implements Builder<BlockType> {
 
+    private final Collection<BlockStatePropertyType<?>> propertyStates = new HashSet<>();
+    private final Map<String, BlockTypeProperty> properties = new HashMap<>();
     private AbsorbKey item;
     private Collection<BlockTag> tags;
     private Collection<BlockStateBuilder> blockStates;
     private BlockStateBuilder defaultState;
-    private final Collection<BlockStatePropertyType<?>> propertyStates = new HashSet<>();
     private String name;
     private String host;
     private String key;
     private Integer networkId;
-    private final Map<String, BlockTypeProperty> properties = new HashMap<>();
 
     public BlockTypeBuilder() {
         reset();
@@ -39,17 +40,17 @@ public class BlockTypeBuilder implements Builder<BlockType> {
         return this;
     }
 
-    public BlockTypeBuilder setMass(MassType type) {
-        this.addProperty(new MassProperty(type));
-        return this;
-    }
-
     public MassType getMass() {
         BlockTypeProperty property = this.properties.get(Identifiable.ABSORB_HOST + ":mass_type");
-        if (property==null) {
+        if (property == null) {
             return null;
         }
         return ((MassProperty) property).get();
+    }
+
+    public BlockTypeBuilder setMass(MassType type) {
+        this.addProperty(new MassProperty(type));
+        return this;
     }
 
     public Collection<BlockTypeProperty> getProperties() {
@@ -148,7 +149,11 @@ public class BlockTypeBuilder implements Builder<BlockType> {
 
     @Override
     public BlockType build() {
-        return new BlockType(this);
+        try {
+            return new BlockType(this);
+        } catch (Throwable e) {
+            throw new BuildException(new AbsorbKey(this.host, this.key), e);
+        }
     }
 
     @Override
@@ -166,6 +171,11 @@ public class BlockTypeBuilder implements Builder<BlockType> {
 
     @Override
     public Builder<BlockType> copy() {
-        return new BlockTypeBuilder().setBlockStates(this.getBlockStates()).setDefaultState(this.getDefaultState()).setItem(this.getItem()).setTags(this.getTags()).setPropertyStates(this.getPropertyStates());
+        return new BlockTypeBuilder()
+                .setBlockStates(this.getBlockStates())
+                .setDefaultState(this.getDefaultState())
+                .setItem(this.getItem())
+                .setTags(this.getTags())
+                .setPropertyStates(this.getPropertyStates());
     }
 }

@@ -6,6 +6,9 @@
     <inspection_tool class="AbstractClassWithoutAbstractMethods" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="ArrayEquality" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AssertStatement" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="AutoCloseableResource" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="METHOD_MATCHER_CONFIG" value="java.util.Formatter,format,java.io.Writer,append,com.google.common.base.Preconditions,checkNotNull,org.hibernate.Session,close,java.io.PrintWriter,printf,java.io.PrintStream,printf,java.lang.Class,getResourceAsStream" />
+    </inspection_tool>
     <inspection_tool class="BoundedWildcard" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="BreakStatement" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="BusyWait" enabled="true" level="INFORMATION" enabled_by_default="true" />

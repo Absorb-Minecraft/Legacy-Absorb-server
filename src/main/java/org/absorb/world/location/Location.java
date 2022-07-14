@@ -1,6 +1,6 @@
 package org.absorb.world.location;
 
-import org.absorb.world.AbsorbWorld;
+import org.absorb.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector2i;
 import org.spongepowered.math.vector.Vector3d;
@@ -8,23 +8,23 @@ import org.spongepowered.math.vector.Vector3i;
 
 public class Location implements Comparable<Location> {
 
-    private final @NotNull AbsorbWorld world;
+    private final @NotNull World world;
     private final @NotNull Vector3d position;
 
-    public Location(@NotNull AbsorbWorld world, @NotNull Vector3d position) {
+    public Location(@NotNull World world, @NotNull Vector3d position) {
         this.world = world;
         this.position = position;
     }
 
-    public Location(@NotNull AbsorbWorld world, @NotNull Vector3i position) {
+    public Location(@NotNull World world, @NotNull Vector3i position) {
         this(world, position.toDouble());
     }
 
-    public Location(@NotNull AbsorbWorld world, double x, double y, double z) {
+    public Location(@NotNull World world, double x, double y, double z) {
         this(world, new Vector3d(x, y, z));
     }
 
-    public Location(@NotNull AbsorbWorld world, int x, int y, int z) {
+    public Location(@NotNull World world, int x, int y, int z) {
         this(world, new Vector3d(x, y, z));
     }
 
@@ -36,7 +36,7 @@ public class Location implements Comparable<Location> {
         return this.position.toInt();
     }
 
-    public @NotNull AbsorbWorld getWorld() {
+    public @NotNull World getWorld() {
         return this.world;
     }
 

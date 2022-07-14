@@ -2,21 +2,16 @@ package org.absorb.net.packet.play.outgoing.world.chunk.data;
 
 import me.nullicorn.nedit.NBTOutputStream;
 import me.nullicorn.nedit.type.NBTCompound;
-import org.absorb.files.nbt.compound.NBTCompoundBuilder;
-import org.absorb.files.nbt.compound.NBTCompoundEntry;
-import org.absorb.files.nbt.compound.NBTCompoundKeys;
 import org.absorb.net.Client;
-import org.absorb.net.data.NetUtils;
 import org.absorb.net.data.NetSerializers;
+import org.absorb.net.data.NetUtils;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.PacketState;
-import org.absorb.utils.AsJson;
 import org.absorb.world.area.AbsorbChunk;
 import org.absorb.world.area.ChunkPart;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.configurate.ConfigurateException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -73,50 +68,28 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
         NBTOutputStream nbtOS;
         try {
             nbtOS = new NBTOutputStream(baos, false);
-
-
             ByteBuffer chunkX = NetSerializers.INTEGER.write(this.chunk.getPosition().x());
             nbtOS.write(chunkX.array());
-            System.out.println("\tChunkX: " + this.chunk.getPosition().x() + Arrays.toString(chunkX.array()));
-
 
             ByteBuffer chunkY = NetSerializers.INTEGER.write(this.chunk.getPosition().y());
             nbtOS.write(chunkY.array());
-            System.out.println("\tChunkY: " + this.chunk.getPosition().y() + Arrays.toString(chunkY.array()));
+
+            System.out.println("Spawning chunk: " + this.chunk.getPosition());
 
 
-            byte[] heightMap = this.chunk.getHeightMap();
-            Long[] longHeightMap = new Long[heightMap.length];
-            for (int index = 0; index < heightMap.length; index++) {
-                longHeightMap[index] = (long) heightMap[index];
-            }
-            NBTCompoundEntry<Long[], Long[]> motionBlocking = NBTCompoundKeys.MOTION_BLOCKING.withValue(longHeightMap);
-            NBTCompoundEntry<Long[], Long[]> worldSurface = NBTCompoundKeys.WORLD_SURFACE.withValue(longHeightMap);
+            NBTCompound heightMap = this.chunk.getHeightMap();
+            nbtOS.writeFully(heightMap);
 
-            NBTCompound heightMapCompound = new NBTCompoundBuilder().addAll(worldSurface, motionBlocking).build();
-            NBTCompound rootHeightMapCompound = new NBTCompound();
-            rootHeightMapCompound.put("", heightMapCompound);
-            nbtOS.writeFully(rootHeightMapCompound);
-            try {
-                System.out.println("\tHeightMap: " + AsJson.asJson(rootHeightMapCompound));
-            } catch (ConfigurateException e) {
-                e.printStackTrace();
-            }
-
-            List<ByteBuffer> chunkSections =
-                    this.blockData.stream().map(part -> part.asSection().write()).toList();
+            List<ByteBuffer> chunkSections = this.blockData.stream().map(part -> part.asSection().write()).toList();
             int chunkSectionsSize = chunkSections.parallelStream().mapToInt(sect -> sect.array().length).sum();
             ByteBuffer chunkSectionsSizeBuffer = NetSerializers.VAR_INTEGER.write(chunkSectionsSize);
             nbtOS.write(chunkSectionsSizeBuffer.array());
-            System.out.println("\tChunkSectionSize: " + chunkSectionsSize + Arrays.toString(chunkSectionsSizeBuffer.array()));
 
             ByteBuffer chunkSectionsBuffer = NetUtils.collect(chunkSections);
             nbtOS.write(chunkSectionsBuffer.array());
-            System.out.println("ChunkSectionBuffer: (" + chunkSectionsBuffer.array().length + ")" + Arrays.toString(chunkSectionsBuffer.array()));
 
             //TODO none container tile entities
             ByteBuffer tileEntityCount = NetSerializers.VAR_INTEGER.write(0);
-            System.out.println("TileEntityCount: " + 0 + Arrays.toString(tileEntityCount.array()));
             nbtOS.write(tileEntityCount.array());
 
 

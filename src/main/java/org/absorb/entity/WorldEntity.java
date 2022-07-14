@@ -3,7 +3,7 @@ package org.absorb.entity;
 import org.absorb.AbsorbManagers;
 import org.absorb.net.Client;
 import org.absorb.net.PlayingState;
-import org.absorb.world.AbsorbWorld;
+import org.absorb.world.World;
 import org.absorb.world.area.AbsorbChunk;
 import org.absorb.world.location.Location;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,7 @@ public class WorldEntity {
     private @Nullable Vector3d fellFrom;
     private @Nullable Vector3d landedOn;
     private @NotNull Vector3d position;
-    private @NotNull AbsorbWorld world;
+    private @NotNull World world;
 
     public WorldEntity(WorldEntityBuilder builder) {
         this.entity = builder.getEntity();
@@ -96,7 +96,7 @@ public class WorldEntity {
         client.updateChunks(genChunks);
     }
 
-    public @NotNull AbsorbWorld getWorld() {
+    public @NotNull World getWorld() {
         return this.world;
     }
 }

@@ -20,7 +20,7 @@ import org.absorb.net.packet.play.outgoing.client.disconnect.OutgoingCloseConnec
 import org.absorb.net.packet.play.outgoing.world.chunk.data.OutgoingChunkUpdatePacketBuilder;
 import org.absorb.threaded.SimpleDataPoint;
 import org.absorb.threaded.ThreadedDataPoint;
-import org.absorb.world.AbsorbWorld;
+import org.absorb.world.World;
 import org.absorb.world.area.AbsorbChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -85,7 +85,7 @@ public class Client implements CommandSender {
     }
 
     public void updateChunks(Iterable<Vector2i> collection) {
-        AbsorbWorld world = this.getEntity().getWorld();
+        World world = this.getEntity().getWorld();
         //will be threaded when its working
         /*collection.forEach(chunkPos -> new Thread(() -> {
             AbsorbChunk chunk = world.generateChunk(chunkPos);
@@ -142,7 +142,7 @@ public class Client implements CommandSender {
 
     public Collection<Vector2i> getViewingChunks() {
         Vector2i currentChunk = this.getEntity().getLocation().getChunkPosition();
-        /*Collection<Vector2i> collection = new HashSet<>();
+        Collection<Vector2i> collection = new HashSet<>();
         byte viewDistance = this.getViewDistance();
         int maxX = currentChunk.x() + viewDistance;
         int minX = currentChunk.x() - viewDistance;
@@ -153,8 +153,7 @@ public class Client implements CommandSender {
                 collection.add(new Vector2i(x, z));
             }
         }
-        return collection;*/
-        return Collections.singleton(currentChunk);
+        return collection;
     }
 
     public long getKeepAliveId() {
@@ -214,7 +213,7 @@ public class Client implements CommandSender {
         return this.playingState;
     }
 
-    public Client setPlayingState(PlayingState playingState) {
+    public Client setPlayingState(@NotNull PlayingState playingState) {
         this.playingState = playingState;
         return this;
     }
@@ -370,7 +369,7 @@ public class Client implements CommandSender {
         return this.socket.getRemoteSocketAddress();
     }
 
-    public void write(ByteBuffer buffer) throws IOException {
+    public synchronized void write(ByteBuffer buffer) throws IOException {
         try {
             if (buffer.limit() <= NETTY_MAX_CAP) {
                 this.socket.getOutputStream().write(buffer.array());

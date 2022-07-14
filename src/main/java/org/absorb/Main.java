@@ -25,10 +25,10 @@ import org.absorb.schedule.Schedule;
 import org.absorb.schedule.ScheduleManager;
 import org.absorb.threaded.Awaitable;
 import org.absorb.utils.Identifiable;
-import org.absorb.world.AbsorbWorld;
-import org.absorb.world.AbsorbWorldBuilder;
-import org.absorb.world.AbsorbWorldData;
-import org.absorb.world.AbsorbWorldManager;
+import org.absorb.world.World;
+import org.absorb.world.WorldBuilder;
+import org.absorb.world.WorldData;
+import org.absorb.world.WorldManager;
 import org.absorb.world.type.WorldTypes;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
@@ -133,8 +133,8 @@ public class Main {
         AbsorbManagers.instance.properties = new ServerProperties();
         AbsorbManagers.instance.properties.updateFile();
 
-        AbsorbWorld world = loadDefaultWorld();
-        AbsorbManagers.instance.worldManager = new AbsorbWorldManager(world);
+        World world = loadDefaultWorld();
+        AbsorbManagers.instance.worldManager = new WorldManager(world);
 
         console.sendMessage(Component.text("Loaded world: " + world.getWorldData().getKey().asFormatted()));
         console.sendProgress(1, 4);
@@ -264,11 +264,11 @@ public class Main {
         }
     }
 
-    private static AbsorbWorld loadDefaultWorld() {
-        return new AbsorbWorldBuilder()
+    private static World loadDefaultWorld() {
+        return new WorldBuilder()
                 .setBlockMax(new Vector3i(600, 20, 600))
                 .setBlockMin(new Vector3i(-200, 0, -200))
-                .setWorldData(new AbsorbWorldData()
+                .setWorldData(new WorldData()
                                       .setType(WorldTypes.FLAT)
                                       .setSeed(0)
                                       .setKey(new AbsorbKey(Identifiable.MINECRAFT_HOST, "temp")))

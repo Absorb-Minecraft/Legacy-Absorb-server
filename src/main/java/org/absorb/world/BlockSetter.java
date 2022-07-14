@@ -1,9 +1,11 @@
 package org.absorb.world;
 
 import org.absorb.block.locatable.LocatableBlock;
+import org.absorb.entity.WorldEntity;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
+import java.util.Collection;
 import java.util.function.Predicate;
 
 public interface BlockSetter {
@@ -12,7 +14,13 @@ public interface BlockSetter {
 
     void setBlock(@NotNull LocatableBlock block);
 
-    AbsorbWorld getWorld();
+    World getWorld();
 
     LocatableBlock getBlockAt(int x, int y, int z);
+
+    Collection<WorldEntity> getEntities();
+
+    Vector3i getMaxBlock();
+
+    Vector3i getMinBlock();
 }

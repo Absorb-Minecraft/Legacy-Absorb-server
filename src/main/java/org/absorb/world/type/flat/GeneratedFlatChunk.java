@@ -3,7 +3,7 @@ package org.absorb.world.type.flat;
 import org.absorb.block.locatable.BlockData;
 import org.absorb.block.locatable.LocatableBlock;
 import org.absorb.block.type.BlockTypes;
-import org.absorb.world.AbsorbWorld;
+import org.absorb.world.World;
 import org.absorb.world.area.GeneratedChunk;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,9 +19,9 @@ public class GeneratedFlatChunk implements GeneratedChunk {
     }
 
     @Override
-    public @NotNull LocatableBlock getBlock(int x, int y, int z, @NotNull AbsorbWorld world) {
+    public @NotNull LocatableBlock getBlock(int x, int y, int z, @NotNull World world) {
         BlockData state = this.generateAt.get(y);
-        if (state==null) {
+        if (state == null) {
             state = BlockTypes.AIR.get().getDefaultBlockState().asBlockData();
         }
         return new LocatableBlock(state, world.getLocation(x, y, z));

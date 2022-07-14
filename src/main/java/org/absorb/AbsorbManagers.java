@@ -10,7 +10,7 @@ import org.absorb.module.ModuleManager;
 import org.absorb.net.NetManager;
 import org.absorb.register.RegistryManager;
 import org.absorb.schedule.ScheduleManager;
-import org.absorb.world.AbsorbWorldManager;
+import org.absorb.world.WorldManager;
 import org.jetbrains.annotations.Nullable;
 
 public class AbsorbManagers {
@@ -19,7 +19,7 @@ public class AbsorbManagers {
     NetManager netManager;
     MessageManager messageManager;
     RegistryManager registryManager;
-    AbsorbWorldManager worldManager;
+    WorldManager worldManager;
     EventManager eventManager;
     ModuleManager moduleManager;
     ServerProperties properties;
@@ -56,7 +56,7 @@ public class AbsorbManagers {
         return get(instance.moduleManager);
     }
 
-    public static AbsorbWorldManager getWorldManager() {
+    public static WorldManager getWorldManager() {
         return get(instance.worldManager);
     }
 

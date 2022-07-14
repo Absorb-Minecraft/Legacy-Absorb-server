@@ -35,6 +35,15 @@ public class ClientHotbar implements GridInventory {
         return this;
     }
 
+    public Slot getSelectedSlot() {
+        int selected = 36 + this.selected;
+        return Arrays
+                .stream(this.slots)
+                .filter(slot -> slot.getIndex().orElse(0) == selected)
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("Cannot find selected slot"));
+    }
+
     @Override
     public int getSize() {
         return 9;

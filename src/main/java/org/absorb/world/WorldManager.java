@@ -8,28 +8,28 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.LinkedTransferQueue;
 
-public class AbsorbWorldManager {
+public class WorldManager {
 
-    private final LinkedTransferQueue<AbsorbWorld> worlds = new LinkedTransferQueue<>();
-    private AbsorbWorld defaultWorld;
+    private final LinkedTransferQueue<World> worlds = new LinkedTransferQueue<>();
+    private World defaultWorld;
 
-    public AbsorbWorldManager(@NotNull AbsorbWorld world) {
+    public WorldManager(@NotNull World world) {
         this.defaultWorld = world;
     }
 
-    public void setDefaultWorld(@NotNull AbsorbWorld world) {
+    public void setDefaultWorld(@NotNull World world) {
         this.defaultWorld = world;
     }
 
-    public Optional<AbsorbWorld> getWorld(AbsorbKey key) {
+    public Optional<World> getWorld(AbsorbKey key) {
         return this.worlds.parallelStream().filter(world -> world.getKey().equals(key)).findAny();
     }
 
-    public AbsorbWorld defaultWorld() {
+    public World defaultWorld() {
         return this.defaultWorld;
     }
 
-    public Collection<AbsorbWorld> worlds() {
+    public Collection<World> worlds() {
         return Collections.unmodifiableCollection(this.worlds);
     }
 
