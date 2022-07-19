@@ -13,8 +13,11 @@ import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.NetSerializer;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.register.RegistryManager;
+import org.absorb.utils.AsJson;
+import org.spongepowered.configurate.ConfigurateException;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class NetSlot implements NetSerializer<Slot> {
@@ -33,21 +36,13 @@ public class NetSlot implements NetSerializer<Slot> {
                 .setStackSize(stackSize.value())
                 .setType(AbsorbManagers.getRegistryManager().getItemTypeWithNetworkId(itemId.value()));
 
-        RegistryManager.getVanillaValues(StackDataKey.class).forEach(key -> this.addToStack(builder, key, data.value()));
+        RegistryManager
+                .getVanillaValues(StackDataKey.class)
+                .forEach(key -> this.addToStack(builder, key, data.value()));
 
-        ItemStack stack = builder
-                .build();
+        ItemStack stack = builder.build();
         Slot slot = new UnknownSlot(null, stack);
         return new NetEntryData<>(position, data.endingPosition(), slot);
-    }
-
-    private <V, T> void addToStack(ItemStackBuilder builder, StackDataKey<V, T> key, NBTCompound data) {
-        Object obj = data.get(key.getName());
-        if (obj==null) {
-            return;
-        }
-        StackData<V, T> dataKey = key.with((T) obj);
-        builder.addData(dataKey);
     }
 
     @Override
@@ -61,6 +56,8 @@ public class NetSlot implements NetSerializer<Slot> {
         ByteBuffer itemId = NetSerializers.VAR_INTEGER.write(stack.getType().getNetworkId());
         ByteBuffer stackSize = NetSerializers.BYTE.write(stack.getStackSize());
 
+        System.out.println("Item: " + stack.getType().getResourceKey().asFormatted());
+
         ByteBuffer ret = ByteBuffer.allocate(present.limit() + itemId.limit() + stackSize.limit());
         ret.put(present);
         ret.put(itemId);
@@ -68,7 +65,30 @@ public class NetSlot implements NetSerializer<Slot> {
 
         NBTCompoundBuilder builder = new NBTCompoundBuilder();
         stack.getData().forEach(stackData -> builder.add(stackData.asCompoundEntry()));
-        ret.put(NetSerializers.NBT_COMPOUND_ENTRIES.write(builder.build()));
-        return ret;
+
+        ByteBuffer nbtBuffer = NetSerializers.NBT_COMPOUND_ENTRIES.write(builder.build());
+        ByteBuffer temp = ByteBuffer.allocate(ret.limit() + nbtBuffer.limit());
+        temp.put(ret.array());
+        temp.put(nbtBuffer.array());
+
+        System.out.println("SlotData");
+        System.out.println("Present: " + Arrays.toString(present.array()));
+        System.out.println("ItemId: " + Arrays.toString(itemId.array()));
+        System.out.println("ItemCount: " + Arrays.toString(stackSize.array()));
+        try {
+            System.out.println("NBT: " + AsJson.asJson(builder.build()));
+        } catch (ConfigurateException e) {
+        }
+        System.out.println("NBT: " + Arrays.toString(nbtBuffer.array()));
+        return temp;
+    }
+
+    private <V, T> void addToStack(ItemStackBuilder builder, StackDataKey<V, T> key, NBTCompound data) {
+        Object obj = data.get(key.getName());
+        if (obj == null) {
+            return;
+        }
+        StackData<V, T> dataKey = key.with((T) obj);
+        builder.addData(dataKey);
     }
 }

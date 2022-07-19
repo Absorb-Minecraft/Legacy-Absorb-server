@@ -9,7 +9,9 @@ import java.util.stream.Collectors;
 
 public class NBTCompoundBuilder implements Builder<NBTCompound> {
 
-    private final Set<NBTCompoundEntry<?, ?>> compoundSet = new HashSet<>();
+    private final Set<NBTCompoundEntry<?, ?>> compoundSet = new TreeSet<>(Comparator.comparing(entry -> entry
+            .getKey()
+            .getKey()));
 
     public NBTCompoundBuilder add(NBTCompoundEntry<?, ?> entry) {
         this.compoundSet.add(entry);
@@ -29,9 +31,9 @@ public class NBTCompoundBuilder implements Builder<NBTCompound> {
     @Override
     public @NotNull NBTCompound build() {
         NBTCompound compound = new NBTCompound();
-        Map<String, Object> map =
-                this.compoundSet.stream().collect(Collectors.toMap(entry -> entry.getKey().getKey(),
-                        NBTCompoundEntry::getRawValue));
+        Map<String, Object> map = this.compoundSet
+                .stream()
+                .collect(Collectors.toMap(entry -> entry.getKey().getKey(), NBTCompoundEntry::getRawValue));
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             if (entry.getValue() instanceof Long[] array) {
                 long[] newArray = new long[array.length];

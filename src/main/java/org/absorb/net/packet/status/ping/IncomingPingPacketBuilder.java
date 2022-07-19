@@ -59,7 +59,11 @@ public class IncomingPingPacketBuilder implements IncomingPacketBuilder<Incoming
 
     @Override
     public int getId() {
+        if (this.usePlay) {
+            return IncomingPingPacket.PLAY_ID;
+        }
         return IncomingPingPacket.ID;
+
     }
 
     @Override

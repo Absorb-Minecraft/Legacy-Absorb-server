@@ -11,6 +11,8 @@ import org.absorb.net.data.string.NetChat;
 import org.absorb.net.data.string.NetKey;
 import org.absorb.net.data.string.NetShortString;
 import org.absorb.net.data.string.NetString;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class NetSerializers {
 
@@ -38,5 +40,13 @@ public class NetSerializers {
 
     public static NetByteArray byteArray(int length) {
         return new NetByteArray(length);
+    }
+
+    public static <T> @NotNull NetList<T> array(@NotNull NetSerializer<T> serializer) {
+        return array(serializer, null);
+    }
+
+    public static <T> @NotNull NetList<T> array(@NotNull NetSerializer<T> serializer, @Nullable Integer length) {
+        return new NetList<>(serializer, length);
     }
 }

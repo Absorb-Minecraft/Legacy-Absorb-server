@@ -36,7 +36,14 @@ public class ClientHotbar implements GridInventory {
     }
 
     public Slot getSelectedSlot() {
-        int selected = 36 + this.selected;
+        return this.getSlotAt(this.selected);
+    }
+
+    public Slot getSlotAt(int position) {
+        if (!(position >= 0 && position < 9)) {
+            throw new RuntimeException("Unknown slot " + position);
+        }
+        int selected = 36 + position;
         return Arrays
                 .stream(this.slots)
                 .filter(slot -> slot.getIndex().orElse(0) == selected)

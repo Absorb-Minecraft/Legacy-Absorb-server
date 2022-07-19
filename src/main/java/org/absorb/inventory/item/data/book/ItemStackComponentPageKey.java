@@ -1,6 +1,7 @@
 package org.absorb.inventory.item.data.book;
 
 import me.nullicorn.nedit.type.NBTList;
+import net.kyori.adventure.text.Component;
 import org.absorb.files.nbt.compound.NBTCompoundKey;
 import org.absorb.files.nbt.compound.NBTCompoundKeys;
 import org.absorb.inventory.item.data.SimpleStackData;
@@ -12,14 +13,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
-public class ItemStackSimplePageKey implements StackDataKey<NBTList, List<String>> {
+public class ItemStackComponentPageKey implements StackDataKey<NBTList, List<Component>> {
     @Override
-    public NBTCompoundKey<NBTList, List<String>> asCompoundKey() {
-        return NBTCompoundKeys.SIMPLE_PAGES;
+    public NBTCompoundKey<NBTList, List<Component>> asCompoundKey() {
+        return NBTCompoundKeys.COMPONENT_PAGES;
     }
 
     @Override
-    public StackData<NBTList, List<String>> withDefault() {
+    public StackData<NBTList, List<Component>> withDefault() {
         return new SimpleStackData<>(this, Collections.emptyList());
     }
 

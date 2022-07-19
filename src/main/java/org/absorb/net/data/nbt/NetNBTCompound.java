@@ -40,7 +40,7 @@ public class NetNBTCompound implements NetSerializer<NBTCompound> {
     public ByteBuffer write(NBTCompound value) {
         try {
             ByteArrayOutputStream baOs = new ByteArrayOutputStream();
-            new NBTOutputStream(baOs, false).writeCompound(value, true);
+            new NBTOutputStream(baOs, false).writeFully(value);
             return ByteBuffer.wrap(baOs.toByteArray());
         } catch (IOException e) {
             throw new IllegalStateException(e);

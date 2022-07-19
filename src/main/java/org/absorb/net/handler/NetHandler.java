@@ -1,5 +1,6 @@
 package org.absorb.net.handler;
 
+import net.kyori.adventure.text.Component;
 import org.absorb.AbsorbManagers;
 import org.absorb.Main;
 import org.absorb.net.Client;
@@ -72,11 +73,15 @@ public class NetHandler {
                     if (this.data.length <= length) {
                         continue;
                     }
-
-                    boolean cont = this.processPacket();
+                    try {
+                        boolean cont = this.processPacket();
                     /*if (!cont) {
                         break;
                     }*/
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                        this.netInfo.disconnect(Component.text("Server side error occurred: " + e.getMessage()));
+                    }
                     length = 100;
                     this.data = new byte[0];
                 }

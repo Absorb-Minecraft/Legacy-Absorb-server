@@ -3,6 +3,8 @@ package org.absorb.files.nbt.compound;
 import me.nullicorn.nedit.type.NBTCompound;
 import me.nullicorn.nedit.type.NBTList;
 import me.nullicorn.nedit.type.TagType;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.absorb.world.biome.BiomeCategory;
 import org.absorb.world.biome.properties.BiomeWeather;
 import org.absorb.world.biome.properties.GrassModifier;
@@ -14,9 +16,18 @@ import java.util.stream.Collectors;
 
 public class NBTCompoundKeys {
 
-    public static final NBTCompoundKey.TypeGenericCollection<String> SIMPLE_PAGES = new NBTCompoundKey.TypeGenericCollection<>(
+    public static final NBTCompoundKey.TypeGenericCollection<String, Component, List<Component>> COMPONENT_PAGES = new NBTCompoundKey.TypeGenericCollection<>(
+            TagType.STRING,
+            "pages",
+            com -> GsonComponentSerializer.gson().serialize(com),
+            str -> GsonComponentSerializer.gson().deserialize(str),
+            LinkedList::new);
+
+    public static final NBTCompoundKey.TypeGenericCollection<String, String, List<String>> SIMPLE_PAGES = new NBTCompoundKey.TypeGenericCollection<>(
             TagType.STRING,
             "pages");
+    public static final NBTCompoundKey.Type<String> AUTHOR = new NBTCompoundKey.Type<>(TagType.STRING, "author");
+    public static final NBTCompoundKey.Type<String> TITLE = new NBTCompoundKey.Type<>(TagType.STRING, "title");
     public static final NBTCompoundKey.Type<Integer> ITEM_DAMAGE = new NBTCompoundKey.Type<>(TagType.INT, "damage");
     public static final NBTCompoundKey.Type<Integer> BLOCK_SEARCH_EXTENT = new NBTCompoundKey.Type<>(TagType.INT,
                                                                                                      "block_search_extent");

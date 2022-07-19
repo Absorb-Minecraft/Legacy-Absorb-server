@@ -3376,6 +3376,9 @@ public abstract class ItemTypes {
     public static final BuilderRegister<ItemType> WRITTEN_BOOK = gen("Written Book",
                                                                      "written_book",
                                                                      builder -> builder
+                                                                             .addSupportedData(StackDataKeys.AUTHOR)
+                                                                             .addSupportedData(StackDataKeys.TITLE)
+                                                                             .addSupportedData(StackDataKeys.COMPONENT_PAGES)
                                                                              .setNetworkId(986)
                                                                              .setStackSize(16));
     public static final BuilderRegister<ItemType> YELLOW_BANNER = gen("Yellow Banner",

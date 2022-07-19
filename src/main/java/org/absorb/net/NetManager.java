@@ -10,11 +10,6 @@ import org.absorb.net.packet.play.incoming.client.ability.IncomingChangeAbilityP
 import org.absorb.net.packet.play.incoming.client.channel.chat.IncomingMessagePacketBuilder;
 import org.absorb.net.packet.play.incoming.client.channel.command.IncomingCommandPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.channel.plugin.IncomingPluginMessagePacketBuilder;
-import org.absorb.net.packet.play.incoming.client.inventory.close.IncomingCloseInventoryPacketBuilder;
-import org.absorb.net.packet.play.incoming.client.inventory.creative.IncomingCreativeInventoryClickPacketBuilder;
-import org.absorb.net.packet.play.incoming.client.inventory.hotbar.cooldown.IncomingItemCooldownPacketBuilder;
-import org.absorb.net.packet.play.incoming.client.inventory.hotbar.hand.use.IncomingUseItemPacketBuilder;
-import org.absorb.net.packet.play.incoming.client.inventory.hotbar.selected.IncomingHotbarChangePacketBuilder;
 import org.absorb.net.packet.play.incoming.client.keep.alive.IncomingKeepAlivePacketBuilder;
 import org.absorb.net.packet.play.incoming.client.movement.IncomingPlayerMovementPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.movement.basic.IncomingBasicPlayerMovementPacketBuilder;
@@ -22,6 +17,12 @@ import org.absorb.net.packet.play.incoming.client.movement.rotation.IncomingRota
 import org.absorb.net.packet.play.incoming.client.movement.teleport.confirm.IncomingTeleportConfirmPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.query.entity.IncomingEntityQueryPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.recipe.IncomingRecipeRequestPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.book.edit.IncomingEditBookPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.inventory.close.IncomingCloseInventoryPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.inventory.creative.IncomingCreativeInventoryClickPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.cooldown.IncomingItemCooldownPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.hand.use.IncomingUseItemPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.selected.IncomingHotbarChangePacketBuilder;
 import org.absorb.net.packet.play.incoming.client.settings.IncomingClientSettingsPacketBuilder;
 import org.absorb.net.packet.play.outgoing.client.action.IncomingClientCommandActionPacketBuilder;
 import org.absorb.net.packet.status.ping.IncomingPingPacketBuilder;
@@ -121,5 +122,6 @@ public class NetManager {
         this.registerIncomingPacketBuilder(new IncomingEntityQueryPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingKeepAlivePacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingUseItemPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingEditBookPacketBuilder());
     }
 }

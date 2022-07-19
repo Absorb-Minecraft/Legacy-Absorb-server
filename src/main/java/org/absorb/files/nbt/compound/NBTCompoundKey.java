@@ -10,7 +10,11 @@ import org.absorb.world.biome.BiomeBuilder;
 import org.absorb.world.type.PlayerWorldTypeView;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -89,27 +93,45 @@ public abstract class NBTCompoundKey<T, F> {
         }
     }
 
-    public static class TypeGenericCollection<V> extends NBTCompoundKey<NBTList, Collection<V>> {
 
-        private TagType listType;
+    public static class TypeGenericCollection<E, V, C extends Collection<V>> extends NBTCompoundKey<NBTList, C> {
+
+        private final TagType listType;
+        private final Function<V, E> mappingTo;
+        private final Function<E, V> mappingFrom;
+        private final Supplier<C> collectionProvider;
 
         TypeGenericCollection(TagType type, String key) {
+            this(type, key, () -> (C) new LinkedList<V>());
+        }
+
+        TypeGenericCollection(TagType type, String key, Supplier<C> collectionProvider) {
+            this(type, key, v -> (E) v, e -> (V) e, collectionProvider);
+        }
+
+        TypeGenericCollection(TagType type, String key, Function<V, E> mappingTo, Function<E, V> mappingFrom,
+                              Supplier<C> collectionProvider) {
             super(TagType.LIST, key);
             this.listType = type;
+            this.mappingTo = mappingTo;
+            this.mappingFrom = mappingFrom;
+            this.collectionProvider = collectionProvider;
         }
 
         @Override
-        protected Collection<V> from(NBTList value) {
-            List<V> ret = new LinkedList<>();
-            ret.addAll((Collection<? extends V>) value);
-            return ret;
+        protected C from(NBTList value) {
+            return value
+                    .stream()
+                    .map(v -> this.mappingFrom.apply((E) v))
+                    .collect(Collectors.toCollection(this.collectionProvider));
         }
 
         @Override
-        protected NBTList to(Collection<V> value) {
-            NBTList list = new NBTList(this.listType);
-            list.addAll(value);
-            return list;
+        protected NBTList to(C value) {
+            return value
+                    .stream()
+                    .map(this.mappingTo)
+                    .collect(Collectors.toCollection(() -> new NBTList(this.listType)));
         }
     }
 
