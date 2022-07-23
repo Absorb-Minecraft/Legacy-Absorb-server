@@ -33,6 +33,11 @@ public class NetNBTCompound implements NetSerializer<NBTCompound> {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+        try {
+            markedIS.close();
+        } catch (IOException ignored) {
+
+        }
         return new NetEntryData<>(position, (int) (position + markedIS.getCounter()), compound);
     }
 
