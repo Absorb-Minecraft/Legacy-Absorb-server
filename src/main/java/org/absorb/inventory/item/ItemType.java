@@ -1,7 +1,7 @@
 package org.absorb.inventory.item;
 
 import org.absorb.block.type.BlockType;
-import org.absorb.event.events.inventory.client.inventory.item.use.UseItemEvent;
+import org.absorb.event.events.client.inventory.item.use.UseItemEvent;
 import org.absorb.inventory.item.data.StackDataKey;
 import org.absorb.inventory.item.properties.ItemTypeProperty;
 import org.absorb.register.AbsorbKey;
@@ -38,6 +38,10 @@ public class ItemType implements NetworkIdentifiable {
         this.stackSize = builder.getStackSize();
         this.name = builder.getName();
         this.onUseEvent = builder.getOnUseEvent();
+    }
+
+    public Collection<ItemTypeProperty> getProperties() {
+        return Collections.unmodifiableCollection(this.properties);
     }
 
     public Optional<Consumer<UseItemEvent.Pre>> onUseItem() {

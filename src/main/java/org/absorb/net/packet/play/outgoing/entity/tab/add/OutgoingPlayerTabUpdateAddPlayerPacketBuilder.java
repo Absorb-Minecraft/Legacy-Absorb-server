@@ -5,12 +5,14 @@ import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.play.outgoing.entity.tab.OutgoingPlayerTabUpdatePacket;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-public class OutgoingPlayerTabUpdateAddPlayerPacketBuilder implements OutgoingPacketBuilder<OutgoingPlayerTabUpdateAddPlayerPacket> {
+public class OutgoingPlayerTabUpdateAddPlayerPacketBuilder
+        implements OutgoingPacketBuilder<OutgoingPlayerTabUpdateAddPlayerPacket> {
 
     private final Collection<PlayerTab> tabs = new HashSet<>();
 
@@ -26,6 +28,12 @@ public class OutgoingPlayerTabUpdateAddPlayerPacketBuilder implements OutgoingPa
     @Override
     public @NotNull OutgoingPlayerTabUpdateAddPlayerPacket build() {
         return new OutgoingPlayerTabUpdateAddPlayerPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingPlayerTabUpdateAddPlayerPacket> from(OutgoingPlayerTabUpdateAddPlayerPacket value) {
+        this.tabs.addAll(value.getTabs());
+        return this;
     }
 
     @Override

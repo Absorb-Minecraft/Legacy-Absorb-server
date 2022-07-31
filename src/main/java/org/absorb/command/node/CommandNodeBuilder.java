@@ -80,59 +80,24 @@ public class CommandNodeBuilder<N extends CommandNode> implements Builder<N> {
         return this;
     }
 
-    private @NotNull RootCommandNode buildRoot() {
-        if (this.name!=null) {
-            throw new IllegalArgumentException("Root command argument cannot have a name. Set parent if another type");
-        }
-        if (this.redirectTo!=null) {
-            throw new IllegalArgumentException("Root command argument cannot have a redirect. Set parent if another " +
-                    "type");
-        }
-        if (this.parser!=null) {
-            throw new IllegalArgumentException("Root command argument cannot have a parser. Set parent if another " +
-                    "type");
-        }
-        if (this.property!=null) {
-            throw new IllegalArgumentException("Root command argument cannot have a property. Set parent if another " +
-                    "type");
-        }
-        if (this.suggestionType!=null) {
-            throw new IllegalArgumentException("Root command argument cannot have a suggestion type. Set parent if " +
-                    "another type");
-        }
-        if (this.executor!=null) {
-            throw new IllegalArgumentException("Root command argument cannot have a executor. Set parent if another " +
-                    "type");
-        }
-        return new RootCommandNode((CommandNodeBuilder<RootCommandNode>) this);
-    }
-
-    private @NotNull LiteralCommandNode buildLiteral() {
-        return new LiteralCommandNode((CommandNodeBuilder<LiteralCommandNode>) this);
-    }
-
-    private @NotNull <T> ArgumentCommandNode<?> buildArgument() {
-        return new ArgumentCommandNode<>((CommandNodeBuilder<ArgumentCommandNode<T>>)this);
-    }
-
     @Override
     public @NotNull N build() {
         AbstractCommandNode node = null;
-        if (this.parent==null) {
+        if (this.parent == null) {
             node = this.buildRoot();
         }
-        if (this.name==null && node == null) {
+        if (this.name == null && node == null) {
             throw new IllegalArgumentException("Name is required for Literal or Argument Nodes");
         }
-        if (this.parser!=null && node == null) {
+        if (this.parser != null && node == null) {
             node = this.buildArgument();
-        }else if(node == null) {
+        } else if (node == null) {
             node = this.buildLiteral();
         }
-        if(node instanceof NameableCommandNode ret) {
+        if (node instanceof NameableCommandNode ret) {
             node.getParent().ifPresent(parent -> parent.registerChild(ret));
         }
-        return (N)node;
+        return (N) node;
     }
 
     @Override
@@ -149,6 +114,66 @@ public class CommandNodeBuilder<N extends CommandNode> implements Builder<N> {
 
     @Override
     public @NotNull CommandNodeBuilder<N> copy() {
-        return new CommandNodeBuilder<N>().setExecutable(this.executor).setName(this.name).setParent(this.parent).setParser(this.parser).setRedirectTo(this.redirectTo).setSuggestionType(this.suggestionType).setProperty(this.property);
+        return new CommandNodeBuilder<N>()
+                .setExecutable(this.executor)
+                .setName(this.name)
+                .setParent(this.parent)
+                .setParser(this.parser)
+                .setRedirectTo(this.redirectTo)
+                .setSuggestionType(this.suggestionType)
+                .setProperty(this.property);
+    }
+
+    @Override
+    public @NotNull Builder<N> from(N value) {
+        if (value instanceof NameableCommandNode nameable) {
+            this.name = nameable.getName();
+        }
+        if (value instanceof AbstractCommandNode abstractNode) {
+            this.parent = abstractNode.getParent().orElse(null);
+        }
+        if (value instanceof ArgumentCommandNode<?> argumentCommandNode) {
+            this.suggestionType = argumentCommandNode.getSuggestionType().orElse(null);
+            this.parser = argumentCommandNode.getParser();
+            this.property = argumentCommandNode.getParser().getProperty().orElse(null);
+        }
+        this.redirectTo = value.getRedirect().orElse(null);
+        this.executor = value.getExecutor().orElse(null);
+        return this;
+    }
+
+    private @NotNull RootCommandNode buildRoot() {
+        if (this.name != null) {
+            throw new IllegalArgumentException("Root command argument cannot have a name. Set parent if another type");
+        }
+        if (this.redirectTo != null) {
+            throw new IllegalArgumentException(
+                    "Root command argument cannot have a redirect. Set parent if another " + "type");
+        }
+        if (this.parser != null) {
+            throw new IllegalArgumentException(
+                    "Root command argument cannot have a parser. Set parent if another " + "type");
+        }
+        if (this.property != null) {
+            throw new IllegalArgumentException(
+                    "Root command argument cannot have a property. Set parent if another " + "type");
+        }
+        if (this.suggestionType != null) {
+            throw new IllegalArgumentException(
+                    "Root command argument cannot have a suggestion type. Set parent if " + "another type");
+        }
+        if (this.executor != null) {
+            throw new IllegalArgumentException(
+                    "Root command argument cannot have a executor. Set parent if another " + "type");
+        }
+        return new RootCommandNode((CommandNodeBuilder<RootCommandNode>) this);
+    }
+
+    private @NotNull LiteralCommandNode buildLiteral() {
+        return new LiteralCommandNode((CommandNodeBuilder<LiteralCommandNode>) this);
+    }
+
+    private @NotNull <T> ArgumentCommandNode<?> buildArgument() {
+        return new ArgumentCommandNode<>((CommandNodeBuilder<ArgumentCommandNode<T>>) this);
     }
 }

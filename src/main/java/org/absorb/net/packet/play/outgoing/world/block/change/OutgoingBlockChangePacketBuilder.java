@@ -5,6 +5,7 @@ import org.absorb.block.state.BlockState;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
@@ -40,6 +41,13 @@ public class OutgoingBlockChangePacketBuilder implements OutgoingPacketBuilder<O
     @Override
     public @NotNull OutgoingBlockChangePacket build() {
         return new OutgoingBlockChangePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingBlockChangePacket> from(OutgoingBlockChangePacket value) {
+        this.position = value.getBlockPosition();
+        this.state = value.getNewBlockState();
+        return this;
     }
 
     @Override

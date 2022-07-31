@@ -21,6 +21,10 @@ public class OutgoingSwapHotbarPacket implements OutgoingPacket {
         this.newHotbarSlot = builder.getNewSlot();
     }
 
+    public byte getHotbarSlot() {
+        return this.newHotbarSlot;
+    }
+
     @Override
     public int getId() {
         return ID;

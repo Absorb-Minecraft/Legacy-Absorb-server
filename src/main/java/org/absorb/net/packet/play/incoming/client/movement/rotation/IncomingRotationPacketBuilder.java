@@ -6,6 +6,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -71,6 +72,14 @@ public class IncomingRotationPacketBuilder implements IncomingPacketBuilder<Inco
     @Override
     public @NotNull IncomingRotationPacket build() {
         return new IncomingRotationPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingRotationPacket> from(IncomingRotationPacket value) {
+        this.isOnGround = value.isOnGround();
+        this.yaw = value.getYaw();
+        this.pitch = value.getPitch();
+        return this;
     }
 
     @Override

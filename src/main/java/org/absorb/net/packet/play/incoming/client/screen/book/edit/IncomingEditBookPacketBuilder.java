@@ -6,6 +6,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,6 +85,14 @@ public class IncomingEditBookPacketBuilder implements IncomingPacketBuilder<Inco
     @Override
     public @NotNull IncomingEditBookPacket build() {
         return new IncomingEditBookPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingEditBookPacket> from(IncomingEditBookPacket value) {
+        this.title = value.getTitle().orElse(null);
+        this.slotIndex = value.getSlotIndex();
+        this.entries.addAll(value.getEntries());
+        return this;
     }
 
     @Override

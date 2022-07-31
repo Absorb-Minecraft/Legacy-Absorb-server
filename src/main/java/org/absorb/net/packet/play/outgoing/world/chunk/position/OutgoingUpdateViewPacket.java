@@ -13,14 +13,21 @@ import java.nio.ByteBuffer;
 
 public class OutgoingUpdateViewPacket implements OutgoingPacket {
 
-    public static final int ID = 0x48;
-
     private final int chunkX;
     private final int chunkZ;
+    public static final int ID = 0x48;
 
     public OutgoingUpdateViewPacket(OutgoingUpdateViewPacketBuilder builder) {
         this.chunkX = builder.getChunkX();
         this.chunkZ = builder.getChunkZ();
+    }
+
+    public int getChunkX() {
+        return this.chunkX;
+    }
+
+    public int getChunkZ() {
+        return this.chunkZ;
     }
 
     @Override
@@ -40,7 +47,8 @@ public class OutgoingUpdateViewPacket implements OutgoingPacket {
 
     @Override
     public ByteBuffer toBytes(Client stream) {
-        return NetUtils.createPacket(ID, NetSerializers.VAR_INTEGER.write(this.chunkX),
-                NetSerializers.VAR_INTEGER.write(this.chunkZ));
+        return NetUtils.createPacket(ID,
+                                     NetSerializers.VAR_INTEGER.write(this.chunkX),
+                                     NetSerializers.VAR_INTEGER.write(this.chunkZ));
     }
 }

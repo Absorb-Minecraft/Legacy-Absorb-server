@@ -1,8 +1,8 @@
 package org.absorb.net.packet.play.outgoing.client.movement.teleport;
 
 import org.absorb.net.Client;
-import org.absorb.net.data.NetUtils;
 import org.absorb.net.data.NetSerializers;
+import org.absorb.net.data.NetUtils;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
@@ -13,8 +13,6 @@ import java.nio.ByteBuffer;
 
 public class OutgoingEntityTeleportPacket implements OutgoingPacket {
 
-    public static final int ID = 0x63;
-
     private final int entityId;
     private final double x;
     private final double y;
@@ -22,6 +20,7 @@ public class OutgoingEntityTeleportPacket implements OutgoingPacket {
     private final boolean onGround;
     private final byte yaw;
     private final byte pitch;
+    public static final int ID = 0x63;
 
     public OutgoingEntityTeleportPacket(OutgoingEntityTeleportPacketBuilder builder) {
         this.entityId = builder.getEntityId();
@@ -31,6 +30,34 @@ public class OutgoingEntityTeleportPacket implements OutgoingPacket {
         this.onGround = builder.isOnGround();
         this.yaw = builder.getYaw();
         this.pitch = builder.getPitch();
+    }
+
+    public int getEntityId() {
+        return this.entityId;
+    }
+
+    public double getX() {
+        return this.x;
+    }
+
+    public double getY() {
+        return this.y;
+    }
+
+    public double getZ() {
+        return this.z;
+    }
+
+    public byte getYaw() {
+        return this.yaw;
+    }
+
+    public byte getPitch() {
+        return this.pitch;
+    }
+
+    public boolean isOnGround() {
+        return this.onGround;
     }
 
     @Override
@@ -63,6 +90,13 @@ public class OutgoingEntityTeleportPacket implements OutgoingPacket {
         ByteBuffer yawBuffer = NetSerializers.BYTE.write(this.yaw);
         ByteBuffer pitchBuffer = NetSerializers.BYTE.write(this.pitch);
         ByteBuffer onGroundBuffer = NetSerializers.BOOLEAN.write(this.onGround);
-        return NetUtils.createPacket(ID, entityIdBuffer, xBuffer, yBuffer, zBuffer, yawBuffer, pitchBuffer, onGroundBuffer);
+        return NetUtils.createPacket(ID,
+                                     entityIdBuffer,
+                                     xBuffer,
+                                     yBuffer,
+                                     zBuffer,
+                                     yawBuffer,
+                                     pitchBuffer,
+                                     onGroundBuffer);
     }
 }

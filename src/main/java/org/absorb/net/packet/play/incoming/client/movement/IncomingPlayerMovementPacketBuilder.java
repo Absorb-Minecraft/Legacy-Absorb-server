@@ -6,6 +6,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3d;
 
@@ -117,6 +118,17 @@ public class IncomingPlayerMovementPacketBuilder implements IncomingPacketBuilde
     @Override
     public @NotNull IncomingPlayerMovementPacket build() {
         return new IncomingPlayerMovementPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingPlayerMovementPacket> from(IncomingPlayerMovementPacket value) {
+        this.x = value.getX();
+        this.y = value.getY();
+        this.z = value.getZ();
+        this.yaw = value.getYaw();
+        this.pitch = value.getPitch();
+        this.isOnGround = value.isOnGround();
+        return this;
     }
 
     @Override

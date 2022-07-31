@@ -28,6 +28,30 @@ public class OutgoingAbilityPacket implements OutgoingPacket {
         this.fieldOfView = builder.getFieldOfView();
     }
 
+    public boolean isInvulnerable() {
+        return this.isInvulnerable;
+    }
+
+    public boolean isFlying() {
+        return this.isFlying;
+    }
+
+    public boolean isFlyingAllowed() {
+        return this.isFlyingAllowed;
+    }
+
+    public boolean isInstantBreak() {
+        return this.isInstantBreak;
+    }
+
+    public float getFlyingSpeed() {
+        return this.flyingSpeed;
+    }
+
+    public float getFieldOfView() {
+        return this.fieldOfView;
+    }
+
     @Override
     public int getId() {
         return ID;

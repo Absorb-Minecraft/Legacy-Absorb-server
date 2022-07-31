@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.client.movement;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3d;
 
@@ -90,6 +91,19 @@ public class OutgoingPlayerMovementPacketBuilder implements OutgoingPacketBuilde
     @Override
     public @NotNull OutgoingPlayerMovementPacket build() {
         return new OutgoingPlayerMovementPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingPlayerMovementPacket> from(OutgoingPlayerMovementPacket value) {
+        this.dismount = value.isDismount();
+        this.x = value.getX();
+        this.y = value.getY();
+        this.z = value.getZ();
+        this.yaw = value.getYaw();
+        this.pitch = value.getPitch();
+        this.teleportId = value.getTeleportId();
+
+        return this;
     }
 
     @Override

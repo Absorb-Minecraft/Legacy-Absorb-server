@@ -6,6 +6,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -106,6 +107,15 @@ public class IncomingLoginStartPacketBuilder implements IncomingPacketBuilder<In
     @Override
     public @NotNull IncomingLoginStartPacket build() {
         return new IncomingLoginStartPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingLoginStartPacket> from(IncomingLoginStartPacket value) {
+        this.publicKey = value.getPublicKey();
+        this.publicSign = value.getPublicSignature();
+        this.timestamp = value.getTimestamp().stream().boxed().findAny().orElse(null);
+        this.username = value.getUsername();
+        return this;
     }
 
     @Override

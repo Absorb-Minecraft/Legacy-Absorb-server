@@ -5,6 +5,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -42,6 +43,12 @@ public class IncomingTeleportConfirmPacketBuilder implements IncomingPacketBuild
     @Override
     public @NotNull IncomingTeleportConfirmPacket build() {
         return new IncomingTeleportConfirmPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingTeleportConfirmPacket> from(IncomingTeleportConfirmPacket value) {
+        this.teleportId = value.getTeleportId();
+        return this;
     }
 
     @Override

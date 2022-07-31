@@ -5,6 +5,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -42,6 +43,12 @@ public class IncomingCloseInventoryPacketBuilder implements IncomingPacketBuilde
     @Override
     public @NotNull IncomingCloseInventoryPacket build() {
         return new IncomingCloseInventoryPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingCloseInventoryPacket> from(IncomingCloseInventoryPacket value) {
+        this.inventoryId = value.getInventoryId();
+        return this;
     }
 
     @Override

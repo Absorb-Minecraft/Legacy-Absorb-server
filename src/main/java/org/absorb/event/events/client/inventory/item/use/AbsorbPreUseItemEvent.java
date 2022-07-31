@@ -1,4 +1,4 @@
-package org.absorb.event.events.inventory.client.inventory.item.use;
+package org.absorb.event.events.client.inventory.item.use;
 
 import org.absorb.event.Event;
 import org.absorb.event.cause.EventCause;

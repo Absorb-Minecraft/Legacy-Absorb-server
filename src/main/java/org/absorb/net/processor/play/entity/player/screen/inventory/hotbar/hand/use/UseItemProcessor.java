@@ -1,7 +1,7 @@
 package org.absorb.net.processor.play.entity.player.screen.inventory.hotbar.hand.use;
 
-import org.absorb.event.events.inventory.client.inventory.item.use.UseItemEvent;
-import org.absorb.event.events.inventory.client.inventory.item.use.UseItemEventBuilder;
+import org.absorb.event.events.client.inventory.item.use.UseItemEvent;
+import org.absorb.event.events.client.inventory.item.use.UseItemEventBuilder;
 import org.absorb.inventory.item.ItemStack;
 import org.absorb.inventory.slot.Slot;
 import org.absorb.net.Client;

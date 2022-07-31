@@ -7,6 +7,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -64,6 +65,13 @@ public class IncomingUseItemPacketBuilder implements IncomingPacketBuilder<Incom
     @Override
     public @NotNull IncomingUseItemPacket build() {
         return new IncomingUseItemPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingUseItemPacket> from(IncomingUseItemPacket value) {
+        this.handId = value.getHand().getNetworkId();
+        this.sequence = value.getSequence();
+        return this;
     }
 
     @Override

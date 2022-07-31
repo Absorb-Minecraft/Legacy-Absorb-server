@@ -97,4 +97,15 @@ public class WorldEntityBuilder implements Builder<WorldEntity> {
     public @NotNull Builder<WorldEntity> copy() {
         throw new RuntimeException("Not implemented yet");
     }
+
+    @Override
+    public @NotNull Builder<WorldEntity> from(WorldEntity value) {
+        this.entity = value.getEntity();
+        this.world = value.getWorld();
+        this.fellFrom = value.getFellFrom().orElse(null);
+        this.landedOn = value.getLandedOn().orElse(null);
+        this.position = value.getPosition();
+        this.instanceId = value.getInstanceId();
+        return this;
+    }
 }

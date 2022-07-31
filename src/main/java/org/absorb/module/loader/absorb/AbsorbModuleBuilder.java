@@ -27,6 +27,14 @@ public class AbsorbModuleBuilder extends ModuleBuilder {
     }
 
     @Override
+    public @NotNull Builder<Module> from(Module value) {
+        if (value instanceof AbsorbModule module) {
+            this.file = module.getFile();
+        }
+        return super.from(value);
+    }
+
+    @Override
     public @NotNull AbsorbModule build() {
         return new AbsorbModule(this);
     }

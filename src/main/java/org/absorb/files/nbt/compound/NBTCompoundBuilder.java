@@ -57,4 +57,10 @@ public class NBTCompoundBuilder implements Builder<NBTCompound> {
     public @NotNull Builder<NBTCompound> copy() {
         return new NBTCompoundBuilder().addAll(this.compoundSet);
     }
+
+    @Override
+    @Deprecated
+    public @NotNull Builder<NBTCompound> from(NBTCompound value) {
+        throw new RuntimeException("Not implemented yet");
+    }
 }

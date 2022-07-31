@@ -1,8 +1,8 @@
 package org.absorb.net.processor.status.request;
 
 import org.absorb.AbsorbManagers;
-import org.absorb.event.events.connection.ping.ClientPingEvent;
-import org.absorb.event.events.connection.ping.ClientPingEventBuilder;
+import org.absorb.event.events.client.connection.ping.ClientPingEvent;
+import org.absorb.event.events.client.connection.ping.ClientPingEventBuilder;
 import org.absorb.net.Client;
 import org.absorb.net.packet.status.request.IncomingStatusRequestPacket;
 import org.absorb.net.packet.status.response.StatusResponsePacketBuilder;

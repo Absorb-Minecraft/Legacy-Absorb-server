@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.client.keep.alive;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 public class OutgoingKeepAlivePacketBuilder implements OutgoingPacketBuilder<OutgoingKeepAlivePacket> {
@@ -21,6 +22,12 @@ public class OutgoingKeepAlivePacketBuilder implements OutgoingPacketBuilder<Out
     @Override
     public @NotNull OutgoingKeepAlivePacket build() {
         return new OutgoingKeepAlivePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingKeepAlivePacket> from(OutgoingKeepAlivePacket value) {
+        this.generatedId = value.getGeneratedId();
+        return this;
     }
 
     @Override

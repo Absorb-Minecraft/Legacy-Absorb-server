@@ -5,6 +5,7 @@ import org.absorb.inventory.slot.Slot;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 public class OutgoingUpdateSlotPacketBuilder implements OutgoingPacketBuilder<OutgoingUpdateSlotPacket> {
@@ -51,6 +52,14 @@ public class OutgoingUpdateSlotPacketBuilder implements OutgoingPacketBuilder<Ou
     @Override
     public @NotNull OutgoingUpdateSlotPacket build() {
         return new OutgoingUpdateSlotPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingUpdateSlotPacket> from(OutgoingUpdateSlotPacket value) {
+        this.slot = value.getSlot();
+        this.inventoryId = value.getInventoryId();
+        this.inventoryState = value.getInventoryState();
+        return this;
     }
 
     @Override

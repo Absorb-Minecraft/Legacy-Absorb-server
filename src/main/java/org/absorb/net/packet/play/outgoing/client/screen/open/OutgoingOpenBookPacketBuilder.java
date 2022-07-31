@@ -4,6 +4,7 @@ import org.absorb.entity.living.human.Hand;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 public class OutgoingOpenBookPacketBuilder implements OutgoingPacketBuilder<OutgoingOpenBookPacket> {
@@ -22,6 +23,12 @@ public class OutgoingOpenBookPacketBuilder implements OutgoingPacketBuilder<Outg
     @Override
     public @NotNull OutgoingOpenBookPacket build() {
         return new OutgoingOpenBookPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingOpenBookPacket> from(OutgoingOpenBookPacket value) {
+        this.hand = value.getHand();
+        return this;
     }
 
     @Override

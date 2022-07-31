@@ -12,11 +12,10 @@ import java.nio.ByteBuffer;
 
 public class OutgoingCloseConnectionPacket implements OutgoingPacket {
 
-    public static final int PLAY_ID = 0x17;
-    public static final int LOGIN_ID = 0x00;
-
     private final @NotNull Component message;
     private final boolean usePlay;
+    public static final int PLAY_ID = 0x17;
+    public static final int LOGIN_ID = 0x00;
 
     public OutgoingCloseConnectionPacket(OutgoingCloseConnectionPacketBuilder builder) {
         this.message = builder.getMessage();
@@ -24,14 +23,12 @@ public class OutgoingCloseConnectionPacket implements OutgoingPacket {
 
     }
 
-    public @NotNull Component getMessage() {
-        return this.message;
+    public boolean isUsingPlayId() {
+        return this.usePlay;
     }
 
-    @Override
-    public ByteBuffer toBytes(Client info) {
-        ByteBuffer dataBytes = NetSerializers.CHAT.write(this.message);
-        return NetUtils.createPacket(this.getId(), dataBytes);
+    public @NotNull Component getMessage() {
+        return this.message;
     }
 
     @Override
@@ -53,5 +50,11 @@ public class OutgoingCloseConnectionPacket implements OutgoingPacket {
     @Override
     public @NotNull OutgoingCloseConnectionPacketBuilder toBuilder() {
         return new OutgoingCloseConnectionPacketBuilder().setMessage(this.message);
+    }
+
+    @Override
+    public ByteBuffer toBytes(Client info) {
+        ByteBuffer dataBytes = NetSerializers.CHAT.write(this.message);
+        return NetUtils.createPacket(this.getId(), dataBytes);
     }
 }

@@ -6,6 +6,8 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
 
@@ -52,8 +54,17 @@ public class IncomingHandshakePacketBuilder implements IncomingPacketBuilder<Inc
     }
 
     @Override
-    public IncomingHandshakePacket build() {
+    public @NotNull IncomingHandshakePacket build() {
         return new IncomingHandshakePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingHandshakePacket> from(IncomingHandshakePacket value) {
+        this.joiningFrom = value.getJoiningFrom();
+        this.packetVersion = value.getProtocolVersionId();
+        this.port = value.getPort();
+        this.state = value.getHandshakeState();
+        return this;
     }
 
     @Override
@@ -62,7 +73,7 @@ public class IncomingHandshakePacketBuilder implements IncomingPacketBuilder<Inc
     }
 
     @Override
-    public PacketState getState() {
+    public @NotNull PacketState getState() {
         return PacketState.HANDSHAKE;
     }
 
@@ -72,7 +83,8 @@ public class IncomingHandshakePacketBuilder implements IncomingPacketBuilder<Inc
     }
 
     @Override
-    public PacketBuilder<IncomingHandshakePacket> from(Client client, ByteBuffer packetBytes) {
+    public @NotNull PacketBuilder<IncomingHandshakePacket> from(@NotNull Client client,
+                                                                @NotNull ByteBuffer packetBytes) {
         NetEntryData<Integer> mcVersion = NetSerializers.VAR_INTEGER.read(0, packetBytes);
         NetEntryData<String> ip = NetSerializers.STRING.read(mcVersion.endingPosition(), packetBytes);
         NetEntryData<Short> port;
@@ -91,7 +103,7 @@ public class IncomingHandshakePacketBuilder implements IncomingPacketBuilder<Inc
     }
 
     @Override
-    public IncomingHandshakePacketBuilder reset() {
+    public @NotNull IncomingHandshakePacketBuilder reset() {
         this.joiningFrom = null;
         this.packetVersion = 0;
         this.port = 25565;
@@ -100,7 +112,7 @@ public class IncomingHandshakePacketBuilder implements IncomingPacketBuilder<Inc
     }
 
     @Override
-    public IncomingHandshakePacketBuilder copy() {
+    public @NotNull IncomingHandshakePacketBuilder copy() {
         return new IncomingHandshakePacketBuilder()
                 .setPacketVersion(this.packetVersion)
                 .setJoiningFrom(this.joiningFrom)

@@ -6,6 +6,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -105,6 +106,16 @@ public class IncomingMessagePacketBuilder implements IncomingPacketBuilder<Incom
     @Override
     public @NotNull IncomingMessagePacket build() {
         return new IncomingMessagePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingMessagePacket> from(IncomingMessagePacket value) {
+        this.message = value.getMessage();
+        this.salt = value.getSalt();
+        this.preview = value.isPreview();
+        this.sign = value.getSignature();
+        this.timestamp = value.getTimestamp();
+        return this;
     }
 
     @Override

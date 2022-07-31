@@ -3,8 +3,8 @@ package org.absorb.inventory.recipe.shapeless;
 import org.absorb.inventory.recipe.RecipeBuilder;
 import org.absorb.inventory.slot.Slot;
 import org.absorb.inventory.slot.UnknownSlot;
-import org.absorb.net.data.NetList;
 import org.absorb.net.data.NetEntryData;
+import org.absorb.net.data.NetList;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.register.AbsorbKey;
 import org.absorb.utils.Builder;
@@ -18,12 +18,12 @@ import java.util.Set;
 
 public class ShapelessRecipeBuilder implements RecipeBuilder<ShapelessRecipe> {
 
+    private final Set<UnknownSlot[]> ingredients = new HashSet<>();
     private String name;
     private String key;
     private String namespace;
     private String groupName;
     private UnknownSlot result;
-    private final Set<UnknownSlot[]> ingredients = new HashSet<>();
 
     public String getName() {
         return this.name;
@@ -104,7 +104,21 @@ public class ShapelessRecipeBuilder implements RecipeBuilder<ShapelessRecipe> {
 
     @Override
     public @NotNull Builder<ShapelessRecipe> copy() {
-        return new ShapelessRecipeBuilder().setGroupName(this.groupName).addManyIngredients(this.ingredients).setKey(this.key).setGroupName(this.groupName);
+        return new ShapelessRecipeBuilder()
+                .setGroupName(this.groupName)
+                .addManyIngredients(this.ingredients)
+                .setKey(this.key)
+                .setGroupName(this.groupName);
+    }
+
+    @Override
+    public @NotNull Builder<ShapelessRecipe> from(ShapelessRecipe value) {
+        this.groupName = value.getGroupName();
+        this.ingredients.addAll(value.getIngredients());
+        this.key = value.getKey();
+        this.result = value.getResult();
+        this.namespace = value.getHost();
+        return this;
     }
 
     @Override
@@ -112,8 +126,8 @@ public class ShapelessRecipeBuilder implements RecipeBuilder<ShapelessRecipe> {
         NetEntryData<AbsorbKey> type = NetSerializers.RESOURCE_KEY.read(0, data);
         NetEntryData<AbsorbKey> id = NetSerializers.RESOURCE_KEY.read(type.endingPosition(), data);
         NetEntryData<String> groupName = NetSerializers.STRING.read(id.endingPosition(), data);
-        NetEntryData<List<List<Slot>>> ingredients =
-                new NetList<>(new NetList<>(NetSerializers.SLOT)).read(groupName.endingPosition(), data);
+        NetEntryData<List<List<Slot>>> ingredients = new NetList<>(new NetList<>(NetSerializers.SLOT)).read(groupName.endingPosition(),
+                                                                                                            data);
         NetEntryData<Slot> result = NetSerializers.SLOT.read(ingredients.endingPosition(), data);
 
         if (!id.value().value().equals(ShapelessRecipe.SHAPELESS)) {
@@ -126,8 +140,7 @@ public class ShapelessRecipeBuilder implements RecipeBuilder<ShapelessRecipe> {
         this.setGroupName(groupName.value());
         this.setResult((UnknownSlot) result.value());
         for (List<Slot> slots : ingredients.value()) {
-            UnknownSlot[] unknownSlots =
-                    slots.stream().map(slot -> (UnknownSlot) slot).toArray(UnknownSlot[]::new);
+            UnknownSlot[] unknownSlots = slots.stream().map(slot -> (UnknownSlot) slot).toArray(UnknownSlot[]::new);
             this.addIngredients(unknownSlots);
         }
 

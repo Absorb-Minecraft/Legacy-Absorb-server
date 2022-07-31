@@ -2,6 +2,7 @@ package org.absorb.net.packet.play.outgoing.world.chunk.data;
 
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.absorb.world.area.AbsorbChunk;
 import org.absorb.world.area.ChunkPart;
 import org.jetbrains.annotations.NotNull;
@@ -12,9 +13,9 @@ import java.util.Set;
 
 public class OutgoingChunkUpdatePacketBuilder implements OutgoingPacketBuilder<OutgoingChunkUpdatePacket> {
 
+    private final Set<ChunkPart> blockData = new HashSet<>();
     private AbsorbChunk chunk;
     private boolean trustLightOnEdge;
-    private final Set<ChunkPart> blockData = new HashSet<>();
 
     public AbsorbChunk getChunk() {
         return this.chunk;
@@ -49,8 +50,11 @@ public class OutgoingChunkUpdatePacketBuilder implements OutgoingPacketBuilder<O
     }
 
     @Override
-    public @NotNull OutgoingChunkUpdatePacketBuilder copy() {
-        return new OutgoingChunkUpdatePacketBuilder().setChunk(this.chunk).setTrustLightOnEdge(this.trustLightOnEdge).addParts(this.getParts());
+    public @NotNull Builder<OutgoingChunkUpdatePacket> from(OutgoingChunkUpdatePacket value) {
+        this.blockData.addAll(value.getParts());
+        this.chunk = value.getChunk();
+        this.trustLightOnEdge = value.isTrustLightOnEdge();
+        return this;
     }
 
     @Override
@@ -59,6 +63,14 @@ public class OutgoingChunkUpdatePacketBuilder implements OutgoingPacketBuilder<O
         this.chunk = null;
         this.trustLightOnEdge = false;
         return this;
+    }
+
+    @Override
+    public @NotNull OutgoingChunkUpdatePacketBuilder copy() {
+        return new OutgoingChunkUpdatePacketBuilder()
+                .setChunk(this.chunk)
+                .setTrustLightOnEdge(this.trustLightOnEdge)
+                .addParts(this.getParts());
     }
 
     @Override

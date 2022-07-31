@@ -1,4 +1,4 @@
-package org.absorb.event.events.connection.ping;
+package org.absorb.event.events.client.connection.ping;
 
 import net.kyori.adventure.text.Component;
 import org.absorb.event.cause.EventCause;
@@ -9,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class ClientPingEventCombiner implements EventCombine<ClientPingEvent> {
 
+    private final Client client;
+    private final @NotNull EventCause willCause;
+    private final @NotNull EventCause hasCaused;
     private @NotNull ThreadedDataPoint<Integer, Integer> protocolVersion;
     private @NotNull ThreadedDataPoint<String, String> nameVersion;
     private @NotNull ThreadedDataPoint<Component, Component> descriptionText;
     private @NotNull ThreadedDataPoint<Integer, Integer> currentPlayers;
     private @NotNull ThreadedDataPoint<Integer, Integer> maxPlayers;
-    private final Client client;
-    private final @NotNull EventCause willCause;
-    private final @NotNull EventCause hasCaused;
 
     public ClientPingEventCombiner(@NotNull ClientPingEvent event) {
         this.client = event.getClient();

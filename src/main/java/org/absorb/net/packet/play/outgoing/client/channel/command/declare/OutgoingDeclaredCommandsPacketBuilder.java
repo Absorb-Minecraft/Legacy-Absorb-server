@@ -5,6 +5,7 @@ import org.absorb.command.node.NameableCommandNode;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -35,6 +36,12 @@ public class OutgoingDeclaredCommandsPacketBuilder implements OutgoingPacketBuil
     @Override
     public @NotNull OutgoingDeclareCommandPacket build() {
         return new OutgoingDeclareCommandPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingDeclareCommandPacket> from(OutgoingDeclareCommandPacket value) {
+        this.nodes.addAll(value.getNodes());
+        return this;
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,6 +48,12 @@ public class IncomingChangeAbilityPacketBuilder implements IncomingPacketBuilder
     @Override
     public @NotNull IncomingChangeAbilityPacket build() {
         return new IncomingChangeAbilityPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingChangeAbilityPacket> from(IncomingChangeAbilityPacket value) {
+        this.ability = value.getAbility().orElse(null);
+        return this;
     }
 
     @Override

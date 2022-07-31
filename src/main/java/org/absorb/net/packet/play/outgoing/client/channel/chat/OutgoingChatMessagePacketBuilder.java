@@ -5,6 +5,7 @@ import org.absorb.message.MessagePosition;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -106,6 +107,20 @@ public class OutgoingChatMessagePacketBuilder implements OutgoingPacketBuilder<O
     @Override
     public @NotNull OutgoingChatMessagePacket build() {
         return new OutgoingChatMessagePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingChatMessagePacket> from(OutgoingChatMessagePacket value) {
+        this.from = value.getFrom().orElse(null);
+        this.fromDisplayName = value.getFromDisplayName();
+        this.messageSign = value.getMessageSignature();
+        this.message = value.getDisplayMessage().orElse(null);
+        this.originalMessage = value.getOriginalMessage();
+        this.position = value.getPosition();
+        this.salt = value.getSalt();
+        this.teamName = value.getTeamName().orElse(null);
+        this.timestamp = value.getTimestamp();
+        return this;
     }
 
     @Override

@@ -208,4 +208,25 @@ public class OutgoingJoinPacketBuilder implements Builder<OutgoingJoinPacket> {
     public @NotNull OutgoingJoinPacketBuilder copy() {
         throw new RuntimeException("Not implemented yet");
     }
+
+    @Override
+    public @NotNull Builder<OutgoingJoinPacket> from(OutgoingJoinPacket value) {
+        this.biomes = value.getBiomes();
+        this.currentWorld = value.getCurrentWorld();
+        this.entityId = value.getId();
+        this.deathLocation = value.getDeathLocation().orElse(null);
+        this.gameMode = value.getGameMode();
+        this.blockViewDistance = value.getBlockViewDistance();
+        this.entityViewDistance = value.getEntityViewDistance();
+        this.isDebugWorld = value.isDebugWorld();
+        this.isFlatWorld = value.isFlatWorld();
+        this.isHardcore = value.isHardcore();
+        this.maxPlayers = value.getMaxPlayers();
+        this.previousGamemode = value.getPreviousGamemode().orElse(null);
+        this.reduceDebug = value.isReduceDebug();
+        this.respawnScreen = value.isRespawnScreen();
+        this.seed = value.getSeed();
+        this.worldTypes.addAll(value.getWorldTypes());
+        return this;
+    }
 }

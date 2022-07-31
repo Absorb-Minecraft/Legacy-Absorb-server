@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.client.compass;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
@@ -32,6 +33,13 @@ public class OutgoingSpawnPositionPacketBuilder implements OutgoingPacketBuilder
     @Override
     public @NotNull OutgoingSpawnPositionPacket build() {
         return new OutgoingSpawnPositionPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingSpawnPositionPacket> from(OutgoingSpawnPositionPacket value) {
+        this.angle = value.getAngle();
+        this.location = value.getLocation();
+        return this;
     }
 
     @Override

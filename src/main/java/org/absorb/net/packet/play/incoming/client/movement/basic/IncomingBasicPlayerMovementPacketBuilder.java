@@ -6,6 +6,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -57,6 +58,15 @@ public class IncomingBasicPlayerMovementPacketBuilder
     @Override
     public @NotNull IncomingBasicPlayerMovementPacket build() {
         return new IncomingBasicPlayerMovementPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingBasicPlayerMovementPacket> from(IncomingBasicPlayerMovementPacket value) {
+        this.isOnGround = value.isOnGround();
+        this.x = value.getX();
+        this.y = value.getY();
+        this.z = value.getZ();
+        return this;
     }
 
     @Override

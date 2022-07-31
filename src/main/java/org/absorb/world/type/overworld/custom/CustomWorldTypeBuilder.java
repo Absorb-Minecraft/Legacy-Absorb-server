@@ -2,6 +2,7 @@ package org.absorb.world.type.overworld.custom;
 
 import org.absorb.register.AbsorbKey;
 import org.absorb.utils.Builder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -222,6 +223,32 @@ public class CustomWorldTypeBuilder implements Builder<CustomWorldType> {
     @Override
     public CustomWorldTypeBuilder copy() {
         throw new RuntimeException("Not implemented yet");
+    }
+
+    @Override
+    public @NotNull Builder<CustomWorldType> from(CustomWorldType value) {
+        this.areBedsAllowed = value.isBedsSafe();
+        this.basedUpon = value.getBasedUpon();
+        this.host = value.getHost();
+        this.hasRaids = value.hasRaids();
+        this.key = value.getKey();
+        this.fixedTime = value.getFixedTime().orElse(null);
+        this.hasSkylight = value.hasSkylight();
+        this.infiBurn = value.getInfiniteBurn();
+        this.isRespawnAnchorUsed = value.isRespawnAnchorUsed();
+        this.isUltrawarm = value.isUltraWarm();
+        this.lavaSpreading = value.isLavaSpreadingQuickly();
+        this.light = value.getAmbientLightLevel();
+        this.logicalHeight = value.getSafeHeight();
+        this.maxHeight = value.getMaximumHeight();
+        this.minHeight = value.getMinimumHeight();
+        this.monsterSpawnBlockLightLimit = value.getMonsterSpawnBlockLightLimit();
+        this.monsterSpawnLightLevel = value.getMonsterSpawnBlockLightLimit();
+        this.multiplier = value.getMultiplier();
+        this.name = value.getName();
+        this.natural = value.isNatural();
+        this.zombiePiglins = value.willBecomeZombifiedPiglins();
+        return this;
     }
 
     public Optional<Long> getFixedTime() {

@@ -7,6 +7,7 @@ import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
 import org.absorb.register.AbsorbKey;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -75,6 +76,14 @@ public class IncomingRecipeRequestPacketBuilder implements IncomingPacketBuilder
     @Override
     public @NotNull IncomingRecipeRequestPacket build() {
         return new IncomingRecipeRequestPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingRecipeRequestPacket> from(IncomingRecipeRequestPacket value) {
+        this.makeAll = value.isMakeAll();
+        this.recipe = value.getRecipe();
+        this.windowId = value.getWindowId();
+        return this;
     }
 
     @Override

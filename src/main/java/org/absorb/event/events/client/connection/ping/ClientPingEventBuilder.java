@@ -1,4 +1,4 @@
-package org.absorb.event.events.connection.ping;
+package org.absorb.event.events.client.connection.ping;
 
 import net.kyori.adventure.text.Component;
 import org.absorb.AbsorbManagers;
@@ -26,7 +26,7 @@ public class ClientPingEventBuilder implements Builder<ClientPingEvent> {
     }
 
     public EventCause getCaused() {
-        if (this.caused==null) {
+        if (this.caused == null) {
             return new EventCause(Collections.emptyList());
         }
         return this.caused;
@@ -38,7 +38,7 @@ public class ClientPingEventBuilder implements Builder<ClientPingEvent> {
     }
 
     public EventCause getWillCause() {
-        if (this.willCause==null) {
+        if (this.willCause == null) {
             return new EventCause(Collections.emptyList());
         }
         return this.willCause;
@@ -132,5 +132,18 @@ public class ClientPingEventBuilder implements Builder<ClientPingEvent> {
                 .setProtocolVersion(this.protocolVersion)
                 .setWillCause(this.willCause)
                 .setCaused(this.caused);
+    }
+
+    @Override
+    public @NotNull Builder<ClientPingEvent> from(ClientPingEvent value) {
+        this.caused = value.hasCaused();
+        this.client = value.getClient();
+        this.name = value.getNamedVersion();
+        this.description = value.getDescription();
+        this.currentPlayers = value.getCurrentPlayers();
+        this.maxPlayers = value.getMaxPlayers();
+        this.willCause = value.willCause();
+        this.protocolVersion = value.getProtocolVersion();
+        return this;
     }
 }

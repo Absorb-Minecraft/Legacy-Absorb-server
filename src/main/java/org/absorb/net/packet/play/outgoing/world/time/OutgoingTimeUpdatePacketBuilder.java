@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.world.time;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.absorb.world.WorldData;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,6 +39,13 @@ public class OutgoingTimeUpdatePacketBuilder implements OutgoingPacketBuilder<Ou
     @Override
     public @NotNull OutgoingTimeUpdatePacket build() {
         return new OutgoingTimeUpdatePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingTimeUpdatePacket> from(OutgoingTimeUpdatePacket value) {
+        this.timeOfDay = value.getTimeOfDay();
+        this.worldAge = value.getWorldAge();
+        return this;
     }
 
     @Override

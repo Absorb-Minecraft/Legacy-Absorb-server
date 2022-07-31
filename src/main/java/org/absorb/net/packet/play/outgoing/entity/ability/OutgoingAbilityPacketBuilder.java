@@ -7,6 +7,7 @@ import org.absorb.net.Client;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 public class OutgoingAbilityPacketBuilder implements OutgoingPacketBuilder<OutgoingAbilityPacket> {
@@ -31,7 +32,7 @@ public class OutgoingAbilityPacketBuilder implements OutgoingPacketBuilder<Outgo
         this.isFlying = entity.isFlying();
         if (entity instanceof Human human) {
             this.isFlyingAllowed = human.isFlyingAllowed();
-            this.isInstantBreak = human.getGamemode()==Gamemodes.CREATIVE;
+            this.isInstantBreak = human.getGamemode() == Gamemodes.CREATIVE;
         }
         return this;
     }
@@ -96,6 +97,17 @@ public class OutgoingAbilityPacketBuilder implements OutgoingPacketBuilder<Outgo
     }
 
     @Override
+    public @NotNull Builder<OutgoingAbilityPacket> from(OutgoingAbilityPacket value) {
+        this.fieldOfView = value.getFieldOfView();
+        this.flyingSpeed = value.getFlyingSpeed();
+        this.isInstantBreak = value.isInstantBreak();
+        this.isFlying = value.isFlying();
+        this.isFlyingAllowed = value.isFlyingAllowed();
+        this.isInvulnerable = value.isInvulnerable();
+        return this;
+    }
+
+    @Override
     public @NotNull PacketBuilder<OutgoingAbilityPacket> reset() {
         this.fieldOfView = 0.1f;
         this.isInstantBreak = false;
@@ -106,7 +118,11 @@ public class OutgoingAbilityPacketBuilder implements OutgoingPacketBuilder<Outgo
 
     @Override
     public @NotNull PacketBuilder<OutgoingAbilityPacket> copy() {
-        return new OutgoingAbilityPacketBuilder().setFlying(this.isFlying).setFlyingAllowed(this.isFlyingAllowed).setFieldOfView(this.fieldOfView).setInstantBreak(this.isInstantBreak);
+        return new OutgoingAbilityPacketBuilder()
+                .setFlying(this.isFlying)
+                .setFlyingAllowed(this.isFlyingAllowed)
+                .setFieldOfView(this.fieldOfView)
+                .setInstantBreak(this.isInstantBreak);
     }
 
     @Override

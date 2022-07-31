@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.client.movement.teleport;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 public class OutgoingEntityTeleportPacketBuilder implements OutgoingPacketBuilder<OutgoingEntityTeleportPacket> {
@@ -84,6 +85,19 @@ public class OutgoingEntityTeleportPacketBuilder implements OutgoingPacketBuilde
     }
 
     @Override
+    public @NotNull Builder<OutgoingEntityTeleportPacket> from(OutgoingEntityTeleportPacket value) {
+        this.entityId = value.getEntityId();
+        this.y = value.getY();
+        this.x = value.getX();
+        this.z = value.getZ();
+        this.yaw = value.getYaw();
+        this.pitch = value.getPitch();
+        this.onGround = value.isOnGround();
+
+        return this;
+    }
+
+    @Override
     public PacketBuilder<OutgoingEntityTeleportPacket> reset() {
         this.entityId = 0;
         this.x = 0;
@@ -97,7 +111,14 @@ public class OutgoingEntityTeleportPacketBuilder implements OutgoingPacketBuilde
 
     @Override
     public PacketBuilder<OutgoingEntityTeleportPacket> copy() {
-        return new OutgoingEntityTeleportPacketBuilder().setEntityId(this.entityId).setOnGround(this.onGround).setPitch(this.pitch).setX(this.x).setY(this.y).setYaw(this.yaw).setZ(this.z);
+        return new OutgoingEntityTeleportPacketBuilder()
+                .setEntityId(this.entityId)
+                .setOnGround(this.onGround)
+                .setPitch(this.pitch)
+                .setX(this.x)
+                .setY(this.y)
+                .setYaw(this.yaw)
+                .setZ(this.z);
     }
 
     @Override

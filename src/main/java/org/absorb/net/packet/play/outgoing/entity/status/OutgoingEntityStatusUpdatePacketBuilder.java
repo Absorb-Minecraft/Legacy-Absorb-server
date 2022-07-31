@@ -5,9 +5,11 @@ import org.absorb.entity.WorldEntity;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
-public class OutgoingEntityStatusUpdatePacketBuilder implements OutgoingPacketBuilder<OutgoingEntityStatusUpdatePacket> {
+public class OutgoingEntityStatusUpdatePacketBuilder
+        implements OutgoingPacketBuilder<OutgoingEntityStatusUpdatePacket> {
 
     private int entityId;
     private EntityEffect<?> effect;
@@ -41,6 +43,13 @@ public class OutgoingEntityStatusUpdatePacketBuilder implements OutgoingPacketBu
     }
 
     @Override
+    public @NotNull Builder<OutgoingEntityStatusUpdatePacket> from(OutgoingEntityStatusUpdatePacket value) {
+        this.entityId = value.getEntityId();
+        this.effect = value.getEffect();
+        return this;
+    }
+
+    @Override
     public @NotNull PacketBuilder<OutgoingEntityStatusUpdatePacket> reset() {
         this.entityId = 0;
         this.effect = null;
@@ -49,7 +58,9 @@ public class OutgoingEntityStatusUpdatePacketBuilder implements OutgoingPacketBu
 
     @Override
     public @NotNull PacketBuilder<OutgoingEntityStatusUpdatePacket> copy() {
-        return new OutgoingEntityStatusUpdatePacketBuilder().setEntityId(this.getEntityId()).setEffect(this.getEffect());
+        return new OutgoingEntityStatusUpdatePacketBuilder()
+                .setEntityId(this.getEntityId())
+                .setEffect(this.getEffect());
     }
 
     @Override

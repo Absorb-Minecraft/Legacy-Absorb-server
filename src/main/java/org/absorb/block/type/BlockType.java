@@ -53,8 +53,10 @@ public class BlockType implements NetworkIdentifiable {
                 .getBlockStates()
                 .isEmpty())) {
             throw new RuntimeException("Default state is not set: " + builder.getHost() + ":" + builder.getKey());
+        } else if (builder.getDefaultState() instanceof BlockStateBuilder defaultStateBuilder2) {
+            defaultStateBuilder = defaultStateBuilder2;
         } else {
-            defaultStateBuilder = builder.getDefaultState();
+            throw new RuntimeException("Unknown Builder state of builder.getDefaultState()");
         }
         if (builder.getNetworkId() == null) {
             throw new RuntimeException("NetworkId is missing: " + builder.getHost() + ":" + builder.getKey());
@@ -71,7 +73,8 @@ public class BlockType implements NetworkIdentifiable {
         this.blockStates.addAll(builder
                                         .getBlockStates()
                                         .parallelStream()
-                                        .map(bsBuilder -> bsBuilder.setType(this).build())
+                                        .filter(bsBuilder -> bsBuilder instanceof BlockStateBuilder)
+                                        .map(bsBuilder -> ((BlockStateBuilder) bsBuilder).setType(this).build())
                                         .toList());
         this.name = builder.getName();
         this.host = builder.getHost();

@@ -14,17 +14,23 @@ public class IncomingMessagePacket implements IncomingPacket {
     private final long timestamp;
     private final byte[] sign;
     private final boolean preview;
+    private final long salt;
     public static final int ID = 0x04;
 
     public IncomingMessagePacket(IncomingMessagePacketBuilder builder) {
         this.message = builder.getMessage();
         this.timestamp = builder.getTimestamp();
         this.preview = builder.isPreview();
+        this.salt = builder.getSalt();
 
         this.sign = builder.getSignature();
         if (this.message == null) {
             throw new RuntimeException("Message must be set");
         }
+    }
+
+    public long getSalt() {
+        return this.salt;
     }
 
     public long getTimestamp() {

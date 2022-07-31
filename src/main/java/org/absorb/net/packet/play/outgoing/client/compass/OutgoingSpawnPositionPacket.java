@@ -14,14 +14,21 @@ import java.nio.ByteBuffer;
 
 public class OutgoingSpawnPositionPacket implements OutgoingPacket {
 
-    public static final int ID = 0x4A;
-
     private final Vector3i location;
     private final float angle;
+    public static final int ID = 0x4A;
 
     public OutgoingSpawnPositionPacket(@NotNull OutgoingSpawnPositionPacketBuilder builder) {
         this.location = builder.getLocation();
         this.angle = builder.getAngle();
+    }
+
+    public float getAngle() {
+        return this.angle;
+    }
+
+    public Vector3i getLocation() {
+        return this.location;
     }
 
 

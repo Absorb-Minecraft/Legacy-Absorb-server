@@ -52,4 +52,12 @@ public class ClickButtonBuilder implements Builder<AbstractClickButton> {
     public @NotNull Builder<AbstractClickButton> copy() {
         return new ClickButtonBuilder().setName(this.name).setNetworkId(this.networkId);
     }
+
+    @Override
+    public @NotNull Builder<AbstractClickButton> from(AbstractClickButton value) {
+        this.name = value.getName();
+        this.networkId = value.getNetworkId();
+        this.clickSlotType = value.getType();
+        return this;
+    }
 }

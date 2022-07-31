@@ -5,6 +5,7 @@ import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.play.outgoing.entity.tab.OutgoingPlayerTabUpdatePacket;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -12,7 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class OutgoingPlayerTabUpdatePingPacketBuilder implements OutgoingPacketBuilder<OutgoingPlayerTabUpdatePingPacket> {
+public class OutgoingPlayerTabUpdatePingPacketBuilder
+        implements OutgoingPacketBuilder<OutgoingPlayerTabUpdatePingPacket> {
 
     private final Map<UUID, Gamemode> gamemodeToUpdate = new HashMap<>();
 
@@ -28,6 +30,12 @@ public class OutgoingPlayerTabUpdatePingPacketBuilder implements OutgoingPacketB
     @Override
     public @NotNull OutgoingPlayerTabUpdatePingPacket build() {
         return new OutgoingPlayerTabUpdatePingPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingPlayerTabUpdatePingPacket> from(OutgoingPlayerTabUpdatePingPacket value) {
+        this.gamemodeToUpdate.putAll(value.getUpdates());
+        return this;
     }
 
     @Override

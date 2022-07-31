@@ -42,4 +42,11 @@ public class ParticleBuilder implements Builder<Particle> {
     public @NotNull Builder<Particle> copy() {
         return new ParticleBuilder().setType(this.type).setProbability(this.probability);
     }
+
+    @Override
+    public @NotNull Builder<Particle> from(Particle value) {
+        this.probability = value.getProbability();
+        this.type = value.getType();
+        return this;
+    }
 }

@@ -9,6 +9,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -137,6 +138,18 @@ public class IncomingClientSettingsPacketBuilder implements IncomingPacketBuilde
     @Override
     public @NotNull IncomingClientSettingsPacket build() {
         return new IncomingClientSettingsPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingClientSettingsPacket> from(IncomingClientSettingsPacket value) {
+        this.chatColorEnabled = value.isChatColorEnabled();
+        this.chatMode = value.getChatMode();
+        this.locale = value.getLocale();
+        this.mainHand = value.getMainHand();
+        this.parts.addAll(value.getParts());
+        this.showOnList = value.isShowOnList();
+        this.viewDistance = value.getViewDistance();
+        return this;
     }
 
     @Override

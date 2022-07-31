@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.world.chunk.position;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.absorb.world.area.AbsorbChunk;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector2i;
@@ -43,6 +44,13 @@ public class OutgoingUpdateViewPacketBuilder implements OutgoingPacketBuilder<Ou
     @Override
     public @NotNull OutgoingUpdateViewPacket build() {
         return new OutgoingUpdateViewPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingUpdateViewPacket> from(OutgoingUpdateViewPacket value) {
+        this.chunkX = value.getChunkX();
+        this.chunkZ = value.getChunkZ();
+        return this;
     }
 
     @Override

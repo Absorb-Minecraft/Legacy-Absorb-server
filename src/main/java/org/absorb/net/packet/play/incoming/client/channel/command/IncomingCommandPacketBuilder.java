@@ -6,6 +6,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -132,6 +133,16 @@ public class IncomingCommandPacketBuilder implements IncomingPacketBuilder<Incom
     @Override
     public @NotNull IncomingCommandPacket build() {
         return new IncomingCommandPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingCommandPacket> from(IncomingCommandPacket value) {
+        this.signedPreview = value.isSignedPreview();
+        this.arguments.addAll(value.getArguments());
+        this.command = value.getCommand();
+        this.salt = value.getSalt();
+        this.timestamp = value.getTimestamp();
+        return this;
     }
 
     @Override

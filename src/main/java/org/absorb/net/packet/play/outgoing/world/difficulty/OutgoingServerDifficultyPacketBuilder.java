@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.world.difficulty;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.absorb.world.Difficulty;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +36,13 @@ public class OutgoingServerDifficultyPacketBuilder implements OutgoingPacketBuil
     }
 
     @Override
+    public @NotNull Builder<OutgoingServerDifficultyPacket> from(OutgoingServerDifficultyPacket value) {
+        this.difficulty = value.getDifficulty();
+        this.locked = value.isLocked();
+        return this;
+    }
+
+    @Override
     public @NotNull PacketBuilder<OutgoingServerDifficultyPacket> reset() {
         this.difficulty = Difficulty.NORMAL;
         return this;
@@ -42,7 +50,9 @@ public class OutgoingServerDifficultyPacketBuilder implements OutgoingPacketBuil
 
     @Override
     public PacketBuilder<OutgoingServerDifficultyPacket> copy() {
-        return new OutgoingServerDifficultyPacketBuilder().setDifficulty(this.getDifficulty()).setLocked(this.isLocked());
+        return new OutgoingServerDifficultyPacketBuilder()
+                .setDifficulty(this.getDifficulty())
+                .setLocked(this.isLocked());
     }
 
     @Override

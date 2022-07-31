@@ -4,6 +4,7 @@ import org.absorb.net.Client;
 import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -55,6 +56,13 @@ public class IncomingPingPacketBuilder implements IncomingPacketBuilder<Incoming
     @Override
     public @NotNull IncomingPingPacket build() {
         return new IncomingPingPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingPingPacket> from(IncomingPingPacket value) {
+        this.usePlay = value.isUsePlay();
+        this.payload = value.getPayload();
+        return this;
     }
 
     @Override

@@ -16,10 +16,7 @@ import org.absorb.net.packet.PacketState;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class OutgoingDeclareCommandPacket implements OutgoingPacket {
 
@@ -28,6 +25,10 @@ public class OutgoingDeclareCommandPacket implements OutgoingPacket {
 
     public OutgoingDeclareCommandPacket(@NotNull OutgoingDeclaredCommandsPacketBuilder builder) {
         this.nodes.addAll(builder.getCommands());
+    }
+
+    public Collection<CommandNode> getNodes() {
+        return Collections.unmodifiableCollection(this.nodes);
     }
 
     @Override

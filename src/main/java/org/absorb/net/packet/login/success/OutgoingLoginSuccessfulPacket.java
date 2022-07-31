@@ -16,17 +16,16 @@ import java.util.stream.Collectors;
 
 public class OutgoingLoginSuccessfulPacket implements OutgoingPacket {
 
-    public static final int ID = 0x02;
-
     private final UUID uuid;
     private final String username;
     private final Collection<PlayerTabProperty> properties = new HashSet<>();
+    public static final int ID = 0x02;
 
     public OutgoingLoginSuccessfulPacket(OutgoingLoginSuccessfulPacketBuilder builder) {
-        if (builder.getUuid()==null) {
+        if (builder.getUuid() == null) {
             throw new IllegalStateException("UUID must be specified");
         }
-        if (builder.getName()==null) {
+        if (builder.getName() == null) {
             throw new IllegalStateException("Name must be specified");
         }
         if (builder.getName().length() > 16) {
@@ -35,6 +34,33 @@ public class OutgoingLoginSuccessfulPacket implements OutgoingPacket {
         this.username = builder.getName();
         this.uuid = builder.getUuid();
         this.properties.addAll(builder.getProperties());
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public UUID getUniqueId() {
+        return this.uuid;
+    }
+
+    public Collection<PlayerTabProperty> getProperties() {
+        return this.properties;
+    }
+
+    @Override
+    public int getId() {
+        return ID;
+    }
+
+    @Override
+    public @NotNull PacketState getState() {
+        return PacketState.LOGIN;
+    }
+
+    @Override
+    public @NotNull OutgoingLoginSuccessfulPacketBuilder toBuilder() {
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
@@ -52,20 +78,5 @@ public class OutgoingLoginSuccessfulPacket implements OutgoingPacket {
             return NetUtils.collect(name, value, isSign, NetSerializers.STRING.write(ptp.getSignature().get()));
         }).collect(Collectors.toList()));
         return NetUtils.createPacket(ID, uuidBuffer, nameBuffer, propertiesSizeBuffer, propertiesBuffer);
-    }
-
-    @Override
-    public int getId() {
-        return ID;
-    }
-
-    @Override
-    public @NotNull PacketState getState() {
-        return PacketState.LOGIN;
-    }
-
-    @Override
-    public OutgoingLoginSuccessfulPacketBuilder toBuilder() {
-        throw new RuntimeException("Not implemented");
     }
 }

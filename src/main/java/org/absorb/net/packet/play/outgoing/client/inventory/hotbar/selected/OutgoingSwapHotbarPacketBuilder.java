@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.client.inventory.hotbar.selected;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 public class OutgoingSwapHotbarPacketBuilder implements OutgoingPacketBuilder<OutgoingSwapHotbarPacket> {
@@ -21,6 +22,12 @@ public class OutgoingSwapHotbarPacketBuilder implements OutgoingPacketBuilder<Ou
     @Override
     public @NotNull OutgoingSwapHotbarPacket build() {
         return new OutgoingSwapHotbarPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingSwapHotbarPacket> from(OutgoingSwapHotbarPacket value) {
+        this.newSlot = value.getHotbarSlot();
+        return this;
     }
 
     @Override

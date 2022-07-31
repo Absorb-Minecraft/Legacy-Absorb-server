@@ -6,6 +6,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -60,6 +61,13 @@ public class IncomingEntityQueryPacketBuilder implements IncomingPacketBuilder<I
     @Override
     public @NotNull IncomingEntityQueryPacket build() {
         return new IncomingEntityQueryPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingEntityQueryPacket> from(IncomingEntityQueryPacket value) {
+        this.entityId = value.getEntityId();
+        this.generatedId = value.getGeneratedId();
+        return this;
     }
 
     @Override

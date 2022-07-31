@@ -1,6 +1,7 @@
 package org.absorb.world;
 
 import org.absorb.utils.Builder;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
 public class WorldBuilder implements Builder<World> {
@@ -51,5 +52,13 @@ public class WorldBuilder implements Builder<World> {
     @Override
     public WorldBuilder copy() {
         return new WorldBuilder().setBlockMax(this.getBlockMax()).setBlockMin(this.getBlockMin());
+    }
+
+    @Override
+    public @NotNull Builder<World> from(World value) {
+        this.blockMax = value.getMaxBlock();
+        this.blockMin = value.getMinBlock();
+        this.worldData = value.getWorldData();
+        return this;
     }
 }

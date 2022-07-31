@@ -2,8 +2,8 @@ package org.absorb.net.packet.play.outgoing.entity.tab.ping;
 
 import org.absorb.entity.living.human.Gamemode;
 import org.absorb.net.Client;
-import org.absorb.net.data.NetUtils;
 import org.absorb.net.data.NetSerializers;
+import org.absorb.net.data.NetUtils;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
 import org.absorb.net.packet.play.outgoing.entity.tab.OutgoingPlayerTabUpdatePacket;
@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +23,10 @@ public class OutgoingPlayerTabUpdatePingPacket implements OutgoingPlayerTabUpdat
 
     public OutgoingPlayerTabUpdatePingPacket(@NotNull OutgoingPlayerTabUpdatePingPacketBuilder builder) {
         this.toUpdate.putAll(builder.getUpdates());
+    }
+
+    public Map<UUID, Gamemode> getUpdates() {
+        return Collections.unmodifiableMap(this.toUpdate);
     }
 
     @Override

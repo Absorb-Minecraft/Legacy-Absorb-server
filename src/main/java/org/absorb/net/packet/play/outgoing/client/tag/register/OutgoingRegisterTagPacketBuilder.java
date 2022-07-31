@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.client.tag.register;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.absorb.utils.NetworkIdentifiable;
 import org.absorb.utils.tag.Tag;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +38,12 @@ public class OutgoingRegisterTagPacketBuilder implements OutgoingPacketBuilder<O
     @Override
     public @NotNull PacketBuilder<OutgoingRegisterTagPacket> copy() {
         return new OutgoingRegisterTagPacketBuilder().addAll(this.tags);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingRegisterTagPacket> from(OutgoingRegisterTagPacket value) {
+        this.tags.addAll(value.getTags());
+        return this;
     }
 
     @Override

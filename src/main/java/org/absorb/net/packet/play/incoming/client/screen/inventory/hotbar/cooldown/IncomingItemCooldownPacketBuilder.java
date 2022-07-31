@@ -6,6 +6,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -58,6 +59,13 @@ public class IncomingItemCooldownPacketBuilder implements IncomingPacketBuilder<
     @Override
     public @NotNull IncomingItemCooldownPacket build() {
         return new IncomingItemCooldownPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingItemCooldownPacket> from(IncomingItemCooldownPacket value) {
+        this.cooldownTicks = value.getCooldownTicks();
+        this.itemId = value.getItemId();
+        return this;
     }
 
     @Override

@@ -79,6 +79,10 @@ public class Biome implements Identifiable, NBTCompoundGroupable {
         }
     }
 
+    public Optional<Particle> getParticle() {
+        return Optional.ofNullable(this.particle);
+    }
+
     public Optional<BiomeSound> getAdditionsSound() {
         return Optional.ofNullable(this.additionsSound);
     }

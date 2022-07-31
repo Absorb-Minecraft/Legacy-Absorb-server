@@ -10,14 +10,21 @@ import org.jetbrains.annotations.NotNull;
 
 public class IncomingPluginMessagePacket implements IncomingPacket {
 
-    public static final int ID = 0x0C;
-
     private final @NotNull AbsorbKey channel;
     private final byte[] data;
+    public static final int ID = 0x0C;
 
     public IncomingPluginMessagePacket(@NotNull IncomingPluginMessagePacketBuilder builder) {
         this.channel = builder.getChannel();
         this.data = builder.getData();
+    }
+
+    public AbsorbKey getChannel() {
+        return this.channel;
+    }
+
+    public byte[] getData() {
+        return this.data;
     }
 
 

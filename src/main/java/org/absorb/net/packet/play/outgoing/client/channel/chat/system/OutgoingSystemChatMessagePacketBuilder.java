@@ -5,6 +5,7 @@ import org.absorb.message.MessagePosition;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 public class OutgoingSystemChatMessagePacketBuilder implements OutgoingPacketBuilder<OutgoingSystemChatMessagePacket> {
@@ -33,6 +34,13 @@ public class OutgoingSystemChatMessagePacketBuilder implements OutgoingPacketBui
     @Override
     public @NotNull OutgoingSystemChatMessagePacket build() {
         return new OutgoingSystemChatMessagePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingSystemChatMessagePacket> from(OutgoingSystemChatMessagePacket value) {
+        this.message = value.getMessage();
+        this.position = value.getPosition();
+        return this;
     }
 
     @Override

@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 public class OutgoingCloseConnectionPacketBuilder implements OutgoingPacketBuilder<OutgoingCloseConnectionPacket> {
@@ -36,6 +37,13 @@ public class OutgoingCloseConnectionPacketBuilder implements OutgoingPacketBuild
     @Override
     public @NotNull OutgoingCloseConnectionPacket build() {
         return new OutgoingCloseConnectionPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingCloseConnectionPacket> from(OutgoingCloseConnectionPacket value) {
+        this.message = value.getMessage();
+        this.usePlay = value.isUsingPlayId();
+        return this;
     }
 
     @Override

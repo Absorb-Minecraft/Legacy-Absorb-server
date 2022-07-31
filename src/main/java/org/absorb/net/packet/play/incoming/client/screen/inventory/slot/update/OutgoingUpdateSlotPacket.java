@@ -29,6 +29,18 @@ public class OutgoingUpdateSlotPacket implements OutgoingPacket {
         this.slot = packet.getSlot();
     }
 
+    public Slot getSlot() {
+        return this.slot;
+    }
+
+    public InventoryAction getInventoryState() {
+        return this.inventoryState;
+    }
+
+    public byte getInventoryId() {
+        return this.inventoryId;
+    }
+
     @Override
     public int getId() {
         return ID;

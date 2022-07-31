@@ -4,6 +4,8 @@ import org.absorb.entity.living.human.tab.PlayerTabProperty;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -43,8 +45,16 @@ public class OutgoingLoginSuccessfulPacketBuilder implements OutgoingPacketBuild
     }
 
     @Override
-    public OutgoingLoginSuccessfulPacket build() {
+    public @NotNull OutgoingLoginSuccessfulPacket build() {
         return new OutgoingLoginSuccessfulPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingLoginSuccessfulPacket> from(OutgoingLoginSuccessfulPacket value) {
+        this.name = value.getUsername();
+        this.properties.addAll(value.getProperties());
+        this.uuid = value.getUniqueId();
+        return this;
     }
 
     @Override
@@ -57,7 +67,10 @@ public class OutgoingLoginSuccessfulPacketBuilder implements OutgoingPacketBuild
 
     @Override
     public PacketBuilder<OutgoingLoginSuccessfulPacket> copy() {
-        return new OutgoingLoginSuccessfulPacketBuilder().setName(this.name).setUuid(this.uuid).addProperties(this.properties);
+        return new OutgoingLoginSuccessfulPacketBuilder()
+                .setName(this.name)
+                .setUuid(this.uuid)
+                .addProperties(this.properties);
     }
 
     @Override

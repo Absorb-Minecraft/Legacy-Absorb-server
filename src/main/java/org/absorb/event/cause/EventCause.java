@@ -6,7 +6,7 @@ import java.util.*;
 
 public class EventCause {
 
-    private final @NotNull Collection<CauseEntry<?>> causeEntries = new LinkedList<>();
+    private final @NotNull List<CauseEntry<?>> causeEntries = new LinkedList<>();
 
     public EventCause(Collection<? extends CauseEntry<?>> collection) {
         this.causeEntries.addAll(collection);
@@ -16,11 +16,23 @@ public class EventCause {
         return this.causeEntries.stream().map(CauseEntry::getValue).toList();
     }
 
+    public List<CauseEntry<?>> getEntries() {
+        return Collections.unmodifiableList(this.causeEntries);
+    }
+
     public List<?> getValues(@NotNull CauseContextKey... keys) {
-        return this.causeEntries.stream().filter(entry -> Arrays.stream(keys).anyMatch(key -> entry.getReason().equals(key))).map(CauseEntry::getValue).toList();
+        return this.causeEntries
+                .stream()
+                .filter(entry -> Arrays.stream(keys).anyMatch(key -> entry.getReason().equals(key)))
+                .map(CauseEntry::getValue)
+                .toList();
     }
 
     public Optional<?> getFirst(@NotNull CauseContextKey... keys) {
-        return this.causeEntries.parallelStream().filter(entry -> Arrays.stream(keys).anyMatch(key -> entry.getReason().equals(key))).findFirst().map(CauseEntry::getValue);
+        return this.causeEntries
+                .parallelStream()
+                .filter(entry -> Arrays.stream(keys).anyMatch(key -> entry.getReason().equals(key)))
+                .findFirst()
+                .map(CauseEntry::getValue);
     }
 }

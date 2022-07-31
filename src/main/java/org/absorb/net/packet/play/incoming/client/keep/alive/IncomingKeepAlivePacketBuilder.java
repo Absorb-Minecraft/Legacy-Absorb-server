@@ -5,6 +5,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -43,6 +44,12 @@ public class IncomingKeepAlivePacketBuilder implements IncomingPacketBuilder<Inc
     @Override
     public @NotNull IncomingKeepAlivePacket build() {
         return new IncomingKeepAlivePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingKeepAlivePacket> from(IncomingKeepAlivePacket value) {
+        this.keepAliveId = value.getKeepAliveId();
+        return this;
     }
 
     @Override

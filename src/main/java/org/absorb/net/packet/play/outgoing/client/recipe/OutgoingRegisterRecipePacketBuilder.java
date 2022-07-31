@@ -4,6 +4,7 @@ import org.absorb.inventory.recipe.Recipe;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -31,6 +32,12 @@ public class OutgoingRegisterRecipePacketBuilder implements OutgoingPacketBuilde
     @Override
     public @NotNull OutgoingRegisterRecipePacket build() {
         return new OutgoingRegisterRecipePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingRegisterRecipePacket> from(OutgoingRegisterRecipePacket value) {
+        this.recipes.addAll(value.getRecipes());
+        return this;
     }
 
     @Override

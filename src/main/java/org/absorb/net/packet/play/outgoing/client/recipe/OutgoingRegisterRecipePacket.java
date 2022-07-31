@@ -4,8 +4,8 @@ import me.nullicorn.nedit.NBTOutputStream;
 import org.absorb.AbsorbManagers;
 import org.absorb.inventory.recipe.Recipe;
 import org.absorb.net.Client;
-import org.absorb.net.data.NetUtils;
 import org.absorb.net.data.NetSerializers;
+import org.absorb.net.data.NetUtils;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
@@ -17,17 +17,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 public class OutgoingRegisterRecipePacket implements OutgoingPacket {
 
-    public static final int ID = 0x67;
-
     private final Set<Recipe> recipes = new HashSet<>();
+    public static final int ID = 0x67;
 
     public OutgoingRegisterRecipePacket(@NotNull OutgoingRegisterRecipePacketBuilder builder) {
         this.recipes.addAll(builder.getRecipes());
+    }
+
+    public Collection<Recipe> getRecipes() {
+        return Collections.unmodifiableCollection(this.recipes);
     }
 
     @Override

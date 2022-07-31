@@ -5,6 +5,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -45,6 +46,12 @@ public class IncomingClientCommandActionPacketBuilder
     @Override
     public @NotNull IncomingClientCommandActionPacket build() {
         return new IncomingClientCommandActionPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingClientCommandActionPacket> from(IncomingClientCommandActionPacket value) {
+        this.commandAction = value.getAction();
+        return this;
     }
 
     @Override

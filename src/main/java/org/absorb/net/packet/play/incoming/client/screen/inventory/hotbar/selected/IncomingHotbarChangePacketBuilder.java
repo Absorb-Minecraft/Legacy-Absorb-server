@@ -5,6 +5,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -42,6 +43,12 @@ public class IncomingHotbarChangePacketBuilder implements IncomingPacketBuilder<
     @Override
     public @NotNull IncomingHotbarChangePacket build() {
         return new IncomingHotbarChangePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingHotbarChangePacket> from(IncomingHotbarChangePacket value) {
+        this.newPosition = value.getNewPosition();
+        return this;
     }
 
     @Override

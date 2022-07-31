@@ -7,6 +7,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -62,6 +63,13 @@ public class IncomingCreativeInventoryClickPacketBuilder
     @Override
     public @NotNull IncomingCreativeInventoryClickPacket build() {
         return new IncomingCreativeInventoryClickPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingCreativeInventoryClickPacket> from(IncomingCreativeInventoryClickPacket value) {
+        this.item = value.getItem();
+        this.slot = value.getInventorySlot();
+        return this;
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
 import org.absorb.register.AbsorbKey;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -70,5 +71,12 @@ public class IncomingPluginMessagePacketBuilder implements IncomingPacketBuilder
     @Override
     public @NotNull IncomingPluginMessagePacket build() {
         return new IncomingPluginMessagePacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingPluginMessagePacket> from(IncomingPluginMessagePacket value) {
+        this.channel = value.getChannel();
+        this.data = value.getData();
+        return this;
     }
 }
