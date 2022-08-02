@@ -24,14 +24,15 @@ public class BlockRegisterTests {
 
     public boolean canFindFile() {
         InputStream stream = Main.class.getResourceAsStream("/burger.json");
-        boolean result = stream != null;
-        try {
-            stream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+        if (stream != null) {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
         }
-        return result;
+        return stream != null;
     }
 
 
