@@ -1,7 +1,7 @@
 package org.absorb.world.area;
 
 import org.absorb.block.locatable.LocatableBlock;
-import org.absorb.world.AbsorbWorld;
+import org.absorb.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector2i;
 import org.spongepowered.math.vector.Vector3d;
@@ -16,9 +16,9 @@ public class AbstractAbsorbChunk implements AbsorbChunk {
 
     private final @NotNull Vector2i position;
     private final @NotNull SortedSet<ChunkPart> parts = new TreeSet<>(Comparator.comparing(ChunkPart::getLevel));
-    private final @NotNull AbsorbWorld world;
+    private final @NotNull World world;
 
-    public AbstractAbsorbChunk(@NotNull AbsorbWorld world, @NotNull Vector2i position) {
+    public AbstractAbsorbChunk(@NotNull World world, @NotNull Vector2i position) {
         this.position = position;
         this.world = world;
     }
@@ -54,7 +54,7 @@ public class AbstractAbsorbChunk implements AbsorbChunk {
     }
 
     @Override
-    public @NotNull AbsorbWorld getWorld() {
+    public @NotNull World getWorld() {
         return this.world;
     }
 

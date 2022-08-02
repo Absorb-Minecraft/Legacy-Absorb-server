@@ -1,8 +1,10 @@
 package org.absorb.net.packet.status.ping;
 
-import org.absorb.net.data.Serializers;
+import org.absorb.net.Client;
+import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -31,18 +33,13 @@ public class IncomingPingPacketBuilder implements IncomingPacketBuilder<Incoming
     }
 
     @Override
-    public IncomingPingPacketBuilder from(ByteBuffer packetBytes) {
+    public IncomingPingPacketBuilder from(Client client, ByteBuffer packetBytes) {
         if (this.usePlay) {
-            this.payload = Serializers.INTEGER.read(0, packetBytes).value();
+            this.payload = NetSerializers.INTEGER.read(0, packetBytes).value();
             return this;
         }
-        this.payload = Serializers.LONG.read(0, packetBytes).value();
+        this.payload = NetSerializers.LONG.read(0, packetBytes).value();
         return this;
-    }
-
-    @Override
-    public @NotNull IncomingPingPacket build() {
-        return new IncomingPingPacket(this);
     }
 
     @Override
@@ -57,8 +54,24 @@ public class IncomingPingPacketBuilder implements IncomingPacketBuilder<Incoming
     }
 
     @Override
+    public @NotNull IncomingPingPacket build() {
+        return new IncomingPingPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<IncomingPingPacket> from(IncomingPingPacket value) {
+        this.usePlay = value.isUsePlay();
+        this.payload = value.getPayload();
+        return this;
+    }
+
+    @Override
     public int getId() {
+        if (this.usePlay) {
+            return IncomingPingPacket.PLAY_ID;
+        }
         return IncomingPingPacket.ID;
+
     }
 
     @Override

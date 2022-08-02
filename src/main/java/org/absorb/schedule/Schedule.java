@@ -14,13 +14,13 @@ import java.util.function.Consumer;
 @Typed(getTypesClass = Schedules.class)
 public class Schedule {
 
-    private @NotNull LocalDateTime shouldRun;
-    private @Nullable LocalDateTime lastRan;
     private final @Nullable Duration next;
-    private int isRunning;
     private final boolean allowedParallelRun;
     private final @NotNull Consumer<Schedule> taskToRun;
     private final boolean repeating;
+    private @NotNull LocalDateTime shouldRun;
+    private @Nullable LocalDateTime lastRan;
+    private int isRunning;
 
     public Schedule(ScheduleBuilder builder) {
         this.shouldRun = builder.getShouldRun();
@@ -28,8 +28,11 @@ public class Schedule {
         this.taskToRun = builder.getTaskToRun();
         this.repeating = builder.isRepeating();
         this.next = builder.getNext();
-        if (this.shouldRun==null) {
+        if (this.shouldRun == null) {
             this.shouldRun = LocalDateTime.now();
+        }
+        if (this.taskToRun == null) {
+            throw new RuntimeException(".setTaskToRun(Consumer<Schedule>) is missing");
         }
     }
 
@@ -37,15 +40,11 @@ public class Schedule {
         return Optional.ofNullable(this.lastRan);
     }
 
-    private synchronized void setRunning(int i) {
-        this.isRunning = this.isRunning + i;
-    }
-
     public synchronized Thread startNew() {
         this.lastRan = LocalDateTime.now();
         this.setRunning(1);
         Thread thread = new Thread(() -> {
-            if (this.next!=null) {
+            if (this.next != null) {
                 this.shouldRun = this.shouldRun.plus(this.next);
             }
             try {
@@ -71,7 +70,11 @@ public class Schedule {
     }
 
     public boolean isRunning() {
-        return this.isRunning!=0;
+        return this.isRunning != 0;
+    }
+
+    private synchronized void setRunning(int i) {
+        this.isRunning = this.isRunning + i;
     }
 
     public LocalDateTime getTime() {

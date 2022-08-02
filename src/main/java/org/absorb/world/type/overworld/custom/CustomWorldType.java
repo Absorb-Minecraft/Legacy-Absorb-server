@@ -30,6 +30,8 @@ public class CustomWorldType implements WorldType {
     private final @NotNull AbsorbKey infiBurn;
     private final boolean isRespawnAnchorUsed;
     private final @Nullable Long fixedTime;
+    private final int monsterSpawnLightLevel;
+    private final int monsterSpawnBlockLightLimit;
 
     public static final int CUSTOM_JSON_WORLD_TYPE_PROTOCOL_ID = 1;
 
@@ -37,6 +39,8 @@ public class CustomWorldType implements WorldType {
         this.name = builder.getName();
         this.key = builder.getKey();
         this.host = builder.getHost();
+        this.monsterSpawnBlockLightLimit = builder.getMonsterSpawnBlockLightLimit();
+        this.monsterSpawnLightLevel = builder.getMonsterSpawnLightLevel();
         this.zombiePiglins = builder.isZombiePiglins();
         this.natural = builder.isNatural();
         this.light = builder.getLight();
@@ -53,19 +57,19 @@ public class CustomWorldType implements WorldType {
         this.infiBurn = builder.getInfiBurn();
         this.isRespawnAnchorUsed = builder.isRespawnAnchorUsed();
         this.fixedTime = builder.getFixedTime().orElse(null);
-        if (this.infiBurn==null) {
+        if (this.infiBurn == null) {
             throw new IllegalStateException("Infinite Burn needs to be set");
         }
-        if (this.basedUpon==null) {
+        if (this.basedUpon == null) {
             throw new IllegalStateException("Based upon needs to be set");
         }
-        if (this.name==null) {
+        if (this.name == null) {
             throw new IllegalStateException("Name needs to be set");
         }
-        if (this.host==null) {
+        if (this.host == null) {
             throw new IllegalStateException("Host needs to be set");
         }
-        if (this.key==null) {
+        if (this.key == null) {
             throw new IllegalStateException("Key needs to be set");
         }
         if (this.multiplier > 30000000) {
@@ -106,6 +110,16 @@ public class CustomWorldType implements WorldType {
     @Override
     public boolean willBecomeZombifiedPiglins() {
         return this.zombiePiglins;
+    }
+
+    @Override
+    public int getMonsterSpawnLightLevel() {
+        return 0;
+    }
+
+    @Override
+    public int getMonsterSpawnBlockLightLimit() {
+        return 0;
     }
 
     @Override

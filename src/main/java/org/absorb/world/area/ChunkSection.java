@@ -4,13 +4,16 @@ import org.absorb.block.locatable.BlockData;
 import org.absorb.block.pallet.BlockPallet;
 import org.absorb.block.pallet.SinglePallet;
 import org.absorb.block.type.BlockTypes;
-import org.absorb.net.data.SerializerUtils;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetSerializers;
+import org.absorb.net.data.NetUtils;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.stream.Collectors;
 
@@ -52,63 +55,52 @@ public class ChunkSection {
     }
 
     public ByteBuffer write() {
-        Collection<BlockData> blocks = this
-                .blockPallets
+        Collection<BlockData> blocks = this.blockPallets
                 .stream()
                 .flatMap(blockPallet -> blockPallet.getBlocks().values().parallelStream())
                 .filter(entry -> !BlockTypes.AIR.isEqual(entry.getState().getType()))
                 .filter(entry -> !BlockTypes.CAVE_AIR.isEqual(entry.getState().getType()))
                 .filter(entry -> !BlockTypes.VOID_AIR.isEqual(entry.getState().getType()))
-                .collect(Collectors.toList());
+                .toList();
 
-        System.out.println("Writing Chunk Section");
-        short blockCount =
-                (short) blocks.size();
-        ByteBuffer blockCountBuffer = Serializers.SHORT.write(blockCount);
-        System.out.println("\tBlockCount: " + blockCount + " " + Arrays.toString(blockCountBuffer.array()));
-        List<ByteBuffer> blockBuffers =
-                this
-                        .blockPallets
-                        .stream()
-                        .sorted((o1, o2) -> o1.compareOnBlockLocation().compare(o1, o2))
-                        .map(BlockPallet::write)
-                        .collect(Collectors.toCollection(LinkedList::new));
-        if (blockBuffers.size()!=BLOCK_STATES_LIMIT) {
+        short blockCount = (short) blocks.size();
+        ByteBuffer blockCountBuffer = NetSerializers.SHORT.write(blockCount);
+        List<ByteBuffer> blockBuffers = this.blockPallets
+                .stream()
+                .sorted((o1, o2) -> o1.compareOnBlockLocation().compare(o1, o2))
+                .map(BlockPallet::write)
+                .collect(Collectors.toCollection(LinkedList::new));
+        if (blockBuffers.size() != BLOCK_STATES_LIMIT) {
             int sizeBefore = blockBuffers.size();
             if (sizeBefore > BLOCK_STATES_LIMIT) {
-                throw new RuntimeException("Blocks exceeded maximum per chunk: Max: " + BLOCK_STATES_LIMIT + " " +
-                        "Currently: " + sizeBefore);
+                throw new RuntimeException(
+                        "Blocks exceeded maximum per chunk: Max: " + BLOCK_STATES_LIMIT + " " + "Currently: "
+                                + sizeBefore);
             }
             for (int i = 0; i < (BLOCK_STATES_LIMIT - sizeBefore); i++) {
-                blockBuffers.add(
-                        new SinglePallet(
-                                BlockTypes.AIR.get().getDefaultBlockState().asBlockData(),
-                                new Vector3i(i, i, i)
-                        ).write());
+                blockBuffers.add(new SinglePallet(BlockTypes.AIR.get().getDefaultBlockState().asBlockData(),
+                                                  new Vector3i(i, i, i)).write());
             }
         }
-        ByteBuffer blockBuffer = SerializerUtils.collect(blockBuffers);
-        System.out.println("\tOriginalBuffer: " + blockBuffers.stream().map(byteBuffer -> Arrays.toString(byteBuffer.array())).collect(Collectors.joining("")));
-        System.out.println("\tBlockBuffer: (" + blockBuffers.size() + ") " + Arrays.toString(blockBuffer.array()));
-        List<ByteBuffer> biomeBuffers =
-                this.biomePallets.stream().map(BlockPallet::write).collect(Collectors.toCollection(LinkedList::new));
-        if (biomeBuffers.size()!=BIOME_STATES_LIMIT) {
+        ByteBuffer blockBuffer = NetUtils.collect(blockBuffers);
+        List<ByteBuffer> biomeBuffers = this.biomePallets
+                .stream()
+                .map(BlockPallet::write)
+                .collect(Collectors.toCollection(LinkedList::new));
+        if (biomeBuffers.size() != BIOME_STATES_LIMIT) {
             int sizeBefore = biomeBuffers.size();
             if (sizeBefore > BIOME_STATES_LIMIT) {
-                throw new RuntimeException("Biome blocks exceeded maximum per chunk: Max: " + BIOME_STATES_LIMIT + " " +
-                        "Currently: " + sizeBefore);
+                throw new RuntimeException(
+                        "Biome blocks exceeded maximum per chunk: Max: " + BIOME_STATES_LIMIT + " " + "Currently: "
+                                + sizeBefore);
             }
             for (int i = 0; i < (BIOME_STATES_LIMIT - sizeBefore); i++) {
-                biomeBuffers.add(
-                        new SinglePallet(
-                                BlockTypes.AIR.get().getDefaultBlockState().asBlockData(),
-                                new Vector3i(i, i, i)).write());
+                biomeBuffers.add(new SinglePallet(BlockTypes.AIR.get().getDefaultBlockState().asBlockData(),
+                                                  new Vector3i(i, i, i)).write());
             }
         }
 
-        ByteBuffer biomeBuffer = SerializerUtils.collect(biomeBuffers);
-        System.out.println("\tBiomeBuffer: (" + biomeBuffers.size() + ")" + Arrays.toString(biomeBuffer.array()));
-
+        ByteBuffer biomeBuffer = NetUtils.collect(biomeBuffers);
 
         ByteBuffer ret = ByteBuffer.allocate(blockCountBuffer.limit() + blockBuffer.limit() + biomeBuffer.limit());
         ret.put(blockCountBuffer.array());

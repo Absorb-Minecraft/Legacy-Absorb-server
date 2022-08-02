@@ -3,6 +3,8 @@ package org.absorb.net.packet.status.pong;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
+import org.jetbrains.annotations.NotNull;
 
 public class OutgoingPongPacketBuilder implements OutgoingPacketBuilder<OutgoingPongPacket> {
 
@@ -30,6 +32,13 @@ public class OutgoingPongPacketBuilder implements OutgoingPacketBuilder<Outgoing
     @Override
     public OutgoingPongPacket build() {
         return new OutgoingPongPacket(this);
+    }
+
+    @Override
+    public @NotNull Builder<OutgoingPongPacket> from(OutgoingPongPacket value) {
+        this.payload = value.getPayload();
+        this.usePlay = value.isUsingPlay();
+        return this;
     }
 
     @Override

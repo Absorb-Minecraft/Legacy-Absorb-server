@@ -1,8 +1,8 @@
 package org.absorb.command.node.parser.properties;
 
-import org.absorb.net.data.Serializer;
-import org.absorb.net.data.SerializerUtils;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetSerializer;
+import org.absorb.net.data.NetUtils;
+import org.absorb.net.data.NetSerializers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,15 +14,15 @@ public class MinMaxParserProperty<T extends Number> implements CommandParserProp
 
     private @Nullable T min;
     private @Nullable T max;
-    private @NotNull Serializer<T> serializer;
+    private @NotNull NetSerializer<T> serializer;
 
-    public MinMaxParserProperty(@NotNull Serializer<T> serializer, @Nullable T min, @Nullable T max) {
+    public MinMaxParserProperty(@NotNull NetSerializer<T> serializer, @Nullable T min, @Nullable T max) {
         this.min = min;
         this.max = max;
         this.serializer = serializer;
     }
 
-    public Serializer<T> getSerializer() {
+    public NetSerializer<T> getSerializer() {
         return this.serializer;
     }
 
@@ -48,8 +48,8 @@ public class MinMaxParserProperty<T extends Number> implements CommandParserProp
             maxBuffer = this.serializer.write(this.max);
         }
 
-        ByteBuffer flagBuffer = Serializers.BYTE.write(flag);
+        ByteBuffer flagBuffer = NetSerializers.BYTE.write(flag);
 
-        return SerializerUtils.collect(List.of(flagBuffer, minBuffer, maxBuffer));
+        return NetUtils.collect(List.of(flagBuffer, minBuffer, maxBuffer));
     }
 }

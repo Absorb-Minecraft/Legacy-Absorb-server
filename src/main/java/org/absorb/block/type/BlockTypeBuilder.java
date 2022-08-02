@@ -1,29 +1,32 @@
 package org.absorb.block.type;
 
 import org.absorb.block.BlockTag;
+import org.absorb.block.state.BlockState;
 import org.absorb.block.state.BlockStateBuilder;
 import org.absorb.block.state.properties.BlockStatePropertyType;
 import org.absorb.block.type.properties.BlockTypeProperty;
 import org.absorb.block.type.properties.mass.MassProperty;
 import org.absorb.block.type.properties.mass.MassType;
 import org.absorb.register.AbsorbKey;
+import org.absorb.utils.BuildException;
 import org.absorb.utils.Builder;
 import org.absorb.utils.Identifiable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public class BlockTypeBuilder implements Builder<BlockType> {
 
+    private final Collection<BlockStatePropertyType<?>> propertyStates = new HashSet<>();
+    private final Map<String, BlockTypeProperty> properties = new HashMap<>();
     private AbsorbKey item;
     private Collection<BlockTag> tags;
-    private Collection<BlockStateBuilder> blockStates;
-    private BlockStateBuilder defaultState;
-    private final Collection<BlockStatePropertyType<?>> propertyStates = new HashSet<>();
+    private Collection<Builder<BlockState>> blockStates;
+    private Builder<BlockState> defaultState;
     private String name;
     private String host;
     private String key;
     private Integer networkId;
-    private final Map<String, BlockTypeProperty> properties = new HashMap<>();
 
     public BlockTypeBuilder() {
         reset();
@@ -39,17 +42,17 @@ public class BlockTypeBuilder implements Builder<BlockType> {
         return this;
     }
 
-    public BlockTypeBuilder setMass(MassType type) {
-        this.addProperty(new MassProperty(type));
-        return this;
-    }
-
     public MassType getMass() {
         BlockTypeProperty property = this.properties.get(Identifiable.ABSORB_HOST + ":mass_type");
-        if (property==null) {
+        if (property == null) {
             return null;
         }
         return ((MassProperty) property).get();
+    }
+
+    public BlockTypeBuilder setMass(MassType type) {
+        this.addProperty(new MassProperty(type));
+        return this;
     }
 
     public Collection<BlockTypeProperty> getProperties() {
@@ -114,11 +117,11 @@ public class BlockTypeBuilder implements Builder<BlockType> {
         return this;
     }
 
-    public Collection<BlockStateBuilder> getBlockStates() {
+    public Collection<Builder<BlockState>> getBlockStates() {
         return this.blockStates;
     }
 
-    public BlockTypeBuilder setBlockStates(Collection<BlockStateBuilder> blockStates) {
+    public BlockTypeBuilder setBlockStates(Collection<Builder<BlockState>> blockStates) {
         this.blockStates = blockStates;
         return this;
     }
@@ -127,11 +130,11 @@ public class BlockTypeBuilder implements Builder<BlockType> {
         return this.setBlockStates(List.of(blockStates));
     }
 
-    public BlockStateBuilder getDefaultState() {
+    public Builder<BlockState> getDefaultState() {
         return this.defaultState;
     }
 
-    public BlockTypeBuilder setDefaultState(BlockStateBuilder defaultState) {
+    public BlockTypeBuilder setDefaultState(Builder<BlockState> defaultState) {
         this.defaultState = defaultState;
         return this;
     }
@@ -148,7 +151,11 @@ public class BlockTypeBuilder implements Builder<BlockType> {
 
     @Override
     public BlockType build() {
-        return new BlockType(this);
+        try {
+            return new BlockType(this);
+        } catch (Throwable e) {
+            throw new BuildException(new AbsorbKey(this.host, this.key), e);
+        }
     }
 
     @Override
@@ -166,6 +173,29 @@ public class BlockTypeBuilder implements Builder<BlockType> {
 
     @Override
     public Builder<BlockType> copy() {
-        return new BlockTypeBuilder().setBlockStates(this.getBlockStates()).setDefaultState(this.getDefaultState()).setItem(this.getItem()).setTags(this.getTags()).setPropertyStates(this.getPropertyStates());
+        return new BlockTypeBuilder()
+                .setBlockStates(this.getBlockStates())
+                .setDefaultState(this.getDefaultState())
+                .setItem(this.getItem())
+                .setTags(this.getTags())
+                .setPropertyStates(this.getPropertyStates());
+    }
+
+    @Override
+    public @NotNull Builder<BlockType> from(BlockType value) {
+        this.key = value.getKey();
+        this.name = value.getName();
+        this.host = value.getHost();
+        this.propertyStates.addAll(value.getPropertyStates());
+        this.defaultState = new BlockStateBuilder().from(value.getDefaultBlockState());
+        this.item = value.getItemKey().orElse(null);
+        this.networkId = value.getNetworkId();
+        this.tags.addAll(value.getTags());
+        this.blockStates.addAll(value
+                                        .getBlockStates()
+                                        .parallelStream()
+                                        .map(bs -> new BlockStateBuilder().from(bs))
+                                        .toList());
+        return this;
     }
 }

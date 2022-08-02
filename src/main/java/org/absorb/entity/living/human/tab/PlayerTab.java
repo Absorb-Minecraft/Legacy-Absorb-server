@@ -14,7 +14,11 @@ public class PlayerTab {
     private final @NotNull Gamemode gameMode;
     private final int ping;
     private final @Nullable Component displayName;
-    private Collection<PlayerTabProperty> properties = new HashSet<>();
+    private final @Nullable Long timestamp;
+    private final byte[] publicKey;
+    private final byte[] sig;
+
+    private final Collection<PlayerTabProperty> properties = new HashSet<>();
 
     public PlayerTab(@NotNull PlayerTabBuilder builder) {
         this.displayName = builder.getDisplayName();
@@ -23,6 +27,24 @@ public class PlayerTab {
         this.uuid = builder.getUuid();
         this.ping = builder.getPing();
         this.properties.addAll(builder.getProperties());
+        this.timestamp = builder.getTimestamp();
+        this.publicKey = builder.getPublicKey();
+        this.sig = builder.getSignature();
+    }
+
+    public byte[] getPublicKey() {
+        return this.publicKey;
+    }
+
+    public byte[] getSignature() {
+        return this.sig;
+    }
+
+    public OptionalLong getTimestamp() {
+        if (this.timestamp==null) {
+            return OptionalLong.empty();
+        }
+        return OptionalLong.of(this.timestamp);
     }
 
     public Collection<PlayerTabProperty> getProperties() {

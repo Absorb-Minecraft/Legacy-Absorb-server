@@ -8,11 +8,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class IncomingPingPacket implements IncomingPacket {
 
-    public static final int ID = 0x01;
-    public static final int PLAY_ID = 0x1D;
-
     private final long payload;
     private final boolean usePlay;
+    public static final int ID = 0x01;
+    public static final int PLAY_ID = 0x2D;
 
     public IncomingPingPacket(IncomingPingPacketBuilder builder) {
         this.payload = builder.getPayload();

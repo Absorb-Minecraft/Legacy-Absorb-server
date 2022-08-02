@@ -1,9 +1,15 @@
 package org.absorb.block.state.properties.type.number;
 
+import org.absorb.block.state.properties.type.FixedBlockStatePropertyType;
 import org.absorb.utils.Identifiable;
 import org.jetbrains.annotations.NotNull;
 
-public enum IntegerBlockStatePropertyTypes implements NumberBlockStatePropertyType<Integer> {
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+public enum IntegerBlockStatePropertyTypes
+        implements NumberBlockStatePropertyType<Integer>, FixedBlockStatePropertyType<Integer> {
 
 
     DISTANCE("Distance", 1, 7),
@@ -76,5 +82,10 @@ public enum IntegerBlockStatePropertyTypes implements NumberBlockStatePropertyTy
     @Override
     public @NotNull String getHost() {
         return this.host;
+    }
+
+    @Override
+    public Collection<Integer> getValues() {
+        return IntStream.rangeClosed(this.min, this.max).boxed().collect(Collectors.toList());
     }
 }

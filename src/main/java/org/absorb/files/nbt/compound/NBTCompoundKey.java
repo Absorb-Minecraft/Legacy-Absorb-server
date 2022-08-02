@@ -12,12 +12,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Typed(getTypesClass = NBTCompoundKeys.class)
 public abstract class NBTCompoundKey<T, F> {
+
+    private final TagType tag;
+    private final String key;
 
     public static class NamedEnum<E extends Enum<E>> extends NBTCompoundKey<String, E> {
 
@@ -32,7 +37,11 @@ public abstract class NBTCompoundKey<T, F> {
         @Override
         protected E from(String value) {
             //noinspection unchecked
-            return this.values.stream().filter(enu -> enu.name().equals(value.toUpperCase())).findAny().orElseThrow(() -> new IllegalArgumentException(value + " is not a valid enum"));
+            return this.values
+                    .stream()
+                    .filter(enu -> enu.name().equals(value.toUpperCase()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException(value + " is not a valid enum"));
         }
 
         @Override
@@ -60,7 +69,7 @@ public abstract class NBTCompoundKey<T, F> {
 
         @Override
         protected String to(AbsorbKey value) {
-            if (value==null) {
+            if (value == null) {
                 return "";
             }
             return value.asFormatted();
@@ -81,6 +90,48 @@ public abstract class NBTCompoundKey<T, F> {
         @Override
         protected String to(AbsorbKey value) {
             return value.asFormatted();
+        }
+    }
+
+
+    public static class TypeGenericCollection<E, V, C extends Collection<V>> extends NBTCompoundKey<NBTList, C> {
+
+        private final TagType listType;
+        private final Function<V, E> mappingTo;
+        private final Function<E, V> mappingFrom;
+        private final Supplier<C> collectionProvider;
+
+        TypeGenericCollection(TagType type, String key) {
+            this(type, key, () -> (C) new LinkedList<V>());
+        }
+
+        TypeGenericCollection(TagType type, String key, Supplier<C> collectionProvider) {
+            this(type, key, v -> (E) v, e -> (V) e, collectionProvider);
+        }
+
+        TypeGenericCollection(TagType type, String key, Function<V, E> mappingTo, Function<E, V> mappingFrom,
+                              Supplier<C> collectionProvider) {
+            super(TagType.LIST, key);
+            this.listType = type;
+            this.mappingTo = mappingTo;
+            this.mappingFrom = mappingFrom;
+            this.collectionProvider = collectionProvider;
+        }
+
+        @Override
+        protected C from(NBTList value) {
+            return value
+                    .stream()
+                    .map(v -> this.mappingFrom.apply((E) v))
+                    .collect(Collectors.toCollection(this.collectionProvider));
+        }
+
+        @Override
+        protected NBTList to(C value) {
+            return value
+                    .stream()
+                    .map(this.mappingTo)
+                    .collect(Collectors.toCollection(() -> new NBTList(this.listType)));
         }
     }
 
@@ -133,12 +184,19 @@ public abstract class NBTCompoundKey<T, F> {
 
         @Override
         protected Collection<Biome> from(NBTList value) {
-            return value.stream().filter(element -> element instanceof NBTCompound).map(g -> new BiomeBuilder().from((NBTCompound) g).build()).toList();
+            return value
+                    .stream()
+                    .filter(element -> element instanceof NBTCompound)
+                    .map(g -> new BiomeBuilder().from((NBTCompound) g).build())
+                    .toList();
         }
 
         @Override
         protected NBTList to(Collection<Biome> value) {
-            return value.stream().map(Biome::toNBT).collect(Collectors.toCollection(() -> new NBTList(TagType.COMPOUND)));
+            return value
+                    .stream()
+                    .map(Biome::toNBT)
+                    .collect(Collectors.toCollection(() -> new NBTList(TagType.COMPOUND)));
         }
     }
 
@@ -150,26 +208,26 @@ public abstract class NBTCompoundKey<T, F> {
 
         @Override
         protected Collection<PlayerWorldTypeView> from(NBTList value) {
-            return value.stream().filter(element -> element instanceof NBTCompound).map(element -> PlayerWorldTypeView.of((NBTCompound) element)).collect(Collectors.toSet());
+            return value
+                    .stream()
+                    .filter(element -> element instanceof NBTCompound)
+                    .map(element -> PlayerWorldTypeView.of((NBTCompound) element))
+                    .collect(Collectors.toSet());
         }
 
         @Override
         protected NBTList to(Collection<PlayerWorldTypeView> value) {
-            return value.stream().map(PlayerWorldTypeView::toNBT).collect(Collectors.toCollection(() -> new NBTList(TagType.COMPOUND)));
+            return value
+                    .stream()
+                    .map(PlayerWorldTypeView::toNBT)
+                    .collect(Collectors.toCollection(() -> new NBTList(TagType.COMPOUND)));
         }
     }
-
-    private final TagType tag;
-    private final String key;
 
     private NBTCompoundKey(TagType tag, String key) {
         this.tag = tag;
         this.key = key;
     }
-
-    protected abstract F from(T value);
-
-    protected abstract T to(F value);
 
     public TagType getTag() {
         return this.tag;
@@ -194,4 +252,8 @@ public abstract class NBTCompoundKey<T, F> {
     public Optional<F> getValue(@NotNull NBTCompound compound) {
         return Optional.ofNullable((F) compound.get(this.getKey()));
     }
+
+    protected abstract F from(T value);
+
+    protected abstract T to(F value);
 }

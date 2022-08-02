@@ -29,12 +29,21 @@ public abstract class AbstractCommandNode implements CommandNode {
         return Optional.ofNullable(this.parent);
     }
 
-    public byte getFlags() {
-        int flags = this.getNodeTypeId();
-        if (this.redirect!=null) {
-            flags = flags + 8;
-        }
-        return (byte) flags;
+    @Override
+    public int getDepth() {
+        int i = 0;
+        CommandNode node = this;
+        do {
+            i++;
+            if (!(node instanceof AbstractCommandNode aNode)) {
+                throw new RuntimeException(
+                        "Parent node must be based on AbstractCommandNode, however found to be " + node
+                                .getClass()
+                                .getName());
+            }
+            node = aNode.getParent().orElse(null);
+        } while (node != null && !(node instanceof RootCommandNode));
+        return i;
     }
 
     @Override
@@ -58,5 +67,13 @@ public abstract class AbstractCommandNode implements CommandNode {
     @Override
     public Optional<CommandNode> getRedirect() {
         return Optional.ofNullable(this.redirect);
+    }
+
+    public byte getFlags() {
+        int flags = this.getNodeTypeId();
+        if (this.redirect != null) {
+            flags = flags + 8;
+        }
+        return (byte) flags;
     }
 }

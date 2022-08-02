@@ -10,10 +10,12 @@ import java.util.concurrent.LinkedTransferQueue;
 
 public class AbstractEntity implements Entity {
 
-    private boolean hasSpawned;
     private final @NotNull EntityType<?> type;
-    private @Nullable Component customName;
     private final Collection<EntityEffect<?>> effects = new LinkedTransferQueue<>();
+    private boolean hasSpawned;
+    private boolean isOnFire;
+    private boolean isGlowing;
+    private @Nullable Component customName;
     private boolean isFlying;
     private boolean hasGravity;
 
@@ -47,13 +49,13 @@ public class AbstractEntity implements Entity {
     }
 
     @Override
-    public void setFlying(boolean isFlying) {
-        this.isFlying = isFlying;
+    public boolean isFlying() {
+        return this.isFlying;
     }
 
     @Override
-    public boolean isFlying() {
-        return this.isFlying;
+    public void setFlying(boolean isFlying) {
+        this.isFlying = isFlying;
     }
 
     @Override
@@ -69,5 +71,25 @@ public class AbstractEntity implements Entity {
     @Override
     public void setCustomName(@Nullable Component component) {
         this.customName = component;
+    }
+
+    @Override
+    public boolean isOnFire() {
+        return this.isOnFire;
+    }
+
+    @Override
+    public void setOnFire(boolean check) {
+        this.isOnFire = check;
+    }
+
+    @Override
+    public boolean isGlowing() {
+        return this.isGlowing;
+    }
+
+    @Override
+    public void setGlowing(boolean glowing) {
+        this.isGlowing = glowing;
     }
 }

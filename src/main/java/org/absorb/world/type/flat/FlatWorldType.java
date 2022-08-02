@@ -32,6 +32,16 @@ public class FlatWorldType implements WorldType {
     }
 
     @Override
+    public int getMonsterSpawnLightLevel() {
+        return 0;
+    }
+
+    @Override
+    public int getMonsterSpawnBlockLightLimit() {
+        return 0;
+    }
+
+    @Override
     public int getNetworkId() {
         return 0;
     }
@@ -114,7 +124,7 @@ public class FlatWorldType implements WorldType {
 
     @Override
     public @NotNull GeneratedChunk generateChunk(@NotNull ChunkPart part) {
-        if(part.getLevel() != 0){
+        if (part.getLevel() != 0) {
             return new GeneratedAirChunk();
         }
 

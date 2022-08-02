@@ -4,19 +4,27 @@ import org.absorb.net.handler.NetHandler;
 import org.absorb.net.packet.IncomingPacket;
 import org.absorb.net.packet.IncomingPacketBuilder;
 import org.absorb.net.packet.PacketState;
-import org.absorb.net.packet.login.handshake.IncomingHandshakePacketBuilder;
-import org.absorb.net.packet.login.pre.IncomingPreLoginPacketBuilder;
-import org.absorb.net.packet.play.channel.incoming.IncomingPluginMessagePacketBuilder;
-import org.absorb.net.packet.play.client.inventory.close.IncomingCloseInventoryPacketBuilder;
-import org.absorb.net.packet.play.client.inventory.creative.IncomingCreativeInventoryClickPacketBuilder;
-import org.absorb.net.packet.play.entity.player.abilities.IncomingChangeAbilityPacketBuilder;
-import org.absorb.net.packet.play.entity.player.movement.incoming.IncomingPlayerMovementPacketBuilder;
-import org.absorb.net.packet.play.entity.player.movement.incoming.basic.IncomingBasicPlayerMovementPacketBuilder;
-import org.absorb.net.packet.play.entity.player.movement.incoming.rotation.IncomingRotationPacketBuilder;
-import org.absorb.net.packet.play.entity.player.teleport.confirm.IncomingTeleportConfirmPacketBuilder;
-import org.absorb.net.packet.play.message.IncomingMessagePacketBuilder;
-import org.absorb.net.packet.play.recipe.craft.IncomingRecipeRequestPacketBuilder;
-import org.absorb.net.packet.play.settings.client.IncomingClientSettingsPacketBuilder;
+import org.absorb.net.packet.handshake.IncomingHandshakePacketBuilder;
+import org.absorb.net.packet.login.start.IncomingLoginStartPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.ability.IncomingChangeAbilityPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.channel.chat.IncomingMessagePacketBuilder;
+import org.absorb.net.packet.play.incoming.client.channel.command.IncomingCommandPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.channel.plugin.IncomingPluginMessagePacketBuilder;
+import org.absorb.net.packet.play.incoming.client.keep.alive.IncomingKeepAlivePacketBuilder;
+import org.absorb.net.packet.play.incoming.client.movement.IncomingPlayerMovementPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.movement.basic.IncomingBasicPlayerMovementPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.movement.rotation.IncomingRotationPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.movement.teleport.confirm.IncomingTeleportConfirmPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.query.entity.IncomingEntityQueryPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.recipe.IncomingRecipeRequestPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.book.edit.IncomingEditBookPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.inventory.close.IncomingCloseInventoryPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.inventory.creative.IncomingCreativeInventoryClickPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.cooldown.IncomingItemCooldownPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.hand.use.IncomingUseItemPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.selected.IncomingHotbarChangePacketBuilder;
+import org.absorb.net.packet.play.incoming.client.settings.IncomingClientSettingsPacketBuilder;
+import org.absorb.net.packet.play.outgoing.client.action.IncomingClientCommandActionPacketBuilder;
 import org.absorb.net.packet.status.ping.IncomingPingPacketBuilder;
 import org.absorb.net.packet.status.request.IncomingStatusRequestPacketBuilder;
 
@@ -29,50 +37,25 @@ public class NetManager {
 
     private final NetHandler handler;
     private final Map<SocketAddress, Client> info = new HashMap<>();
-    private final Map<Map.Entry<Integer, PacketState>, Supplier<IncomingPacketBuilder<? extends IncomingPacket>>> packetBuilders =
-            new HashMap<>();
+    private final Map<Map.Entry<Integer, PacketState>, Supplier<IncomingPacketBuilder<? extends IncomingPacket>>> packetBuilders = new HashMap<>();
 
     public NetManager(NetHandler handler) {
         this.handler = handler;
         this.init();
     }
 
-    private void init() {
-        this.registerPacketBuilders();
-    }
-
     public void registerIncomingPacketBuilder(IncomingPacketBuilder<? extends IncomingPacket> builder) {
-        Optional<Map.Entry<Integer, PacketState>> opKey =
-                this
-                        .packetBuilders
-                        .keySet()
-                        .stream()
-                        .filter(entry -> entry.getValue()==builder.getState() && entry.getKey()==builder.getId())
-                        .findAny();
+        Optional<Map.Entry<Integer, PacketState>> opKey = this.packetBuilders
+                .keySet()
+                .stream()
+                .filter(entry -> entry.getValue() == builder.getState() && entry.getKey() == builder.getId())
+                .findAny();
         if (opKey.isPresent()) {
             this.packetBuilders.replace(opKey.get(), builder::copy);
             return;
         }
-        this.packetBuilders.put(new AbstractMap.SimpleImmutableEntry<>(builder.getId(), builder.getState()), builder::copy);
-    }
-
-    private void registerPacketBuilders() {
-        this.registerIncomingPacketBuilder(new IncomingHandshakePacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingPreLoginPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingStatusRequestPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingPingPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingPingPacketBuilder().setUsePlay(true));
-        this.registerIncomingPacketBuilder(new IncomingClientSettingsPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingTeleportConfirmPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingRecipeRequestPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingPlayerMovementPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingPluginMessagePacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingBasicPlayerMovementPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingChangeAbilityPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingRotationPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingMessagePacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingCreativeInventoryClickPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingCloseInventoryPacketBuilder());
+        this.packetBuilders.put(new AbstractMap.SimpleImmutableEntry<>(builder.getId(), builder.getState()),
+                                builder::copy);
     }
 
     public NetHandler getHandler() {
@@ -93,12 +76,11 @@ public class NetManager {
 
     public Optional<IncomingPacketBuilder<? extends IncomingPacket>> getIncomingPacketBuilder(int networkId,
                                                                                               PacketState state) {
-        return this
-                .packetBuilders
+        return this.packetBuilders
                 .entrySet()
                 .parallelStream()
-                .filter(entry -> entry.getKey().getKey()==networkId)
-                .filter(entry -> entry.getKey().getValue()==state)
+                .filter(entry -> entry.getKey().getKey() == networkId)
+                .filter(entry -> entry.getKey().getValue() == state)
                 .findAny()
                 .map(entry -> entry.getValue().get());
     }
@@ -110,5 +92,36 @@ public class NetManager {
             e.printStackTrace();
         }
         this.info.remove(info.getAddress());
+    }
+
+    private void init() {
+        this.registerPacketBuilders();
+    }
+
+    private void registerPacketBuilders() {
+        this.registerIncomingPacketBuilder(new IncomingHandshakePacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingLoginStartPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingStatusRequestPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingPingPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingPingPacketBuilder().setUsePlay(true));
+        this.registerIncomingPacketBuilder(new IncomingClientSettingsPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingTeleportConfirmPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingRecipeRequestPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingPlayerMovementPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingPluginMessagePacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingBasicPlayerMovementPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingChangeAbilityPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingRotationPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingMessagePacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingCreativeInventoryClickPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingCloseInventoryPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingItemCooldownPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingHotbarChangePacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingCommandPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingClientCommandActionPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingEntityQueryPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingKeepAlivePacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingUseItemPacketBuilder());
+        this.registerIncomingPacketBuilder(new IncomingEditBookPacketBuilder());
     }
 }

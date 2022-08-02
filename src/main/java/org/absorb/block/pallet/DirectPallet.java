@@ -1,7 +1,7 @@
 package org.absorb.block.pallet;
 
 import org.absorb.block.locatable.BlockData;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetSerializers;
 import org.spongepowered.math.vector.Vector3i;
 
 import java.nio.ByteBuffer;
@@ -18,6 +18,6 @@ public class DirectPallet implements BlockPallet {
 
     @Override
     public ByteBuffer write() {
-        return Serializers.BYTE.write((byte) Math.ceil((StrictMath.log(15) / 2)));
+        return NetSerializers.BYTE.write((byte) Math.ceil((StrictMath.log(15) / 2)));
     }
 }

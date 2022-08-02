@@ -12,12 +12,42 @@ import java.util.UUID;
 
 public class PlayerTabBuilder implements Builder<PlayerTab> {
 
+    private final Collection<PlayerTabProperty> properties = new HashSet<>();
     private UUID uuid;
     private String name;
     private Gamemode gameMode;
     private int ping;
     private Component displayName;
-    private final Collection<PlayerTabProperty> properties = new HashSet<>();
+    private Long timestamp;
+    private byte[] publicKey = new byte[0];
+    private byte[] sig = new byte[0];
+
+    public Long getTimestamp() {
+        return this.timestamp;
+    }
+
+    public PlayerTabBuilder setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    public byte[] getPublicKey() {
+        return this.publicKey;
+    }
+
+    public PlayerTabBuilder setPublicKey(byte[] publicKey) {
+        this.publicKey = publicKey;
+        return this;
+    }
+
+    public byte[] getSignature() {
+        return this.sig;
+    }
+
+    public PlayerTabBuilder setSignature(byte[] sig) {
+        this.sig = sig;
+        return this;
+    }
 
     public Collection<PlayerTabProperty> getProperties() {
         return Collections.unmodifiableCollection(this.properties);
@@ -96,5 +126,16 @@ public class PlayerTabBuilder implements Builder<PlayerTab> {
                 .setPing(this.ping)
                 .setGameMode(this.gameMode)
                 .setUuid(this.uuid);
+    }
+
+    @Override
+    public @NotNull Builder<PlayerTab> from(PlayerTab value) {
+        this.displayName = value.getDisplayName().orElse(null);
+        this.name = value.getName();
+        this.ping = value.getPing();
+        this.gameMode = value.getGameMode();
+        this.uuid = value.getUuid();
+
+        return this;
     }
 }

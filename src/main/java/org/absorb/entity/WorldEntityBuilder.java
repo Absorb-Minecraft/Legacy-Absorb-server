@@ -3,7 +3,7 @@ package org.absorb.entity;
 import org.absorb.AbsorbManagers;
 import org.absorb.utils.Builder;
 import org.absorb.utils.colllection.ConnectedCollection;
-import org.absorb.world.AbsorbWorld;
+import org.absorb.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3d;
 
@@ -13,19 +13,17 @@ public class WorldEntityBuilder implements Builder<WorldEntity> {
     private Vector3d fellFrom;
     private Vector3d landedOn;
     private Vector3d position;
-    private AbsorbWorld world;
+    private World world;
     private Integer instanceId;
 
     public int getInstanceId() {
-        if (this.instanceId==null) {
-            return new ConnectedCollection<>(
-                    AbsorbManagers
-                            .getWorldManager()
-                            .worlds()
-                            .parallelStream()
-                            .flatMap(w -> w.getEntities().parallelStream())
-                            .toList())
-                    .size();
+        if (this.instanceId == null) {
+            return new ConnectedCollection<>(AbsorbManagers
+                                                     .getWorldManager()
+                                                     .worlds()
+                                                     .parallelStream()
+                                                     .flatMap(w -> w.getEntities().parallelStream())
+                                                     .toList()).size();
         }
         return this.instanceId;
     }
@@ -71,11 +69,11 @@ public class WorldEntityBuilder implements Builder<WorldEntity> {
         return this;
     }
 
-    public AbsorbWorld getWorld() {
+    public World getWorld() {
         return this.world;
     }
 
-    public WorldEntityBuilder setWorld(AbsorbWorld world) {
+    public WorldEntityBuilder setWorld(World world) {
         this.world = world;
         return this;
     }
@@ -98,5 +96,16 @@ public class WorldEntityBuilder implements Builder<WorldEntity> {
     @Override
     public @NotNull Builder<WorldEntity> copy() {
         throw new RuntimeException("Not implemented yet");
+    }
+
+    @Override
+    public @NotNull Builder<WorldEntity> from(WorldEntity value) {
+        this.entity = value.getEntity();
+        this.world = value.getWorld();
+        this.fellFrom = value.getFellFrom().orElse(null);
+        this.landedOn = value.getLandedOn().orElse(null);
+        this.position = value.getPosition();
+        this.instanceId = value.getInstanceId();
+        return this;
     }
 }

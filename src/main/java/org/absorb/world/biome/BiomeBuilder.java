@@ -136,13 +136,13 @@ public class BiomeBuilder implements Builder<Biome> {
         return this;
     }
 
+    public Double getOffset() {
+        return this.offset;
+    }
+
     public BiomeBuilder setOffset(@Nullable Double offset) {
         this.offset = offset;
         return this;
-    }
-
-    public Double getOffset() {
-        return this.offset;
     }
 
     public TemperatureModifier getTemperatureModifier() {
@@ -267,43 +267,84 @@ public class BiomeBuilder implements Builder<Biome> {
                 .setNetworkId(this.getNetworkId());
     }
 
+    @Override
+    public @NotNull Builder<Biome> from(Biome value) {
+        this.additionsSound = value.getAdditionsSound().orElse(null);
+        this.category = value.getCategory();
+        this.depth = value.getDepth();
+        this.host = value.getHost();
+        this.name = value.getName();
+        this.additionTickChance = value.getAdditionsTickChance().stream().boxed().findAny().orElse(null);
+        this.blockSearchExtent = value.getBlockSearchExtent().stream().boxed().findAny().orElse(null);
+        this.defaultProperties = value.getDefaultProperties();
+        this.downfall = value.getDownfall();
+        this.ambientSound = value.getAmbientSound().orElse(null);
+        this.modifier = value.getTemperatureModifier().orElse(null);
+        this.moodSound = value.getMoodSound().orElse(null);
+        this.musicMaximumDelay = value.getMusicMaximumDelay().stream().boxed().findAny().orElse(null);
+        this.musicMinimumDelay = value.getMusicMinimumDelay().stream().boxed().findAny().orElse(null);
+        this.musicSound = value.getMusic().orElse(null);
+        this.networkId = value.getNetworkId();
+        this.offset = value.getOffset().stream().boxed().findAny().orElse(null);
+        this.particle = value.getParticle().orElse(null);
+        this.replaceCurrentMusic = value.willMusicReplaceCurrent().orElse(null);
+        this.scale = value.getScale();
+        this.temperature = value.getTemperature();
+        this.tickDelay = value.getTickDelay().stream().boxed().findAny().orElse(null);
+
+        return this;
+    }
+
     public BiomeBuilder from(@NotNull NBTCompound group) {
-        AbsorbKey name =
-                NBTCompoundKeys.NAME.getValue(group).orElseThrow(() -> new IllegalArgumentException(
-                        "Name " +
-                                "is " +
-                                "required"));
+        AbsorbKey name = NBTCompoundKeys.NAME
+                .getValue(group)
+                .orElseThrow(() -> new IllegalArgumentException("Name " + "is " + "required"));
         this.host = name.host();
         this.name = name.value();
-        this.depth =
-                NBTCompoundKeys.DEPTH.getValue(group).orElseThrow(() -> new IllegalArgumentException(
-                        "Depth" +
-                                " is " +
-                                "required"));
-        this.scale =
-                NBTCompoundKeys.SCALE.getValue(group).orElseThrow(() -> new IllegalArgumentException("Scale is " +
-                        "required"));
-        this.temperature = NBTCompoundKeys.TEMPERATURE.getValue(group).orElseThrow(() -> new IllegalArgumentException(
-                "temperature is required"));
-        this.downfall =
-                NBTCompoundKeys.DOWNFALL.getValue(group).orElseThrow(() -> new IllegalArgumentException(
-                        "downfall is required"));
-        this.category =
-                NBTCompoundKeys.CATEGORY.getValue(group).orElseThrow(() -> new IllegalArgumentException(
-                        "Category is required"));
-        this.modifier = NBTCompoundKeys.TEMPERATURE_MODIFIER.getValue(group).orElseThrow(() -> new IllegalArgumentException(
-                "temperature modifier is required"));
-        this.networkId =
-                NBTCompoundKeys.ID.getValue(group).orElseThrow(() -> new IllegalArgumentException("ID is " +
-                        "required"));
+        this.depth = NBTCompoundKeys.DEPTH
+                .getValue(group)
+                .orElseThrow(() -> new IllegalArgumentException("Depth" + " is " + "required"));
+        this.scale = NBTCompoundKeys.SCALE
+                .getValue(group)
+                .orElseThrow(() -> new IllegalArgumentException("Scale is " + "required"));
+        this.temperature = NBTCompoundKeys.TEMPERATURE
+                .getValue(group)
+                .orElseThrow(() -> new IllegalArgumentException("temperature is required"));
+        this.downfall = NBTCompoundKeys.DOWNFALL
+                .getValue(group)
+                .orElseThrow(() -> new IllegalArgumentException("downfall is required"));
+        this.category = NBTCompoundKeys.CATEGORY
+                .getValue(group)
+                .orElseThrow(() -> new IllegalArgumentException("Category is required"));
+        this.modifier = NBTCompoundKeys.TEMPERATURE_MODIFIER
+                .getValue(group)
+                .orElseThrow(() -> new IllegalArgumentException("temperature modifier is required"));
+        this.networkId = NBTCompoundKeys.ID
+                .getValue(group)
+                .orElseThrow(() -> new IllegalArgumentException("ID is " + "required"));
         this.defaultProperties = new BiomePropertiesBuilder()
-                .setGrassColourModifier(NBTCompoundKeys.GRASS_COLOR_MODIFIER.getValue(group).orElseThrow(() -> new IllegalArgumentException("Grass colour modifier is required")))
-                .setFoliageColour(NBTCompoundKeys.FOLIAGE_COLOR.getValue(group).orElseThrow(() -> new IllegalArgumentException("Foliage colour is required")))
-                .setGrassColour(NBTCompoundKeys.GRASS_COLOR.getValue(group).orElseThrow(() -> new IllegalArgumentException("Grass colour is required")))
-                .setFogColour(NBTCompoundKeys.FOG_COLOR.getValue(group).orElseThrow(() -> new IllegalArgumentException("Fog colour is required")))
-                .setWaterColour(NBTCompoundKeys.WATER_COLOR.getValue(group).orElseThrow(() -> new IllegalArgumentException("Water colour is required")))
-                .setSkyColour(NBTCompoundKeys.SKY_COLOR.getValue(group).orElseThrow(() -> new IllegalArgumentException("Sky colour is required")))
-                .setWaterFogColour(NBTCompoundKeys.WATER_FOG_COLOR.getValue(group).orElseThrow(() -> new IllegalArgumentException("water fog color is required")))
+                .setGrassColourModifier(NBTCompoundKeys.GRASS_COLOR_MODIFIER
+                                                .getValue(group)
+                                                .orElseThrow(() -> new IllegalArgumentException(
+                                                        "Grass colour modifier is required")))
+                .setFoliageColour(NBTCompoundKeys.FOLIAGE_COLOR
+                                          .getValue(group)
+                                          .orElseThrow(() -> new IllegalArgumentException("Foliage colour is required")))
+                .setGrassColour(NBTCompoundKeys.GRASS_COLOR
+                                        .getValue(group)
+                                        .orElseThrow(() -> new IllegalArgumentException("Grass colour is required")))
+                .setFogColour(NBTCompoundKeys.FOG_COLOR
+                                      .getValue(group)
+                                      .orElseThrow(() -> new IllegalArgumentException("Fog colour is required")))
+                .setWaterColour(NBTCompoundKeys.WATER_COLOR
+                                        .getValue(group)
+                                        .orElseThrow(() -> new IllegalArgumentException("Water colour is required")))
+                .setSkyColour(NBTCompoundKeys.SKY_COLOR
+                                      .getValue(group)
+                                      .orElseThrow(() -> new IllegalArgumentException("Sky colour is required")))
+                .setWaterFogColour(NBTCompoundKeys.WATER_FOG_COLOR
+                                           .getValue(group)
+                                           .orElseThrow(() -> new IllegalArgumentException("water fog color is required")))
                 .build();
         return this;
     }

@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 public class BooleanCommandParser implements CommandParser<Boolean> {
+
+    public static final int ID = 0;
+
     @Override
     public @NotNull String getName() {
         return "Boolean";
@@ -24,8 +27,9 @@ public class BooleanCommandParser implements CommandParser<Boolean> {
 
     @Override
     public @NotNull ParserResult<Boolean> parse(@NotNull ParserResult<?> previous) throws Exception {
-        ParserResult<String> asStringResult = previous.getNextWord().orElseThrow(() -> new Exception("Cannot find any" +
-                " text"));
+        ParserResult<String> asStringResult = previous
+                .getNextWord()
+                .orElseThrow(() -> new Exception("Cannot find any" + " text"));
 
         if (asStringResult.getValue().equals("true")) {
             return previous.createFrom(asStringResult.getTaken(), true);
@@ -39,5 +43,10 @@ public class BooleanCommandParser implements CommandParser<Boolean> {
     @Override
     public Optional<CommandParserProperty<Boolean>> getProperty() {
         return Optional.empty();
+    }
+
+    @Override
+    public int getNetworkId() {
+        return ID;
     }
 }

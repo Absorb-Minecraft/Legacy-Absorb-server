@@ -9,4 +9,6 @@ public interface Builder<T> {
     @NotNull Builder<T> reset();
 
     @NotNull Builder<T> copy();
+
+    @NotNull Builder<T> from(T value);
 }

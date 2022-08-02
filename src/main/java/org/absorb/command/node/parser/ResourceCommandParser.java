@@ -10,17 +10,24 @@ import java.util.function.Supplier;
 
 public class ResourceCommandParser<R extends Identifiable> implements CommandParser<R> {
 
-    Supplier<Collection<R>> getter;
+    private final Supplier<Collection<R>> getter;
+    public static final int ID = 44;
 
-    public ResourceCommandParser(Supplier<Collection<R>> getter){
+    public ResourceCommandParser(Supplier<Collection<R>> getter) {
         this.getter = getter;
     }
 
     @Override
     public @NotNull ParserResult<R> parse(@NotNull ParserResult<?> previous) throws Exception {
-        ParserResult<String> resultAsString = previous.getNextWord().orElseThrow(() -> new Exception("Cannot find resource key"));
-        R resourceResult =
-                this.getter.get().parallelStream().filter(resource -> resource.getResourceKey().asFormatted().equals(resultAsString.getValue())).findAny().orElseThrow(() -> new Exception("Cannot find acceptable resource key"));
+        ParserResult<String> resultAsString = previous
+                .getNextWord()
+                .orElseThrow(() -> new Exception("Cannot find resource key"));
+        R resourceResult = this.getter
+                .get()
+                .parallelStream()
+                .filter(resource -> resource.getResourceKey().asFormatted().equals(resultAsString.getValue()))
+                .findAny()
+                .orElseThrow(() -> new Exception("Cannot find acceptable resource key"));
         return previous.createFrom(resultAsString.getTaken(), resourceResult);
     }
 
@@ -42,5 +49,10 @@ public class ResourceCommandParser<R extends Identifiable> implements CommandPar
     @Override
     public @NotNull String getHost() {
         return Identifiable.MINECRAFT_HOST;
+    }
+
+    @Override
+    public int getNetworkId() {
+        return 44;
     }
 }

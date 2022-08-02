@@ -3,6 +3,7 @@ package org.absorb.block.state;
 import org.absorb.block.state.properties.BlockStateProperty;
 import org.absorb.block.type.BlockType;
 import org.absorb.utils.Builder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -56,5 +57,13 @@ public class BlockStateBuilder implements Builder<BlockState> {
     @Override
     public Builder<BlockState> copy() {
         return new BlockStateBuilder().setProperties(this.getProperties()).setId(this.getId()).setType(this.getType());
+    }
+
+    @Override
+    public @NotNull Builder<BlockState> from(BlockState value) {
+        this.properties.addAll(value.getProperties());
+        this.id = value.getId();
+        this.type = value.getType();
+        return this;
     }
 }

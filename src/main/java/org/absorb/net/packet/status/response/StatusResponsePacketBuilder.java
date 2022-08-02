@@ -2,10 +2,11 @@ package org.absorb.net.packet.status.response;
 
 import net.kyori.adventure.text.Component;
 import org.absorb.AbsorbManagers;
-import org.absorb.event.events.connection.ping.ClientPingEvent;
+import org.absorb.event.events.client.connection.ping.ClientPingEvent;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
+import org.absorb.utils.Builder;
 import org.absorb.version.MCVersion;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,6 +69,16 @@ public class StatusResponsePacketBuilder implements OutgoingPacketBuilder<Status
     }
 
     @Override
+    public @NotNull Builder<StatusResponsePacket> from(StatusResponsePacket value) {
+        this.currentPlayers = value.getCurrentPlayers();
+        this.description = value.getDescriptionText();
+        this.maxPlayers = value.getMaxPlayers();
+        this.versionName = value.getNameVersion();
+        this.versionProtocol = value.getProtocolVersion();
+        return this;
+    }
+
+    @Override
     public @NotNull PacketBuilder<StatusResponsePacket> reset() {
         this.currentPlayers = AbsorbManagers.getNetManager().getClients().size();
         this.maxPlayers = this.currentPlayers + 1;
@@ -79,7 +90,12 @@ public class StatusResponsePacketBuilder implements OutgoingPacketBuilder<Status
 
     @Override
     public @NotNull PacketBuilder<StatusResponsePacket> copy() {
-        return new StatusResponsePacketBuilder().setCurrentPlayers(this.currentPlayers).setMaxPlayers(this.maxPlayers).setDescription(this.description).setVersionName(this.versionName).setVersionProtocol(this.versionProtocol);
+        return new StatusResponsePacketBuilder()
+                .setCurrentPlayers(this.currentPlayers)
+                .setMaxPlayers(this.maxPlayers)
+                .setDescription(this.description)
+                .setVersionName(this.versionName)
+                .setVersionProtocol(this.versionProtocol);
     }
 
     @Override

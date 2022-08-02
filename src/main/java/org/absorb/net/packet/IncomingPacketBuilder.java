@@ -1,14 +1,17 @@
 package org.absorb.net.packet;
 
+import org.absorb.net.Client;
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.ByteBuffer;
 
 public interface IncomingPacketBuilder<P extends IncomingPacket> extends PacketBuilder<P> {
 
-    PacketBuilder<P> from(ByteBuffer packetBytes);
+    @NotNull PacketBuilder<P> from(@NotNull Client connection, @NotNull ByteBuffer packetBytes);
 
     @Override
-    IncomingPacketBuilder<P> reset();
+    @NotNull IncomingPacketBuilder<P> reset();
 
     @Override
-    IncomingPacketBuilder<P> copy();
+    @NotNull IncomingPacketBuilder<P> copy();
 }

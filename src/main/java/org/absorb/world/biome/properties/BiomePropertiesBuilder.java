@@ -1,6 +1,7 @@
 package org.absorb.world.biome.properties;
 
 import org.absorb.utils.Builder;
+import org.jetbrains.annotations.NotNull;
 
 public class BiomePropertiesBuilder implements Builder<BiomeProperties> {
 
@@ -100,6 +101,23 @@ public class BiomePropertiesBuilder implements Builder<BiomeProperties> {
 
     @Override
     public Builder<BiomeProperties> copy() {
-        return new BiomePropertiesBuilder().setFogColour(this.getFogColour()).setFoliageColour(this.getFoliageColour()).setGrassColour(this.getGrassColour()).setGrassColourModifier(this.getGrassColourModifier());
+        return new BiomePropertiesBuilder()
+                .setFogColour(this.getFogColour())
+                .setFoliageColour(this.getFoliageColour())
+                .setGrassColour(this.getGrassColour())
+                .setGrassColourModifier(this.getGrassColourModifier());
+    }
+
+    @Override
+    public @NotNull Builder<BiomeProperties> from(BiomeProperties value) {
+        this.fogColour = value.getFogColour();
+        this.grassColour = value.getGrassColour().stream().boxed().findAny().orElse(null);
+        this.weather = value.getWeather();
+        this.foliageColour = value.getFoliageColour().stream().boxed().findAny().orElse(null);
+        this.skyColour = value.getSkyColour();
+        this.grassColourModifier = value.getGrassColourModifier().orElse(null);
+        this.waterColour = value.getWaterColour();
+        this.waterFogColour = value.getWaterFogColour();
+        return this;
     }
 }

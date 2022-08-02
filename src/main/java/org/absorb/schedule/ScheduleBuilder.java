@@ -77,6 +77,17 @@ public class ScheduleBuilder implements Builder<Schedule> {
 
     @Override
     public @NotNull Builder<Schedule> copy() {
-        return new ScheduleBuilder().setRepeating(this.repeating).setAllowedParallelRun(this.allowedParallelRun).setTaskToRun(this.taskToRun).setShouldRun(this.shouldRun);
+        return new ScheduleBuilder()
+                .setRepeating(this.repeating)
+                .setAllowedParallelRun(this.allowedParallelRun)
+                .setTaskToRun(this.taskToRun)
+                .setShouldRun(this.shouldRun);
+    }
+
+    @Override
+    public @NotNull Builder<Schedule> from(Schedule value) {
+        this.repeating = value.isRepeating();
+        this.shouldRun = value.getTime();
+        return this;
     }
 }

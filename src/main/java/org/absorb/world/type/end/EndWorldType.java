@@ -32,6 +32,16 @@ public class EndWorldType implements WorldType {
     }
 
     @Override
+    public int getMonsterSpawnLightLevel() {
+        return 0;
+    }
+
+    @Override
+    public int getMonsterSpawnBlockLightLimit() {
+        return 0;
+    }
+
+    @Override
     public int getNetworkId() {
         return 3;
     }
@@ -123,7 +133,7 @@ public class EndWorldType implements WorldType {
 
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof WorldType type)){
+        if (!(obj instanceof WorldType type)) {
             return false;
         }
         return type.getResourceKey().equals(this.getResourceKey());

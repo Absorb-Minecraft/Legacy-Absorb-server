@@ -1,7 +1,7 @@
 package org.absorb.block.pallet;
 
 import org.absorb.block.locatable.BlockData;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetSerializers;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3i;
 
@@ -26,11 +26,11 @@ public class SinglePallet implements BlockPallet {
     @Override
     public ByteBuffer write() {
         byte bitsPerEntry = 0;
-        ByteBuffer palletBuffer = Serializers.VAR_INTEGER.write(this.state.getState().getNetworkId());
-        ByteBuffer dataBuffer = Serializers.VAR_INTEGER.write(0);
+        ByteBuffer palletBuffer = NetSerializers.VAR_INTEGER.write(this.state.getState().getNetworkId());
+        ByteBuffer dataBuffer = NetSerializers.VAR_INTEGER.write(0);
 
         ByteBuffer bitsPerEntryBuffer =
-                Serializers.BYTE.write(bitsPerEntry);
+                NetSerializers.BYTE.write(bitsPerEntry);
 
         ByteBuffer buffer = ByteBuffer.allocate(bitsPerEntryBuffer.limit() + palletBuffer.limit() + dataBuffer.limit());
         buffer.put(bitsPerEntryBuffer.array());

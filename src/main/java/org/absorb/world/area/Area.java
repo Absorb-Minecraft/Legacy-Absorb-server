@@ -1,6 +1,6 @@
 package org.absorb.world.area;
 
-import org.absorb.world.AbsorbWorld;
+import org.absorb.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.math.vector.Vector3d;
 import org.spongepowered.math.vector.Vector3i;
@@ -9,9 +9,9 @@ public class Area {
 
     private final @NotNull Vector3d min;
     private final @NotNull Vector3d max;
-    private final @NotNull AbsorbWorld world;
+    private final @NotNull World world;
 
-    public Area(@NotNull Vector3d min, @NotNull Vector3d max, @NotNull AbsorbWorld world) {
+    public Area(@NotNull Vector3d min, @NotNull Vector3d max, @NotNull World world) {
         this.max = max;
         this.min = min;
         this.world = world;
@@ -25,7 +25,7 @@ public class Area {
         return this.max;
     }
 
-    public @NotNull AbsorbWorld getWorld() {
+    public @NotNull World getWorld() {
         return this.world;
     }
 

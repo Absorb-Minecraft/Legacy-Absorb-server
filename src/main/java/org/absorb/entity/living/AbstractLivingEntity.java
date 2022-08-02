@@ -8,6 +8,8 @@ public class AbstractLivingEntity extends AbstractEntity implements LivingEntity
 
     private float walkingSpeed;
     private float flyingSpeed;
+    private int arrowsInside;
+    private double health;
 
     public AbstractLivingEntity(@NotNull EntityType<? extends LivingEntity> type) {
         super(type);
@@ -31,5 +33,25 @@ public class AbstractLivingEntity extends AbstractEntity implements LivingEntity
     @Override
     public void setFlyingSpeed(float speed) {
         this.flyingSpeed = speed;
+    }
+
+    @Override
+    public int getArrowsInside() {
+        return this.arrowsInside;
+    }
+
+    @Override
+    public void setArrowsInside(int arrows) {
+        this.arrowsInside = arrows;
+    }
+
+    @Override
+    public double getHealth() {
+        return this.health;
+    }
+
+    @Override
+    public void setHealth(double health) {
+        this.health = health;
     }
 }

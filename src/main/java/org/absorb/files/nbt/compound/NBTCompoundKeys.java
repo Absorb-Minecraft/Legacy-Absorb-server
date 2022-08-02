@@ -1,7 +1,10 @@
 package org.absorb.files.nbt.compound;
 
 import me.nullicorn.nedit.type.NBTCompound;
+import me.nullicorn.nedit.type.NBTList;
 import me.nullicorn.nedit.type.TagType;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.absorb.world.biome.BiomeCategory;
 import org.absorb.world.biome.properties.BiomeWeather;
 import org.absorb.world.biome.properties.GrassModifier;
@@ -13,49 +16,63 @@ import java.util.stream.Collectors;
 
 public class NBTCompoundKeys {
 
+    public static final NBTCompoundKey.TypeGenericCollection<String, Component, List<Component>> COMPONENT_PAGES = new NBTCompoundKey.TypeGenericCollection<>(
+            TagType.STRING,
+            "pages",
+            com -> GsonComponentSerializer.gson().serialize(com),
+            str -> GsonComponentSerializer.gson().deserialize(str),
+            LinkedList::new);
+
+    public static final NBTCompoundKey.TypeGenericCollection<String, String, List<String>> SIMPLE_PAGES = new NBTCompoundKey.TypeGenericCollection<>(
+            TagType.STRING,
+            "pages");
+    public static final NBTCompoundKey.Type<String> AUTHOR = new NBTCompoundKey.Type<>(TagType.STRING, "author");
+    public static final NBTCompoundKey.Type<String> TITLE = new NBTCompoundKey.Type<>(TagType.STRING, "title");
     public static final NBTCompoundKey.Type<Integer> ITEM_DAMAGE = new NBTCompoundKey.Type<>(TagType.INT, "damage");
     public static final NBTCompoundKey.Type<Integer> BLOCK_SEARCH_EXTENT = new NBTCompoundKey.Type<>(TagType.INT,
-            "block_search_extent");
+                                                                                                     "block_search_extent");
     public static final NBTCompoundKey.Type<Double> OFFSET = new NBTCompoundKey.Type<>(TagType.DOUBLE, "offset");
     public static final NBTCompoundKey.Resource SOUND = new NBTCompoundKey.Resource("sound");
-    public static final NBTCompoundKey.Type<Integer> TICK_DELAY = new NBTCompoundKey.Type<>(TagType.INT,
-            "tick_delay");
+    public static final NBTCompoundKey.Type<Integer> TICK_DELAY = new NBTCompoundKey.Type<>(TagType.INT, "tick_delay");
     public static final NBTCompoundKey.Type<Long[]> MOTION_BLOCKING = new NBTCompoundKey.Type<>(TagType.LONG_ARRAY,
-            "MOTION_BLOCKING");
-    public static final NBTCompoundKey.Type<NBTCompound> MOOD_SOUND = new NBTCompoundKey.Type<>(TagType.COMPOUND
-            , "mood_sound");
+                                                                                                "MOTION_BLOCKING");
+    public static final NBTCompoundKey.Type<NBTCompound> MOOD_SOUND = new NBTCompoundKey.Type<>(TagType.COMPOUND,
+                                                                                                "mood_sound");
     public static final NBTCompoundKey.Type<Long[]> WORLD_SURFACE = new NBTCompoundKey.Type<>(TagType.LONG_ARRAY,
-            "WORLD_SURFACE");
-    public static final NBTCompoundKey.Type<NBTCompound> DIMENSION_TYPE =
-            new NBTCompoundKey.Type<>(TagType.COMPOUND, "minecraft:dimension_type");
-    public static final NBTCompoundKey.Type<NBTCompound> WORLD_GEN_BIOME =
-            new NBTCompoundKey.Type<>(TagType.COMPOUND, "minecraft:worldgen/biome");
+                                                                                              "WORLD_SURFACE");
+    public static final NBTCompoundKey.Type<NBTCompound> DIMENSION_TYPE = new NBTCompoundKey.Type<>(TagType.COMPOUND,
+                                                                                                    "minecraft:dimension_type");
+    public static final NBTCompoundKey.Type<NBTCompound> WORLD_GEN_BIOME = new NBTCompoundKey.Type<>(TagType.COMPOUND,
+                                                                                                     "minecraft:worldgen/biome");
+    public static final NBTCompoundKey.Type<NBTCompound> CHAT_TYPES = new NBTCompoundKey.Type<>(TagType.COMPOUND,
+                                                                                                "minecraft:chat_type");
 
     public static final NBTCompoundKey.BiomeValue BIOMES = new NBTCompoundKey.BiomeValue("value");
     public static final NBTCompoundKey.Type<String> COMPOUND_TYPE = new NBTCompoundKey.Type<>(TagType.STRING, "type");
+    public static final NBTCompoundKey.Type<NBTList> VALUE_LIST = new NBTCompoundKey.Type<>(TagType.LIST, "value");
 
-    public static final NBTCompoundKey.Boolean PIGLIN_SAFE =
-            new NBTCompoundKey.Boolean("piglin_safe");
-    public static final NBTCompoundKey.Boolean NATURAL =
-            new NBTCompoundKey.Boolean("natural");
+    public static final NBTCompoundKey.Boolean PIGLIN_SAFE = new NBTCompoundKey.Boolean("piglin_safe");
+    public static final NBTCompoundKey.Boolean NATURAL = new NBTCompoundKey.Boolean("natural");
     public static final NBTCompoundKey.Type<Float> AMBIENT_LIGHT = new NBTCompoundKey.Type<>(TagType.FLOAT,
-            "ambient_light");
+                                                                                             "ambient_light");
     public static final NBTCompoundKey.Type<Long> FIXED_TIME = new NBTCompoundKey.Type<>(TagType.LONG, "fixed_time");
     public static final NBTCompoundKey.Type<String> INFINIBURN = new NBTCompoundKey.Type<>(TagType.STRING,
-            "infiniburn");
-    public static final NBTCompoundKey.Boolean RESPAWN_ANCHOR_WORKS = new NBTCompoundKey.Boolean(
-            "respawn_anchor_works");
+                                                                                           "infiniburn");
+    public static final NBTCompoundKey.Boolean RESPAWN_ANCHOR_WORKS = new NBTCompoundKey.Boolean("respawn_anchor_works");
     public static final NBTCompoundKey.Boolean HAS_SKYLIGHT = new NBTCompoundKey.Boolean("has_skylight");
     public static final NBTCompoundKey.Boolean BED_WORKS = new NBTCompoundKey.Boolean("bed_works");
-    public static final NBTCompoundKey.Resource DIMENSION_EFFECTS = new NBTCompoundKey.Resource(
-            "effects");
+    public static final NBTCompoundKey.Resource DIMENSION_EFFECTS = new NBTCompoundKey.Resource("effects");
     public static final NBTCompoundKey.Boolean HAS_RAIDS = new NBTCompoundKey.Boolean("has_raids");
+    public static final NBTCompoundKey.Type<Integer> MONSTER_SPAWN_LIGHT_LEVEL = new NBTCompoundKey.Type<>(TagType.INT,
+                                                                                                           "monster_spawn_light_level");
+    public static final NBTCompoundKey.Type<Integer> MONSTER_SPAWN_BLOCK_LIGHT_LIMIT = new NBTCompoundKey.Type<>(TagType.INT,
+                                                                                                                 "monster_spawn_block_light_limit");
     public static final NBTCompoundKey.Type<Integer> MIN_Y = new NBTCompoundKey.Type<>(TagType.INT, "min_y");
     public static final NBTCompoundKey.Type<Integer> HEIGHT = new NBTCompoundKey.Type<>(TagType.INT, "height");
     public static final NBTCompoundKey.Type<Integer> LOGICAL_HEIGHT = new NBTCompoundKey.Type<>(TagType.INT,
-            "logical_height");
+                                                                                                "logical_height");
     public static final NBTCompoundKey.Type<Double> COORDINATE_SCALE = new NBTCompoundKey.Type<>(TagType.DOUBLE,
-            "coordinate_scale");
+                                                                                                 "coordinate_scale");
     public static final NBTCompoundKey.Boolean ULTRAWARM = new NBTCompoundKey.Boolean("ultrawarm");
     public static final NBTCompoundKey.Boolean HAS_CEILING = new NBTCompoundKey.Boolean("has_ceiling");
     public static final NBTCompoundKey.Resource NAME = new NBTCompoundKey.Resource("name");
@@ -63,51 +80,52 @@ public class NBTCompoundKeys {
     public static final NBTCompoundKey.Resource RESOURCE_TYPE = new NBTCompoundKey.Resource("type");
     public static final NBTCompoundKey.Dimension DIMENSION = new NBTCompoundKey.Dimension("value");
     public static final NBTCompoundKey.Type<NBTCompound> ELEMENT = new NBTCompoundKey.Type<>(TagType.COMPOUND,
-            "element");
+                                                                                             "element");
     public static final NBTCompoundKey.NamedEnum<BiomeWeather> PRECIPITATION = new NBTCompoundKey.NamedEnum<>(
-            "precipitation", EnumSet.allOf(BiomeWeather.class));
+            "precipitation",
+            EnumSet.allOf(BiomeWeather.class));
     public static final NBTCompoundKey.Type<Float> DEPTH = new NBTCompoundKey.Type<>(TagType.FLOAT, "depth");
     public static final NBTCompoundKey.Type<Float> TEMPERATURE = new NBTCompoundKey.Type<>(TagType.FLOAT,
-            "temperature");
+                                                                                           "temperature");
     public static final NBTCompoundKey.Type<Float> SCALE = new NBTCompoundKey.Type<>(TagType.FLOAT, "scale");
     public static final NBTCompoundKey.Type<Float> DOWNFALL = new NBTCompoundKey.Type<>(TagType.FLOAT, "downfall");
     public static final NBTCompoundKey.NamedEnum<BiomeCategory> CATEGORY = new NBTCompoundKey.NamedEnum<>("category",
-            EnumSet.allOf(BiomeCategory.class));
-    public static final NBTCompoundKey.NamedEnum<TemperatureModifier> TEMPERATURE_MODIFIER =
-            new NBTCompoundKey.NamedEnum<>("temperature_modifier", EnumSet.allOf(TemperatureModifier.class));
-    public static final NBTCompoundKey.Type<Integer> SKY_COLOR = new NBTCompoundKey.Type<>(TagType.INT,
-            "sky_color");
+                                                                                                          EnumSet.allOf(
+                                                                                                                  BiomeCategory.class));
+    public static final NBTCompoundKey.NamedEnum<TemperatureModifier> TEMPERATURE_MODIFIER = new NBTCompoundKey.NamedEnum<>(
+            "temperature_modifier",
+            EnumSet.allOf(TemperatureModifier.class));
+    public static final NBTCompoundKey.Type<Integer> SKY_COLOR = new NBTCompoundKey.Type<>(TagType.INT, "sky_color");
     public static final NBTCompoundKey.Type<Integer> WATER_FOG_COLOR = new NBTCompoundKey.Type<>(TagType.INT,
-            "water_fog_color");
-    public static final NBTCompoundKey.Type<Integer> FOG_COLOR = new NBTCompoundKey.Type<>(TagType.INT,
-            "fog_color");
+                                                                                                 "water_fog_color");
+    public static final NBTCompoundKey.Type<Integer> FOG_COLOR = new NBTCompoundKey.Type<>(TagType.INT, "fog_color");
     public static final NBTCompoundKey.Type<Integer> FOLIAGE_COLOR = new NBTCompoundKey.Type<>(TagType.INT,
-            "foliage_color");
+                                                                                               "foliage_color");
     public static final NBTCompoundKey.Type<Integer> GRASS_COLOR = new NBTCompoundKey.Type<>(TagType.INT,
-            "grass_color");
+                                                                                             "grass_color");
     public static final NBTCompoundKey.Type<Integer> WATER_COLOR = new NBTCompoundKey.Type<>(TagType.INT,
-            "water_color");
-    public static final NBTCompoundKey.NamedEnum<GrassModifier> GRASS_COLOR_MODIFIER =
-            new NBTCompoundKey.NamedEnum<>("grass_color_modifier", EnumSet.allOf(GrassModifier.class));
-    public static final NBTCompoundKey.Type<NBTCompound> BIOME_EFFECTS =
-            new NBTCompoundKey.Type<>(TagType.COMPOUND, "effects");
-    public static final NBTCompoundKey.Type<Integer> MIN_DELAY = new NBTCompoundKey.Type<>(TagType.INT,
-            "min_delay");
+                                                                                             "water_color");
+    public static final NBTCompoundKey.NamedEnum<GrassModifier> GRASS_COLOR_MODIFIER = new NBTCompoundKey.NamedEnum<>(
+            "grass_color_modifier",
+            EnumSet.allOf(GrassModifier.class));
+    public static final NBTCompoundKey.Type<NBTCompound> BIOME_EFFECTS = new NBTCompoundKey.Type<>(TagType.COMPOUND,
+                                                                                                   "effects");
+    public static final NBTCompoundKey.Type<Integer> MIN_DELAY = new NBTCompoundKey.Type<>(TagType.INT, "min_delay");
     public static final NBTCompoundKey.Type<Integer> MAX_DELAY = new NBTCompoundKey.Type<>(TagType.INT, "max_delay");
     public static final NBTCompoundKey.Boolean REPLACE_CURRENT_MUSIC = new NBTCompoundKey.Boolean(
             "replace_current_music");
     public static final NBTCompoundKey.Type<NBTCompound> MUSIC = new NBTCompoundKey.Type<>(TagType.COMPOUND, "music");
     public static final NBTCompoundKey.Resource AMBIENT_SOUND = new NBTCompoundKey.Resource("ambient_sound");
     public static final NBTCompoundKey.Type<Double> TICK_CHANCE = new NBTCompoundKey.Type<>(TagType.DOUBLE,
-            "tick_chance");
-    public static final NBTCompoundKey.Type<NBTCompound> ADDITIONS_SOUND = new NBTCompoundKey.Type<>(TagType.COMPOUND
-            , "additions_sound");
+                                                                                            "tick_chance");
+    public static final NBTCompoundKey.Type<NBTCompound> ADDITIONS_SOUND = new NBTCompoundKey.Type<>(TagType.COMPOUND,
+                                                                                                     "additions_sound");
     public static final NBTCompoundKey.Type<NBTCompound> OPTIONS = new NBTCompoundKey.Type<>(TagType.COMPOUND,
-            "options");
+                                                                                             "options");
     public static final NBTCompoundKey.Type<Float> PROBABILITY = new NBTCompoundKey.Type<>(TagType.FLOAT,
-            "probability");
+                                                                                           "probability");
     public static final NBTCompoundKey.Type<NBTCompound> PARTICLE = new NBTCompoundKey.Type<>(TagType.COMPOUND,
-            "particle");
+                                                                                              "particle");
     public static final Set<NBTCompoundKey<?, ?>> KEYS;
 
     static {
@@ -134,6 +152,11 @@ public class NBTCompoundKeys {
     }
 
     public static <T> Optional<NBTCompoundKey<T, ?>> getKeysWithName(String name, TagType tag) {
-        return KEYS.parallelStream().filter(key -> key.getKey().equals(name)).filter(key -> key.getTag().equals(tag)).findAny().map(key -> (NBTCompoundKey<T, ?>) key);
+        return KEYS
+                .parallelStream()
+                .filter(key -> key.getKey().equals(name))
+                .filter(key -> key.getTag().equals(tag))
+                .findAny()
+                .map(key -> (NBTCompoundKey<T, ?>) key);
     }
 }

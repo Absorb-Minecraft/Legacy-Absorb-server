@@ -14,6 +14,10 @@ public interface WorldType extends Identifiable {
 
     boolean willBecomeZombifiedPiglins();
 
+    int getMonsterSpawnLightLevel();
+
+    int getMonsterSpawnBlockLightLimit();
+
     int getNetworkId();
 
     boolean isNatural();

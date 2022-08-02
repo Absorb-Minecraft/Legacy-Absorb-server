@@ -5,8 +5,8 @@ import org.absorb.AbsorbManagers;
 import org.absorb.message.MessagePosition;
 import org.absorb.message.channel.ChatChannel;
 import org.absorb.net.Client;
-import org.absorb.net.packet.play.message.IncomingMessagePacket;
-import org.absorb.net.packet.play.message.chat.OutgoingChatMessagePacketBuilder;
+import org.absorb.net.packet.play.incoming.client.channel.chat.IncomingMessagePacket;
+import org.absorb.net.packet.play.outgoing.client.channel.chat.OutgoingChatMessagePacketBuilder;
 import org.absorb.net.processor.NetProcess;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,14 +26,14 @@ public class MessageProcessor implements NetProcess<IncomingMessagePacket> {
     private void onCommandProcess(@NotNull Client connection, @NotNull String command) {
         try {
             AbsorbManagers.getCommandManager().execute(connection, command.substring(1));
-        }catch (Throwable e){
-            new OutgoingChatMessagePacketBuilder().setPosition(MessagePosition.SYSTEM).setMessage(Component.text(
+        } catch (Throwable e) {
+            new OutgoingChatMessagePacketBuilder().setPosition(MessagePosition.SYSTEM).setDisplayMessage(Component.text(
                     "Command Failed: " + e.getMessage())).build().writeToAsync(connection);
             e.printStackTrace();
         }
     }
 
-    private void onMessageProcess(Client connection, String message){
+    private void onMessageProcess(Client connection, String message) {
         ChatChannel channel = AbsorbManagers.getChannelManager().getChatChannel();
         Component messageToSend = channel.format(connection, message);
         Collection<Client> audience = channel.getClients(connection);
@@ -41,7 +41,7 @@ public class MessageProcessor implements NetProcess<IncomingMessagePacket> {
 
         audience.forEach(client -> {
             new OutgoingChatMessagePacketBuilder()
-                    .setMessage(messageToSend)
+                    .setDisplayMessage(messageToSend)
                     .setFrom(connection.getUuid())
                     .setPosition(channel.getDefaultPosition())
                     .build()

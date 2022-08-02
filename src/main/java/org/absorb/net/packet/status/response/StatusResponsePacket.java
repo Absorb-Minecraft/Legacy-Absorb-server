@@ -3,8 +3,8 @@ package org.absorb.net.packet.status.response;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.absorb.net.Client;
-import org.absorb.net.data.SerializerUtils;
-import org.absorb.net.data.Serializers;
+import org.absorb.net.data.NetUtils;
+import org.absorb.net.data.NetSerializers;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.PacketState;
 import org.spongepowered.configurate.ConfigurateException;
@@ -65,8 +65,8 @@ public class StatusResponsePacket implements OutgoingPacket {
             node.node("version").node("protocol").set(this.protocolVersion);
             String json =
                     JacksonConfigurationLoader.builder().fieldValueSeparatorStyle(FieldValueSeparatorStyle.NO_SPACE).indent(0).buildAndSaveString(node);
-            ByteBuffer bytes = Serializers.STRING.write(json);
-            return SerializerUtils.createPacket(StatusResponsePacket.ID, bytes);
+            ByteBuffer bytes = NetSerializers.STRING.write(json);
+            return NetUtils.createPacket(StatusResponsePacket.ID, bytes);
         } catch (ConfigurateException e) {
             throw new RuntimeException(e);
         }
