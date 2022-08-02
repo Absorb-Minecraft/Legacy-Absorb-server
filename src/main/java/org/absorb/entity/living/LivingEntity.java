@@ -13,5 +13,25 @@ public interface LivingEntity extends Entity {
 
     void setFlyingSpeed(float speed);
 
+    int getArrowsInside();
 
+    void setArrowsInside(int arrows);
+
+    double getHealth();
+
+    void setHealth(double health);
+
+    default double damage(double damage) {
+        double newHealth = this.getHealth() - damage;
+        this.setHealth(newHealth);
+        return newHealth;
+    }
+
+    default void kill() {
+        this.setHealth(0);
+    }
+
+    default boolean isDead() {
+        return this.getHealth() == 0;
+    }
 }

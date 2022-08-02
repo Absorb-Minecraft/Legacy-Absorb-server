@@ -19,15 +19,23 @@ public interface Entity {
 
     boolean hasGravity();
 
-    void setFlying(boolean isFlying);
-
     boolean isFlying();
+
+    void setFlying(boolean isFlying);
 
     @NotNull EntityType<? extends Entity> getType();
 
     Optional<Component> getCustomName();
 
     void setCustomName(@Nullable Component component);
+
+    boolean isOnFire();
+
+    void setOnFire(boolean check);
+
+    boolean isGlowing();
+
+    void setGlowing(boolean glowing);
 
     default void removeCustomName() {
         this.setCustomName(null);
