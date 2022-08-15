@@ -3,7 +3,11 @@ package org.absorb.entity.living.monster.creeper;
 import org.absorb.entity.EntityTypes;
 import org.absorb.entity.living.AbstractLivingEntity;
 import org.absorb.entity.living.monster.MonsterEntity;
+import org.absorb.net.packet.play.outgoing.entity.metadata.types.EntityMetadataType;
+import org.absorb.net.packet.play.outgoing.entity.metadata.types.EntityMetadataTypes;
 import org.absorb.world.explode.Explosive;
+
+import java.util.Collection;
 
 public class Creeper extends AbstractLivingEntity implements MonsterEntity, Explosive {
 
@@ -59,5 +63,10 @@ public class Creeper extends AbstractLivingEntity implements MonsterEntity, Expl
     @Override
     public boolean canHurtEntities() {
         return true;
+    }
+
+    @Override
+    public Collection<EntityMetadataType<?, ?>> getMetadataTypes() {
+        return EntityMetadataTypes.getCreeperMetadata();
     }
 }

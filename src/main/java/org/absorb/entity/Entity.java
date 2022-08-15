@@ -1,6 +1,7 @@
 package org.absorb.entity;
 
 import net.kyori.adventure.text.Component;
+import org.absorb.net.packet.play.outgoing.entity.metadata.types.EntityMetadataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +37,8 @@ public interface Entity {
     boolean isGlowing();
 
     void setGlowing(boolean glowing);
+
+    Collection<EntityMetadataType<?, ?>> getMetadataTypes();
 
     default void removeCustomName() {
         this.setCustomName(null);
