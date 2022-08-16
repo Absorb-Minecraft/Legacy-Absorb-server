@@ -6,6 +6,7 @@ import org.absorb.net.packet.play.outgoing.entity.metadata.types.value.MetadataV
 import org.absorb.net.packet.play.outgoing.entity.metadata.types.value.bitmask.DisplayBitmask;
 import org.absorb.net.packet.play.outgoing.entity.metadata.types.value.bitmask.HandBitmask;
 import org.absorb.net.packet.play.outgoing.entity.metadata.types.value.bitmask.MobBitmask;
+import org.absorb.net.packet.play.outgoing.entity.metadata.types.value.bitmask.SkinBitmask;
 import org.spongepowered.math.vector.Vector3i;
 
 import java.util.Collection;
@@ -52,12 +53,12 @@ public interface EntityMetadataTypes {
 
     EntityMetadataType<Float, Float> ADDITIONAL_HEALTH = new EntityMetadataType<>(MetadataValueTypes.ADDITIONAL_HEALTH,
                                                                                   15,
-                                                                                  0);
+                                                                                  0f);
 
     EntityMetadataType<Integer, Integer> SCORE = new EntityMetadataType<>(MetadataValueTypes.SCORE, 16, 0);
-    EntityMetadataType<SkinBitmask, SkinBitmask> SKIN = new EntityMetadataType<>(MetadataValueTypes.SKIN,
-                                                                                 17,
-                                                                                 new SkinBitmask());
+    EntityMetadataType<Byte, SkinBitmask> SKIN = new EntityMetadataType<>(MetadataValueTypes.SKIN_BITMASK,
+                                                                          17,
+                                                                          new SkinBitmask());
     EntityMetadataType<Byte, Hand> PLAYER_HAND = new EntityMetadataType<>(MetadataValueTypes.PLAYER_HAND,
                                                                           18,
                                                                           Hand.RIGHT);
