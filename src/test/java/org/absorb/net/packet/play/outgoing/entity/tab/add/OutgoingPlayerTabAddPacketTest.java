@@ -1,4 +1,4 @@
-package org.absorb.net.packet.play.tab.add;
+package org.absorb.net.packet.play.outgoing.entity.tab.add;
 
 import org.absorb.entity.living.human.Gamemode;
 import org.absorb.entity.living.human.Gamemodes;
@@ -7,9 +7,11 @@ import org.absorb.entity.living.human.tab.PlayerTabBuilder;
 import org.absorb.net.Client;
 import org.absorb.net.data.NetEntryData;
 import org.absorb.net.data.NetSerializers;
-import org.absorb.net.packet.play.outgoing.entity.tab.add.OutgoingPlayerTabUpdateAddPlayerPacket;
-import org.absorb.net.packet.play.outgoing.entity.tab.add.OutgoingPlayerTabUpdateAddPlayerPacketBuilder;
+import org.absorb.net.packet.OnWiki;
+import org.absorb.net.packet.PacketState;
+import org.absorb.net.packet.WikiUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -19,7 +21,32 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+@OnWiki(state = PacketState.PLAY, urlTitle = "Player_Info")
 public class OutgoingPlayerTabAddPacketTest {
+
+    /**
+     * This checks if the packet id is the latest on the wiki. If it isn't then this packet needs updating.
+     * <p>
+     * Packet Id's are normally the first to be changed and therefore typically a good lightweight point of call for
+     * when the protocol has changed and where.
+     * <p>
+     * This will be skipped if there is a connection issue to the file page, however if the title url has changed, it
+     * will not be skipped. This accounts for when the Wiki changes the title name
+     */
+    @Test
+    public void testPacketId() {
+        WikiUtils.WikiEntry wikiEntry;
+        try {
+            wikiEntry = WikiUtils.getEntry(this);
+        } catch (RuntimeException e) {
+            Assertions.fail(e);
+            return;
+        } catch (IOException e) {
+            Assumptions.assumeFalse(true, "Cannot connect to Minecraft protocol Wiki");
+            return;
+        }
+        Assertions.assertEquals(wikiEntry.getId(), OutgoingPlayerTabUpdateAddPlayerPacket.ID);
+    }
 
     @Test
     public void testCanReadWritten() {

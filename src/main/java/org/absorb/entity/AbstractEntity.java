@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.LinkedTransferQueue;
 
-public class AbstractEntity implements Entity {
+public abstract class AbstractEntity implements Entity {
 
     private final @NotNull EntityType<?> type;
     private final Collection<EntityEffect<?>> effects = new LinkedTransferQueue<>();

@@ -3,9 +3,12 @@ package org.absorb.entity.living.human;
 import net.kyori.adventure.text.Component;
 import org.absorb.entity.EntityTypes;
 import org.absorb.entity.living.AbstractLivingEntity;
+import org.absorb.net.packet.play.outgoing.entity.metadata.types.EntityMetadataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 public class Human extends AbstractLivingEntity {
@@ -30,9 +33,13 @@ public class Human extends AbstractLivingEntity {
         return this.gamemode;
     }
 
+    public void setGamemode(@NotNull Gamemode mode) {
+        this.gamemode = mode;
+    }
+
     public boolean isFlyingAllowed() {
-        if (this.isFlyingAllowed==null) {
-            if (this.gamemode==Gamemodes.CREATIVE) {
+        if (this.isFlyingAllowed == null) {
+            if (this.gamemode == Gamemodes.CREATIVE) {
                 return true;
             }
             return false;
@@ -48,8 +55,9 @@ public class Human extends AbstractLivingEntity {
         this.isFlyingAllowed = null;
     }
 
-    public void setGamemode(@NotNull Gamemode mode) {
-        this.gamemode = mode;
+    @Override
+    public Collection<EntityMetadataType<?, ?>> getMetadataTypes() {
+        //TODO
+        return Collections.emptyList();
     }
-
 }
