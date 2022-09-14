@@ -1,4 +1,4 @@
-package org.absorb.net.packet.play.incoming.client.screen.inventory.slot.update;
+package org.absorb.net.packet.play.outgoing.client.inventory.update.slot;
 
 import org.absorb.inventory.action.InventoryAction;
 import org.absorb.inventory.slot.Slot;

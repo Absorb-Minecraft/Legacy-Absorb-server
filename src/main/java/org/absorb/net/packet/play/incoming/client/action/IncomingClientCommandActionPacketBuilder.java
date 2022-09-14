@@ -1,4 +1,4 @@
-package org.absorb.net.packet.play.outgoing.client.action;
+package org.absorb.net.packet.play.incoming.client.action;
 
 import org.absorb.net.Client;
 import org.absorb.net.data.NetSerializers;

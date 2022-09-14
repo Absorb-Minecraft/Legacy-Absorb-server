@@ -7,6 +7,7 @@ import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.handshake.IncomingHandshakePacketBuilder;
 import org.absorb.net.packet.login.start.IncomingLoginStartPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.ability.IncomingChangeAbilityPacketBuilder;
+import org.absorb.net.packet.play.incoming.client.action.IncomingClientCommandActionPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.channel.chat.IncomingMessagePacketBuilder;
 import org.absorb.net.packet.play.incoming.client.channel.command.IncomingCommandPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.channel.plugin.IncomingPluginMessagePacketBuilder;
@@ -24,7 +25,6 @@ import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.cooldo
 import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.hand.use.IncomingUseItemPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.selected.IncomingHotbarChangePacketBuilder;
 import org.absorb.net.packet.play.incoming.client.settings.IncomingClientSettingsPacketBuilder;
-import org.absorb.net.packet.play.outgoing.client.action.IncomingClientCommandActionPacketBuilder;
 import org.absorb.net.packet.status.ping.IncomingPingPacketBuilder;
 import org.absorb.net.packet.status.request.IncomingStatusRequestPacketBuilder;
 

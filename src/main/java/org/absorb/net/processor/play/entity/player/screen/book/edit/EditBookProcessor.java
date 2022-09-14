@@ -9,7 +9,7 @@ import org.absorb.inventory.slot.AbstractSlot;
 import org.absorb.inventory.slot.Slot;
 import org.absorb.net.Client;
 import org.absorb.net.packet.play.incoming.client.screen.book.edit.IncomingEditBookPacket;
-import org.absorb.net.packet.play.incoming.client.screen.inventory.slot.update.OutgoingUpdateSlotPacketBuilder;
+import org.absorb.net.packet.play.outgoing.client.inventory.update.slot.OutgoingUpdateSlotPacketBuilder;
 import org.absorb.net.processor.NetProcess;
 
 import java.io.IOException;
