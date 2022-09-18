@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-@OnWiki(state = PacketState.PLAY, urlTitle = "Plugin_Message_.28serverbound.29")
+@OnWiki(state = PacketState.PLAY, urlTitle = "Plugin_Message_.28clientbound.29")
 public class IncomingPluginMessagePacketTest {
     /**
      * This checks if the packet id is the latest on the wiki. If it isn't then this packet needs updating.

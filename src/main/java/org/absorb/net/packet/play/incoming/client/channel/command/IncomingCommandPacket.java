@@ -19,7 +19,7 @@ public class IncomingCommandPacket implements IncomingPacket {
     private final long salt;
     private final @NotNull List<Map.Entry<String, byte[]>> arguments = new LinkedList<>();
     private final boolean signedPreview;
-    public static final int ID = 0x03;
+    public static final int ID = 0x04;
 
     public IncomingCommandPacket(IncomingCommandPacketBuilder packet) {
         this.salt = packet.getSalt();

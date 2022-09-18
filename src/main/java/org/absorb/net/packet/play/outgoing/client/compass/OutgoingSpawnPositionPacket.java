@@ -16,7 +16,7 @@ public class OutgoingSpawnPositionPacket implements OutgoingPacket {
 
     private final Vector3i location;
     private final float angle;
-    public static final int ID = 0x4A;
+    public static final int ID = 0x4D;
 
     public OutgoingSpawnPositionPacket(@NotNull OutgoingSpawnPositionPacketBuilder builder) {
         this.location = builder.getLocation();

@@ -3,7 +3,6 @@ package org.absorb.net.packet.play.incoming.client.movement.basic;
 import org.absorb.net.packet.OnWiki;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.WikiUtils;
-import org.absorb.net.packet.play.incoming.client.channel.plugin.IncomingPluginMessagePacket;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -33,6 +32,6 @@ public class IncomingBasicPlayerMovementPacketTest {
             Assumptions.assumeFalse(true, "Cannot connect to Minecraft protocol Wiki");
             return;
         }
-        Assertions.assertEquals(wikiEntry.getId(), IncomingPluginMessagePacket.ID);
+        Assertions.assertEquals(wikiEntry.getId(), IncomingBasicPlayerMovementPacket.ID);
     }
 }

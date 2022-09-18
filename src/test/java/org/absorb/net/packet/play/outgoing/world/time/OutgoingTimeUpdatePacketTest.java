@@ -3,7 +3,6 @@ package org.absorb.net.packet.play.outgoing.world.time;
 import org.absorb.net.packet.OnWiki;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.WikiUtils;
-import org.absorb.net.packet.play.incoming.client.ability.IncomingChangeAbilityPacket;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -33,6 +32,6 @@ public class OutgoingTimeUpdatePacketTest {
             Assumptions.assumeFalse(true, "Cannot connect to Minecraft protocol Wiki");
             return;
         }
-        Assertions.assertEquals(wikiEntry.getId(), IncomingChangeAbilityPacket.ID);
+        Assertions.assertEquals(wikiEntry.getId(), OutgoingTimeUpdatePacket.ID);
     }
 }

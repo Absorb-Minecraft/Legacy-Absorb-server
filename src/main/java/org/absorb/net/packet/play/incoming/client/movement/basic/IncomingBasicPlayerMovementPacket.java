@@ -10,12 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class IncomingBasicPlayerMovementPacket implements IncomingPacket {
 
-    public static final int ID = 0x13;
-
     private final double x;
     private final double y;
     private final double z;
     private final boolean isOnGround;
+    public static final int ID = 0x14;
 
 
     public IncomingBasicPlayerMovementPacket(@NotNull IncomingBasicPlayerMovementPacketBuilder builder) {

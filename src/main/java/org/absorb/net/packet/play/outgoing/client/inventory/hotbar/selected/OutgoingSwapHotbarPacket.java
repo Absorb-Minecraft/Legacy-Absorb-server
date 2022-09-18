@@ -15,7 +15,7 @@ public class OutgoingSwapHotbarPacket implements OutgoingPacket {
 
     private final byte newHotbarSlot;
 
-    public static final int ID = 0x47;
+    public static final int ID = 0x4A;
 
     public OutgoingSwapHotbarPacket(OutgoingSwapHotbarPacketBuilder builder) {
         this.newHotbarSlot = builder.getNewSlot();

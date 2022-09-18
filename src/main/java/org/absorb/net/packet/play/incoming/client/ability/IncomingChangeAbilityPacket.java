@@ -13,9 +13,8 @@ import java.util.Optional;
 
 public class IncomingChangeAbilityPacket implements IncomingPacket {
 
-    public static final int ID = 0x1B;
-
     private final @Nullable PlayerAbilities ability;
+    public static final int ID = 0x1C;
 
     public IncomingChangeAbilityPacket(IncomingChangeAbilityPacketBuilder packet) {
         this.ability = packet.getAbility();

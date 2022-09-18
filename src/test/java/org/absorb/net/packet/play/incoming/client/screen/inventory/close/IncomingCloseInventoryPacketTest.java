@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-@OnWiki(state = PacketState.PLAY, urlTitle = "Close_Container_.28serverbound.29")
+@OnWiki(state = PacketState.PLAY, urlTitle = "Close_Container_.28clientbound.29")
 public class IncomingCloseInventoryPacketTest {
 
     /**

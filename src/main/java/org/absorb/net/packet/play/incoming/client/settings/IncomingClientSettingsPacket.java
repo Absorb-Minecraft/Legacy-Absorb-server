@@ -24,7 +24,7 @@ public class IncomingClientSettingsPacket implements IncomingPacket {
     private final @NotNull Hand mainHand;
     private final boolean showOnList;
 
-    public static final int ID = 0x07;
+    public static final int ID = 0x08;
 
     public IncomingClientSettingsPacket(@NotNull IncomingClientSettingsPacketBuilder builder) {
         this.locale = builder.getLocale();

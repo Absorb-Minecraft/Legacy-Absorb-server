@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-@OnWiki(urlTitle = "Set_Held_Item_.28serverbound.29", state = PacketState.PLAY)
+@OnWiki(urlTitle = "Set_Held_Item_.28clientbound.29", state = PacketState.PLAY)
 public class OutgoingSwapHotbarPacketTest {
     /**
      * This checks if the packet id is the latest on the wiki. If it isn't then this packet needs updating.

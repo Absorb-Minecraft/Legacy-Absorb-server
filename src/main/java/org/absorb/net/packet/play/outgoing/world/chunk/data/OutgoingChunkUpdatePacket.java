@@ -24,7 +24,7 @@ public class OutgoingChunkUpdatePacket implements OutgoingPacket {
     private final boolean trustLightOnEdge;
     private final @NotNull TreeSet<ChunkPart> blockData = new TreeSet<>(Comparator.comparing(ChunkPart::getLevel));
 
-    public static final int ID = 0x1F;
+    public static final int ID = 0x21;
 
     public OutgoingChunkUpdatePacket(OutgoingChunkUpdatePacketBuilder builder) {
         this.chunk = builder.getChunk();

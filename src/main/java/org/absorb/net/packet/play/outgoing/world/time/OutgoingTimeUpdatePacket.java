@@ -1,8 +1,8 @@
 package org.absorb.net.packet.play.outgoing.world.time;
 
 import org.absorb.net.Client;
-import org.absorb.net.data.NetUtils;
 import org.absorb.net.data.NetSerializers;
+import org.absorb.net.data.NetUtils;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.Packet;
@@ -13,10 +13,9 @@ import java.nio.ByteBuffer;
 
 public class OutgoingTimeUpdatePacket implements OutgoingPacket {
 
-    public static final int ID = 0x59;
-
     private final long worldAge;
     private final long timeOfDay;
+    public static final int ID = 0x5C;
 
     public OutgoingTimeUpdatePacket(OutgoingTimeUpdatePacketBuilder builder) {
         this.worldAge = builder.getWorldAge();
@@ -48,7 +47,8 @@ public class OutgoingTimeUpdatePacket implements OutgoingPacket {
 
     @Override
     public ByteBuffer toBytes(Client stream) {
-        return NetUtils.createPacket(ID, NetSerializers.LONG.write(this.worldAge),
-                NetSerializers.LONG.write(this.timeOfDay));
+        return NetUtils.createPacket(ID,
+                                     NetSerializers.LONG.write(this.worldAge),
+                                     NetSerializers.LONG.write(this.timeOfDay));
     }
 }

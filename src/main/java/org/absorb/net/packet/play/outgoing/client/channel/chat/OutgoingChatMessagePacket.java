@@ -27,7 +27,7 @@ public class OutgoingChatMessagePacket implements OutgoingPacket {
     private final long timestamp;
     private final long salt;
     private final byte[] messageSign;
-    public static final int ID = 0x30;
+    public static final int ID = 0x33;
 
 
     public OutgoingChatMessagePacket(OutgoingChatMessagePacketBuilder builder) {

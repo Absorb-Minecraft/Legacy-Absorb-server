@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
 public class OutgoingKeepAlivePacket implements OutgoingPacket {
 
     public final long generatedLong;
-    public static final int ID = 0x1E;
+    public static final int ID = 0x20;
 
     public OutgoingKeepAlivePacket(OutgoingKeepAlivePacketBuilder packet) {
         this.generatedLong = packet.getGeneratedId();

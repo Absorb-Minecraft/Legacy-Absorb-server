@@ -13,7 +13,7 @@ public class IncomingClientCommandActionPacket implements IncomingPacket {
     private final @NotNull ClientCommandAction action;
 
 
-    public static final int ID = 0x06;
+    public static final int ID = 0x07;
 
     public IncomingClientCommandActionPacket(@NotNull IncomingClientCommandActionPacketBuilder builder) {
         this.action = builder.getCommandAction();

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class IncomingCloseInventoryPacket implements IncomingPacket {
 
     private final byte inventoryId;
-    public static final int ID = 0x0B;
+    public static final int ID = 0x10;
 
     public IncomingCloseInventoryPacket(@NotNull IncomingCloseInventoryPacketBuilder builder) {
         this.inventoryId = builder.getInventoryId();

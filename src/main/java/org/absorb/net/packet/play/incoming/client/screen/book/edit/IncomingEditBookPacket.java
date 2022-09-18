@@ -19,7 +19,7 @@ public class IncomingEditBookPacket implements IncomingPacket {
     private final int slotIndex;
     private final List<String> entries = new ArrayList<>();
     private final @Nullable String title;
-    public static final int ID = 0x0d;
+    public static final int ID = 0x0E;
 
     public IncomingEditBookPacket(IncomingEditBookPacketBuilder builder) {
         this.entries.addAll(builder.getEntries());

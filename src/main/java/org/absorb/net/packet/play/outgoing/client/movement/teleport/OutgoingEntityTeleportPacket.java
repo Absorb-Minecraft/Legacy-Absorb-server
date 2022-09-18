@@ -20,7 +20,7 @@ public class OutgoingEntityTeleportPacket implements OutgoingPacket {
     private final boolean onGround;
     private final byte yaw;
     private final byte pitch;
-    public static final int ID = 0x63;
+    public static final int ID = 0x66;
 
     public OutgoingEntityTeleportPacket(OutgoingEntityTeleportPacketBuilder builder) {
         this.entityId = builder.getEntityId();

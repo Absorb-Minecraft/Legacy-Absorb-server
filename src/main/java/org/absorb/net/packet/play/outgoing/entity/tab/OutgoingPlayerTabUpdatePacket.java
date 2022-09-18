@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface OutgoingPlayerTabUpdatePacket extends OutgoingPacket {
 
-    int ID = 0x34;
+    int ID = 0x37;
 
     @Override
     default int getId() {

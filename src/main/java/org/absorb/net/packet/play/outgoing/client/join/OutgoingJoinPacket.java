@@ -49,8 +49,8 @@ public class OutgoingJoinPacket implements OutgoingPacket {
     private final @Nullable Location deathLocation;
     private final @NotNull Collection<PlayerWorldTypeView> worldTypes;
     private final @NotNull World currentWorld;
-    private final @NotNull SortedSet<Biome> biomes = new TreeSet<>(Comparator.comparing(Biome::getNetworkId));
-    public static final int ID = 0x23;
+    private final @NotNull Collection<Biome> biomes = new TreeSet<>(Comparator.comparing(Biome::getNetworkId));
+    public static final int ID = 0x25;
 
 
     public OutgoingJoinPacket(@NotNull OutgoingJoinPacketBuilder builder) {

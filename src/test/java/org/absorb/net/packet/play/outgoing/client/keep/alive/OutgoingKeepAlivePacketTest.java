@@ -4,14 +4,13 @@ package org.absorb.net.packet.play.outgoing.client.keep.alive;
 import org.absorb.net.packet.OnWiki;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.WikiUtils;
-import org.absorb.net.packet.play.incoming.client.ability.IncomingChangeAbilityPacket;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-@OnWiki(urlTitle = "Keep_Alive_.28serverbound.29", state = PacketState.PLAY)
+@OnWiki(urlTitle = "Keep_Alive_.28clientbound.29", state = PacketState.PLAY)
 public class OutgoingKeepAlivePacketTest {
 
     /**
@@ -35,6 +34,6 @@ public class OutgoingKeepAlivePacketTest {
             Assumptions.assumeFalse(true, "Cannot connect to Minecraft protocol Wiki");
             return;
         }
-        Assertions.assertEquals(wikiEntry.getId(), IncomingChangeAbilityPacket.ID);
+        Assertions.assertEquals(wikiEntry.getId(), OutgoingKeepAlivePacket.ID);
     }
 }

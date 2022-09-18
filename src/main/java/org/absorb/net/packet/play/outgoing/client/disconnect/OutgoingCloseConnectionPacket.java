@@ -14,7 +14,7 @@ public class OutgoingCloseConnectionPacket implements OutgoingPacket {
 
     private final @NotNull Component message;
     private final boolean usePlay;
-    public static final int PLAY_ID = 0x17;
+    public static final int PLAY_ID = 0x19;
     public static final int LOGIN_ID = 0x00;
 
     public OutgoingCloseConnectionPacket(OutgoingCloseConnectionPacketBuilder builder) {

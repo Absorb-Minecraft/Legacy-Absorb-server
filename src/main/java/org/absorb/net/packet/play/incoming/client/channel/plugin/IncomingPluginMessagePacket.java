@@ -12,7 +12,7 @@ public class IncomingPluginMessagePacket implements IncomingPacket {
 
     private final @NotNull AbsorbKey channel;
     private final byte[] data;
-    public static final int ID = 0x0C;
+    public static final int ID = 0x16;
 
     public IncomingPluginMessagePacket(@NotNull IncomingPluginMessagePacketBuilder builder) {
         this.channel = builder.getChannel();

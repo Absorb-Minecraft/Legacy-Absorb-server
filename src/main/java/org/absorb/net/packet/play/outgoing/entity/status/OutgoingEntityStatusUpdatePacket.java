@@ -16,7 +16,7 @@ public class OutgoingEntityStatusUpdatePacket implements OutgoingPacket {
 
     private final EntityEffect<?> effect;
     private final int entityId;
-    public static final int ID = 0x1B; //TODO -> UPDATE THIS
+    public static final int ID = 0x1A;
 
     public OutgoingEntityStatusUpdatePacket(@NotNull OutgoingEntityStatusUpdatePacketBuilder builder) {
         this.effect = builder.getEffect();

@@ -16,7 +16,7 @@ public class OutgoingSystemChatMessagePacket implements OutgoingPacket {
     private final @NotNull Component message;
     private final @NotNull MessagePosition position;
 
-    public static final int ID = 0x5F;
+    public static final int ID = 0x62;
 
     public OutgoingSystemChatMessagePacket(OutgoingSystemChatMessagePacketBuilder builder) {
         this.message = builder.getMessage();

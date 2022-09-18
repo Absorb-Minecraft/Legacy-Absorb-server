@@ -11,11 +11,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class IncomingRecipeRequestPacket implements IncomingPacket {
 
-    public static final int ID = 0x18;
-
     private final byte windowId;
     private final @NotNull AbsorbKey recipe;
     private final boolean makeAll;
+    public static final int ID = 0x1B;
 
     public IncomingRecipeRequestPacket(IncomingRecipeRequestPacketBuilder builder) {
         this.makeAll = builder.isMakeAll();
@@ -52,6 +51,9 @@ public class IncomingRecipeRequestPacket implements IncomingPacket {
 
     @Override
     public @NotNull PacketBuilder<? extends Packet> toBuilder() {
-        return new IncomingRecipeRequestPacketBuilder().setRecipe(this.recipe).setWindowId(this.windowId).setMakeAll(this.makeAll);
+        return new IncomingRecipeRequestPacketBuilder()
+                .setRecipe(this.recipe)
+                .setWindowId(this.windowId)
+                .setMakeAll(this.makeAll);
     }
 }
