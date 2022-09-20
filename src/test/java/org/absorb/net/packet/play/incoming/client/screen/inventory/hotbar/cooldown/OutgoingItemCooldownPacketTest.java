@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.coold
 import org.absorb.net.packet.OnWiki;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.WikiUtils;
+import org.absorb.net.packet.play.outgoing.client.inventory.hotbar.cooldown.OutgoingItemCooldownPacket;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 @OnWiki(state = PacketState.PLAY, urlTitle = "Set_Cooldown")
-public class IncomingItemCooldownPacketTest {
+public class OutgoingItemCooldownPacketTest {
 
     /**
      * This checks if the packet id is the latest on the wiki. If it isn't then this packet needs updating.
@@ -33,6 +34,6 @@ public class IncomingItemCooldownPacketTest {
             Assumptions.assumeFalse(true, "Cannot connect to Minecraft protocol Wiki");
             return;
         }
-        Assertions.assertEquals(wikiEntry.getId(), IncomingItemCooldownPacket.ID);
+        Assertions.assertEquals(wikiEntry.getId(), OutgoingItemCooldownPacket.ID);
     }
 }

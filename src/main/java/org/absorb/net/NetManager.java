@@ -21,7 +21,6 @@ import org.absorb.net.packet.play.incoming.client.recipe.IncomingRecipeRequestPa
 import org.absorb.net.packet.play.incoming.client.screen.book.edit.IncomingEditBookPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.screen.inventory.close.IncomingCloseInventoryPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.screen.inventory.creative.IncomingCreativeInventoryClickPacketBuilder;
-import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.cooldown.IncomingItemCooldownPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.hand.use.IncomingUseItemPacketBuilder;
 import org.absorb.net.packet.play.incoming.client.screen.inventory.hotbar.selected.IncomingHotbarChangePacketBuilder;
 import org.absorb.net.packet.play.incoming.client.settings.IncomingClientSettingsPacketBuilder;
@@ -115,7 +114,6 @@ public class NetManager {
         this.registerIncomingPacketBuilder(new IncomingMessagePacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingCreativeInventoryClickPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingCloseInventoryPacketBuilder());
-        this.registerIncomingPacketBuilder(new IncomingItemCooldownPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingHotbarChangePacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingCommandPacketBuilder());
         this.registerIncomingPacketBuilder(new IncomingClientCommandActionPacketBuilder());

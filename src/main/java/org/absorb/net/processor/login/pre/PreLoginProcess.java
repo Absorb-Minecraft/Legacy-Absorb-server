@@ -7,6 +7,7 @@ import org.absorb.entity.living.human.Gamemodes;
 import org.absorb.entity.living.human.Human;
 import org.absorb.entity.living.human.effects.HumanEffects;
 import org.absorb.entity.living.human.tab.PlayerTab;
+import org.absorb.message.type.ChatTypes;
 import org.absorb.net.Client;
 import org.absorb.net.PlayingState;
 import org.absorb.net.packet.PacketState;
@@ -25,6 +26,7 @@ import org.spongepowered.math.vector.Vector3d;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -68,6 +70,7 @@ public class PreLoginProcess implements NetProcess<IncomingLoginStartPacket> {
                 .setDebugWorld(true)
                 .setRespawnScreen(true)
                 .setGameMode(Gamemodes.CREATIVE)
+                .setChatTypes(List.of(ChatTypes.CHAT))
                 .setWorldTypes(AbsorbManagers
                                        .getRegistryManager()
                                        .getWorldTypes()

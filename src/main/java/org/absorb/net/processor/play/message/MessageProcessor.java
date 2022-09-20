@@ -27,8 +27,11 @@ public class MessageProcessor implements NetProcess<IncomingMessagePacket> {
         try {
             AbsorbManagers.getCommandManager().execute(connection, command.substring(1));
         } catch (Throwable e) {
-            new OutgoingChatMessagePacketBuilder().setPosition(MessagePosition.SYSTEM).setDisplayMessage(Component.text(
-                    "Command Failed: " + e.getMessage())).build().writeToAsync(connection);
+            new OutgoingChatMessagePacketBuilder()
+                    .setPosition(MessagePosition.SYSTEM)
+                    .setDisplayMessage(Component.text("Command Failed: " + e.getMessage()))
+                    .build()
+                    .writeToAsync(connection);
             e.printStackTrace();
         }
     }
@@ -41,8 +44,10 @@ public class MessageProcessor implements NetProcess<IncomingMessagePacket> {
 
         audience.forEach(client -> {
             new OutgoingChatMessagePacketBuilder()
+                    .setOriginalMessage(Component.text(message))
                     .setDisplayMessage(messageToSend)
                     .setFrom(connection.getUuid())
+                    .setFromDisplayName(Component.text(connection.getUsername()))
                     .setPosition(channel.getDefaultPosition())
                     .build()
                     .writeToAsync(client);

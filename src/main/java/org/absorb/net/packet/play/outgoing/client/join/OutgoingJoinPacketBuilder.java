@@ -2,6 +2,7 @@ package org.absorb.net.packet.play.outgoing.client.join;
 
 import org.absorb.entity.living.human.Gamemode;
 import org.absorb.entity.living.human.Gamemodes;
+import org.absorb.message.type.ChatType;
 import org.absorb.utils.Builder;
 import org.absorb.world.World;
 import org.absorb.world.biome.Biome;
@@ -27,6 +28,8 @@ public class OutgoingJoinPacketBuilder implements Builder<OutgoingJoinPacket> {
     private boolean isDebugWorld;
     private boolean isFlatWorld;
     private Collection<PlayerWorldTypeView> worldTypes;
+    private Collection<ChatType> chatTypes;
+
     private World currentWorld;
     private Collection<Biome> biomes;
     private Location deathLocation;
@@ -161,6 +164,15 @@ public class OutgoingJoinPacketBuilder implements Builder<OutgoingJoinPacket> {
         return this;
     }
 
+    public Collection<ChatType> getChatTypes() {
+        return this.chatTypes;
+    }
+
+    public OutgoingJoinPacketBuilder setChatTypes(Collection<ChatType> chatTypes) {
+        this.chatTypes = chatTypes;
+        return this;
+    }
+
     public World getCurrentWorld() {
         return this.currentWorld;
     }
@@ -199,6 +211,7 @@ public class OutgoingJoinPacketBuilder implements Builder<OutgoingJoinPacket> {
         this.gameMode = Gamemodes.CREATIVE;
         this.worldTypes = Collections.emptyList();
         this.biomes = Collections.emptyList();
+        this.chatTypes = Collections.emptyList();
         this.currentWorld = null;
         this.deathLocation = null;
         return this;
@@ -227,6 +240,7 @@ public class OutgoingJoinPacketBuilder implements Builder<OutgoingJoinPacket> {
         this.respawnScreen = value.isRespawnScreen();
         this.seed = value.getSeed();
         this.worldTypes.addAll(value.getWorldTypes());
+        this.chatTypes.addAll(value.getChatTypes());
         return this;
     }
 }

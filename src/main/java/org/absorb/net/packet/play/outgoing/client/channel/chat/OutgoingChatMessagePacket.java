@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -112,31 +113,50 @@ public class OutgoingChatMessagePacket implements OutgoingPacket {
 
     @Override
     public ByteBuffer toBytes(Client stream) {
-        ByteBuffer messageBuffer = NetSerializers.CHAT.write(this.message);
-        ByteBuffer positionBuffer = NetSerializers.BYTE.write((byte) this.position.getNetworkId());
-        ByteBuffer fromBuffer = NetSerializers.LONG.write(0L);
-        if (this.from != null) {
-            fromBuffer = NetSerializers.UUID.write(this.from);
-        }
-        ByteBuffer fromName = NetSerializers.CHAT.write(this.fromDisplayName);
-        ByteBuffer hasTeamName = NetSerializers.BOOLEAN.write(this.teamName != null);
-        ByteBuffer teamName = ByteBuffer.allocate(0);
-        if (this.teamName != null) {
-            teamName = NetSerializers.CHAT.write(this.teamName);
-        }
-        ByteBuffer timestamp = NetSerializers.LONG.write(this.timestamp);
-        ByteBuffer salt = NetSerializers.LONG.write(this.salt);
-        ByteBuffer sign = ByteBuffer.wrap(this.messageSign);
+        ByteBuffer signedChatMessage = NetSerializers.CHAT.write(this.originalMessage);
+        System.out.println("SignedChat: " + Arrays.toString(signedChatMessage.array()));
 
+        ByteBuffer hasUnsignedMessage = NetSerializers.BOOLEAN.write(this.message != null);
+        System.out.println("HasUnsignedChat: " + Arrays.toString(hasUnsignedMessage.array()));
+        ByteBuffer unsignedMessage = ByteBuffer.allocate(0);
+        if (this.message != null) {
+            unsignedMessage = NetSerializers.CHAT.write(this.message);
+        }
+        System.out.println("unsigned Chat: " + Arrays.toString(unsignedMessage.array()));
+        ByteBuffer messageType = NetSerializers.VAR_INTEGER.write(this.position.getNetworkId());
+        System.out.println("Message Type: " + Arrays.toString(messageType.array()));
+
+        ByteBuffer senderId = NetSerializers.UUID.write(this.from == null ? new UUID(0, 0) : this.from);
+        System.out.println("Sender Id: " + Arrays.toString(senderId.array()));
+        ByteBuffer senderName = NetSerializers.CHAT.write(this.fromDisplayName);
+        System.out.println("Sender Name: " + Arrays.toString(senderName.array()));
+        ByteBuffer senderTeamNamePresent = NetSerializers.BOOLEAN.write(this.teamName != null);
+        System.out.println("TeamName Present: " + Arrays.toString(senderTeamNamePresent.array()));
+        ByteBuffer senderTeamName = ByteBuffer.allocate(0);
+        if (this.teamName != null) {
+            senderTeamName = NetSerializers.CHAT.write(this.teamName);
+        }
+        System.out.println("Teamname: " + Arrays.toString(senderTeamName.array()));
+        ByteBuffer timestamp = NetSerializers.LONG.write(this.timestamp);
+        System.out.println("Timestamp: " + Arrays.toString(timestamp.array()));
+        ByteBuffer salt = NetSerializers.LONG.write(this.salt);
+        System.out.println("Salt: " + Arrays.toString(salt.array()));
+        ByteBuffer signLength = NetSerializers.VAR_INTEGER.write(this.messageSign.length);
+        System.out.println("SignLength: " + Arrays.toString(signLength.array()));
+        ByteBuffer sign = NetSerializers.byteArray(this.messageSign.length).write(this.messageSign);
+        System.out.println("Sign: " + Arrays.toString(sign.array()));
         return NetUtils.createPacket(ID,
-                                     messageBuffer,
-                                     positionBuffer,
-                                     fromBuffer,
-                                     fromName,
-                                     hasTeamName,
-                                     teamName,
+                                     signedChatMessage,
+                                     hasUnsignedMessage,
+                                     unsignedMessage,
+                                     messageType,
+                                     senderId,
+                                     senderName,
+                                     senderTeamNamePresent,
+                                     senderTeamName,
                                      timestamp,
                                      salt,
+                                     signLength,
                                      sign);
     }
 }

@@ -6,11 +6,11 @@ public class MCVersion {
     private final int minor;
     private final int patch;
     private final int networkName;
-    public static final MCVersion MC1_19_1 = new MCVersion(1, 19, 1, 760);
+    public static final MCVersion MC1_19_2 = new MCVersion(1, 19, 2, 760);
     public static final MCVersion MC1_19_0 = new MCVersion(1, 19, 0, 759);
     public static final MCVersion MC1_18_2 = new MCVersion(1, 18, 2, 758);
     public static final MCVersion MC1_18_0 = new MCVersion(1, 18, 0, 757);
-    public static final MCVersion CURRENT = MC1_19_0;
+    public static final MCVersion CURRENT = MC1_19_2;
 
     private MCVersion(int major, int minor, int patch, int networkId) {
         this.major = major;
