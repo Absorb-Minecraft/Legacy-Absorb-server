@@ -22,7 +22,6 @@ public class NetChat implements NetSerializer<Component> {
         if (sValue.length() >= 262144) {
             throw new RuntimeException("Component is greater then 262144 characters when string format");
         }
-        System.out.println("Writing Chat: " + sValue);
         return NetSerializers.STRING.write(sValue, false);
     }
 }

@@ -1,7 +1,6 @@
 package org.absorb.net.packet.play.outgoing.client.channel.chat.system;
 
 import net.kyori.adventure.text.Component;
-import org.absorb.message.MessagePosition;
 import org.absorb.net.packet.OutgoingPacketBuilder;
 import org.absorb.net.packet.PacketBuilder;
 import org.absorb.net.packet.PacketState;
@@ -11,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class OutgoingSystemChatMessagePacketBuilder implements OutgoingPacketBuilder<OutgoingSystemChatMessagePacket> {
 
     private Component message;
-    private MessagePosition position;
+    private boolean overlay;
 
     public Component getMessage() {
         return this.message;
@@ -22,12 +21,12 @@ public class OutgoingSystemChatMessagePacketBuilder implements OutgoingPacketBui
         return this;
     }
 
-    public MessagePosition getPosition() {
-        return this.position;
+    public boolean hasOverlay() {
+        return this.overlay;
     }
 
-    public OutgoingSystemChatMessagePacketBuilder setPosition(MessagePosition position) {
-        this.position = position;
+    public OutgoingSystemChatMessagePacketBuilder setOverlay(boolean overlay) {
+        this.overlay = overlay;
         return this;
     }
 
@@ -39,20 +38,20 @@ public class OutgoingSystemChatMessagePacketBuilder implements OutgoingPacketBui
     @Override
     public @NotNull Builder<OutgoingSystemChatMessagePacket> from(OutgoingSystemChatMessagePacket value) {
         this.message = value.getMessage();
-        this.position = value.getPosition();
+        this.overlay = value.hasOverlay();
         return this;
     }
 
     @Override
     public PacketBuilder<OutgoingSystemChatMessagePacket> reset() {
         this.message = null;
-        this.position = null;
+        this.overlay = false;
         return this;
     }
 
     @Override
     public PacketBuilder<OutgoingSystemChatMessagePacket> copy() {
-        return new OutgoingSystemChatMessagePacketBuilder().setMessage(this.message).setPosition(this.position);
+        return new OutgoingSystemChatMessagePacketBuilder().setMessage(this.message).setOverlay(this.overlay);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.absorb.net.packet.play.outgoing.client.channel.chat;
 import org.absorb.net.packet.OnWiki;
 import org.absorb.net.packet.PacketState;
 import org.absorb.net.packet.WikiUtils;
+import org.absorb.net.packet.play.outgoing.client.channel.chat.message.OutgoingChatMessagePacket;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;

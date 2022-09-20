@@ -1,4 +1,4 @@
-package org.absorb.net.packet.play.outgoing.client.channel.chat;
+package org.absorb.net.packet.play.outgoing.client.channel.chat.message;
 
 import net.kyori.adventure.text.Component;
 import org.absorb.message.MessagePosition;
