@@ -17,7 +17,7 @@ public class OutgoingAbilityPacket implements OutgoingPacket {
     private final boolean isInstantBreak;
     private final float flyingSpeed;
     private final float fieldOfView;
-    public static final int ID = 0x2F;
+    public static final int ID = 0x31;
 
     public OutgoingAbilityPacket(@NotNull OutgoingAbilityPacketBuilder builder) {
         this.isInstantBreak = builder.isInstantBreak();

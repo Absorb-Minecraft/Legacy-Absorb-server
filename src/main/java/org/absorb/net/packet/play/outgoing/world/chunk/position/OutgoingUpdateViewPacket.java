@@ -15,7 +15,7 @@ public class OutgoingUpdateViewPacket implements OutgoingPacket {
 
     private final int chunkX;
     private final int chunkZ;
-    public static final int ID = 0x48;
+    public static final int ID = 0x4B;
 
     public OutgoingUpdateViewPacket(OutgoingUpdateViewPacketBuilder builder) {
         this.chunkX = builder.getChunkX();

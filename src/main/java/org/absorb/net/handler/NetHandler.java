@@ -51,7 +51,12 @@ public class NetHandler {
 
                     if (this.data.length > length) {
                         this.data = new byte[0];
-                        System.err.println("Cleared cache");
+                        try {
+                            System.err.println("Cleared cache for " + this.netInfo.getUsername());
+                        } catch (RuntimeException e) {
+                            System.err.println(
+                                    "Cleared cache for " + this.netInfo.getSocket().getInetAddress().getHostAddress());
+                        }
                     }
                     int b = is.read();
                     if (b == -1) {
@@ -79,6 +84,10 @@ public class NetHandler {
                         break;
                     }*/
                     } catch (Throwable e) {
+                        System.err.println("|---|Network read error|---|");
+                        System.err.println("Player: " + this.netInfo.getUsername());
+                        System.err.println("Data: [" + Arrays.toString(this.data) + "]");
+                        System.err.println("|---|                  |---|");
                         e.printStackTrace();
                         this.netInfo.disconnect(Component.text("Server side error occurred: " + e.getMessage()));
                     }
@@ -144,11 +153,24 @@ public class NetHandler {
             }
             byte[] packetData = Arrays.copyOfRange(this.data, packetId.endingPosition(), this.data.length);
 
-            org.absorb.net.packet.IncomingPacket packet = builder
-                    .get()
-                    .from(this.netInfo, ByteBuffer.wrap(packetData))
-                    .build();
-            packet.getProcess().onProcess(this.netInfo, packet);
+            org.absorb.net.packet.IncomingPacket packet = null;
+            try {
+                packet = builder.get().from(this.netInfo, ByteBuffer.wrap(packetData)).build();
+            } catch (Throwable e) {
+                System.err.println("|---|Network convert error|---|");
+                System.err.println("Player: " + this.netInfo.getUsername());
+                System.err.println(
+                        "Incoming Net Builder: " + builder.map(b -> b.getClass().getSimpleName()).orElse("Unknown"));
+                System.err.println("Packet Id: " + builder.map(b -> Integer.toHexString(b.getId())).orElse("Unknown"));
+                System.err.println("Packet State: " + builder.map(b -> b.getState().name()).orElse("Unknown"));
+                e.printStackTrace();
+                return false;
+            }
+            try {
+                packet.getProcess().onProcess(this.netInfo, packet);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
             return true;
         }
     }

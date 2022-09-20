@@ -16,6 +16,10 @@ public class NetKey implements NetSerializer<AbsorbKey> {
 
     @Override
     public ByteBuffer write(AbsorbKey value) {
-        return NetSerializers.STRING.write(value.asFormatted());
+        String formatted = value.asFormatted();
+        if (formatted.length() >= 32767) {
+            throw new RuntimeException("Key is greater then 32767 characters");
+        }
+        return NetSerializers.STRING.write(formatted, false);
     }
 }

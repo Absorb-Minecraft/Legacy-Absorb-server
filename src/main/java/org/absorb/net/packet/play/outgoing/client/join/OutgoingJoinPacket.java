@@ -8,6 +8,7 @@ import org.absorb.entity.living.human.Gamemode;
 import org.absorb.files.nbt.compound.NBTCompoundBuilder;
 import org.absorb.files.nbt.compound.NBTCompoundEntry;
 import org.absorb.files.nbt.compound.NBTCompoundKeys;
+import org.absorb.message.type.ChatType;
 import org.absorb.net.Client;
 import org.absorb.net.data.NetList;
 import org.absorb.net.data.NetSerializers;
@@ -28,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.stream.Collectors;
 
 public class OutgoingJoinPacket implements OutgoingPacket {
@@ -49,8 +51,9 @@ public class OutgoingJoinPacket implements OutgoingPacket {
     private final @Nullable Location deathLocation;
     private final @NotNull Collection<PlayerWorldTypeView> worldTypes;
     private final @NotNull World currentWorld;
-    private final @NotNull SortedSet<Biome> biomes = new TreeSet<>(Comparator.comparing(Biome::getNetworkId));
-    public static final int ID = 0x23;
+    private final @NotNull Collection<ChatType> chatTypes = new LinkedTransferQueue<>();
+    private final @NotNull Collection<Biome> biomes = new TreeSet<>(Comparator.comparing(Biome::getNetworkId));
+    public static final int ID = 0x25;
 
 
     public OutgoingJoinPacket(@NotNull OutgoingJoinPacketBuilder builder) {
@@ -79,6 +82,10 @@ public class OutgoingJoinPacket implements OutgoingPacket {
         if (this.gameMode == null) {
             throw new IllegalArgumentException("Gamemode must be specified");
         }
+    }
+
+    public @NotNull Collection<ChatType> getChatTypes() {
+        return this.chatTypes;
     }
 
     public @NotNull Optional<Location> getDeathLocation() {
@@ -193,7 +200,7 @@ public class OutgoingJoinPacket implements OutgoingPacket {
                 .build();
 
         NBTList chatType = new NBTList(TagType.COMPOUND);
-        //chatType.addAll(AbsorbManagers.getMessageManager().getAllChatTypes());
+        chatType.addAll(this.chatTypes.stream().map(ChatType::asCompound).toList());
 
         NBTCompound chatTypes = new NBTCompoundBuilder()
                 .addAll(NBTCompoundKeys.COMPOUND_TYPE.withValue("minecraft:chat_type"),

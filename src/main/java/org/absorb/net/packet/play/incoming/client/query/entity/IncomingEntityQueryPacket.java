@@ -16,7 +16,7 @@ public class IncomingEntityQueryPacket implements IncomingPacket {
 
     private final int entityId;
 
-    public static final int ID = 0x0E;
+    public static final int ID = 0x0F;
 
     public IncomingEntityQueryPacket(IncomingEntityQueryPacketBuilder builder) {
         this.entityId = builder.getEntityId();

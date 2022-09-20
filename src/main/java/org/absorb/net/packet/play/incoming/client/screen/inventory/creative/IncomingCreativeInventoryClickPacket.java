@@ -13,7 +13,7 @@ public class IncomingCreativeInventoryClickPacket implements IncomingPacket {
 
     private final Slot slot;
     private final short inventorySlot;
-    public static final int ID = 0x2A;
+    public static final int ID = 0x2B;
 
     public IncomingCreativeInventoryClickPacket(IncomingCreativeInventoryClickPacketBuilder builder) {
         this.slot = builder.getItem();

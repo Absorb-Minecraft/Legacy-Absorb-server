@@ -13,8 +13,6 @@ import java.nio.ByteBuffer;
 
 public class OutgoingPlayerMovementPacket implements OutgoingPacket {
 
-    public static final int ID = 0x36;
-
     private final double deltaX;
     private final double deltaY;
     private final double deltaZ;
@@ -22,6 +20,7 @@ public class OutgoingPlayerMovementPacket implements OutgoingPacket {
     private final float pitch;
     private final int teleportId;
     private final boolean dismount;
+    public static final int ID = 0x39;
 
     public OutgoingPlayerMovementPacket(@NotNull OutgoingPlayerMovementPacketBuilder builder) {
         this.deltaX = builder.getX();

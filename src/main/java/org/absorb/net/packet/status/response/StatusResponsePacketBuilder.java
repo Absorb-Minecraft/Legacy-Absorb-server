@@ -17,6 +17,26 @@ public class StatusResponsePacketBuilder implements OutgoingPacketBuilder<Status
     private Component description;
     private int maxPlayers;
     private int currentPlayers;
+    private boolean previewChat;
+    private boolean enforceSecureChat;
+
+    public boolean isPreviewChat() {
+        return this.previewChat;
+    }
+
+    public StatusResponsePacketBuilder setPreviewChat(boolean previewChat) {
+        this.previewChat = previewChat;
+        return this;
+    }
+
+    public boolean isEnforceSecureChat() {
+        return this.enforceSecureChat;
+    }
+
+    public StatusResponsePacketBuilder setEnforceSecureChat(boolean enforceSecureChat) {
+        this.enforceSecureChat = enforceSecureChat;
+        return this;
+    }
 
     public String getVersionName() {
         return this.versionName;

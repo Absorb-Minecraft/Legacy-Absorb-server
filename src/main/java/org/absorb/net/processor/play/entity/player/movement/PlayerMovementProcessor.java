@@ -16,22 +16,26 @@ import java.util.HashSet;
 public class PlayerMovementProcessor implements NetProcess<IncomingPlayerMovementPacket> {
     @Override
     public void onProcess(Client connection, IncomingPlayerMovementPacket packet) throws IOException {
-        if (connection.getPlayingState()==PlayingState.LOGIN_PRE_DATA) {
+        if (connection.getPlayingState() == PlayingState.LOGIN_PRE_DATA) {
             connection.setPlayingState(PlayingState.LOGIN_END_DATA);
             int id = connection.newTeleportId();
             connection.registerTeleportId(id);
-            new OutgoingPlayerMovementPacketBuilder().setPosition(connection.getEntity().getPosition()).setTeleportId(id).build().writeTo(connection);
+            new OutgoingPlayerMovementPacketBuilder()
+                    .setPosition(connection.getEntity().getPosition())
+                    .setTeleportId(id)
+                    .build()
+                    .writeTo(connection);
             return;
         }
-        if (connection.getPlayingState()==PlayingState.AWAITING) {
+        if (connection.getPlayingState() == PlayingState.AWAITING) {
             return;
         }
-        if (connection.getPlayingState()==PlayingState.LOGIN_END_DATA) {
+        if (connection.getPlayingState() == PlayingState.LOGIN_END_DATA) {
             connection.setPlayingState(PlayingState.PLAYING);
             connection.getEntity().setPosition(packet.getPosition());
             return;
         }
-        if (connection.getPlayingState()!=PlayingState.PLAYING) {
+        if (connection.getPlayingState() != PlayingState.PLAYING) {
             throw new IOException("Unknown playing state of " + connection.getPlayingState().name());
         }
 

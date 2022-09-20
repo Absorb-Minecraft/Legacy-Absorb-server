@@ -15,7 +15,7 @@ public class IncomingMessagePacket implements IncomingPacket {
     private final byte[] sign;
     private final boolean preview;
     private final long salt;
-    public static final int ID = 0x04;
+    public static final int ID = 0x05;
 
     public IncomingMessagePacket(IncomingMessagePacketBuilder builder) {
         this.message = builder.getMessage();

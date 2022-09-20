@@ -23,6 +23,7 @@ import java.util.zip.ZipEntry;
 
 public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
 
+    private boolean disableCanLoadChecks;
     public static final SimpleNode<String> NAME = SimpleNode.asString(true, "name");
     public static final SimpleNode<String> ID = SimpleNode.asString(true, "id");
     public static final SimpleNode<Integer> MAJOR_VERSION = SimpleNode.asInteger(true, "version", "major");
@@ -30,10 +31,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
     public static final SimpleNode<Integer> PATCH_VERSION = SimpleNode.asInteger(true, "version", "patch");
     public static final SimpleNode<String> MAIN_CLASS = SimpleNode.asString(true, "entry", "main");
     public static final SimpleNode<String> DESCRIPTION = SimpleNode.asString(false, "info", "description");
-
     public static final File MODULE_FOLDER = new File("Modules");
-
-    private boolean disableCanLoadChecks;
 
     public boolean canLoadChecksEnabled() {
         return !this.disableCanLoadChecks;
@@ -49,7 +47,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
 
     public @NotNull Collection<File> getCanLoad(@NotNull File folder) {
         File[] files = folder.listFiles();
-        if (files==null) {
+        if (files == null) {
             return Collections.emptyList();
         }
         if (this.disableCanLoadChecks) {
@@ -80,7 +78,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
         try {
             node = JacksonConfigurationLoader.builder().buildAndLoadString(json);
             String projectName = NAME.getValue(node).orElse(null);
-            if (projectName==null) {
+            if (projectName == null) {
                 try {
                     file.close();
                 } catch (IOException e) {
@@ -89,7 +87,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
                 return false;
             }
             String projectId = ID.getValue(node).orElse(null);
-            if (projectId==null) {
+            if (projectId == null) {
                 try {
                     file.close();
                 } catch (IOException e) {
@@ -98,7 +96,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
                 return false;
             }
             String mainClass = MAIN_CLASS.getValue(node).orElse(null);
-            if (mainClass==null) {
+            if (mainClass == null) {
                 try {
                     file.close();
                 } catch (IOException e) {
@@ -107,7 +105,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
                 return false;
             }
             Integer versionMajor = MAJOR_VERSION.getValue(node).orElse(null);
-            if (versionMajor==null) {
+            if (versionMajor == null) {
                 try {
                     file.close();
                 } catch (IOException e) {
@@ -116,7 +114,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
                 return false;
             }
             Integer versionMinor = MINOR_VERSION.getValue(node).orElse(null);
-            if (versionMinor==null) {
+            if (versionMinor == null) {
                 try {
                     file.close();
                 } catch (IOException e) {
@@ -125,7 +123,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
                 return false;
             }
             Integer versionPatch = PATCH_VERSION.getValue(node).orElse(null);
-            if (versionPatch==null) {
+            if (versionPatch == null) {
                 try {
                     file.close();
                 } catch (IOException e) {
@@ -171,36 +169,36 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
         ConfigurationNode node;
         node = JacksonConfigurationLoader.builder().buildAndLoadString(json);
         String projectName = NAME.getValue(node).orElse(null);
-        if (projectName==null) {
+        if (projectName == null) {
             file.close();
             throw new IOException("Project Name missing");
         }
         String projectId = ID.getValue(node).orElse(null);
-        if (projectId==null) {
+        if (projectId == null) {
             file.close();
 
             throw new IOException("Project ID missing");
         }
         String mainClass = MAIN_CLASS.getValue(node).orElse(null);
-        if (mainClass==null) {
+        if (mainClass == null) {
             file.close();
 
             throw new IOException("Main class missing");
         }
         Integer versionMajor = MAJOR_VERSION.getValue(node).orElse(null);
-        if (versionMajor==null) {
+        if (versionMajor == null) {
             file.close();
 
             throw new IOException("Major version missing");
         }
         Integer versionMinor = MINOR_VERSION.getValue(node).orElse(null);
-        if (versionMinor==null) {
+        if (versionMinor == null) {
             file.close();
 
             throw new IOException("Minor version missing");
         }
         Integer versionPatch = PATCH_VERSION.getValue(node).orElse(null);
-        if (versionPatch==null) {
+        if (versionPatch == null) {
             file.close();
 
             throw new IOException("Patch version missing");
@@ -234,21 +232,22 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
                 continue;
             }
             Class<?> clazz;
-            String className = current.getName().replaceAll("/", ".").substring(0,
-                    current.getName().length() - 6);
+            String className = current.getName().replaceAll("/", ".").substring(0, current.getName().length() - 6);
+            if (className.equals("module-info")) {
+                continue;
+            }
             try {
                 clazz = urlLoader.loadClass(className);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            } catch (ClassNotFoundException | NoClassDefFoundError e) {
                 continue;
             }
             if (className.equals(module.getMainClass())) {
                 mainClass = clazz;
             }
         }
-        if (mainClass==null) {
-            throw new IOException("Could not find Main Class, jar was loaded for library use however this is not " +
-                    "a supported way");
+        if (mainClass == null) {
+            throw new IOException("Could not find Main Class, jar was loaded for library use however this is not "
+                                          + "a supported way");
         }
         Object mainInstance;
         try {
@@ -262,6 +261,8 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
             throw new IOException("Main class should have a public constructor", e);
         }
         AbsorbManagers.getEventManager().registerAll(mainInstance);
+
+        jar.close();
 
         AbsorbManagers.getEventManager().callAsynced(new ConstructModuleEvent(module, this));
     }

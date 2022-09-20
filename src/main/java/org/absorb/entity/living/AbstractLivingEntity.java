@@ -4,7 +4,7 @@ import org.absorb.entity.AbstractEntity;
 import org.absorb.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
-public class AbstractLivingEntity extends AbstractEntity implements LivingEntity {
+public abstract class AbstractLivingEntity extends AbstractEntity implements LivingEntity {
 
     private float walkingSpeed;
     private float flyingSpeed;

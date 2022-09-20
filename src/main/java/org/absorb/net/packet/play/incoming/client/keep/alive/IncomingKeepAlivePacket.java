@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class IncomingKeepAlivePacket implements IncomingPacket {
 
     private final long keepAliveId;
-    public static final int ID = 0X11;
+    public static final int ID = 0x12;
 
     public IncomingKeepAlivePacket(IncomingKeepAlivePacketBuilder builder) {
         this.keepAliveId = builder.getKeepAliveId();

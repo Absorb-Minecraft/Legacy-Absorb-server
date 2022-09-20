@@ -19,9 +19,8 @@ import java.util.HashSet;
 
 public class OutgoingRegisterTagPacket implements OutgoingPacket {
 
-    public static final int ID = 0x68;
-
     private final Collection<Tag<? extends NetworkIdentifiable>> tags = new HashSet<>();
+    public static final int ID = 0x6B;
 
     public OutgoingRegisterTagPacket(OutgoingRegisterTagPacketBuilder builder) {
         this.tags.addAll(builder.getTags());

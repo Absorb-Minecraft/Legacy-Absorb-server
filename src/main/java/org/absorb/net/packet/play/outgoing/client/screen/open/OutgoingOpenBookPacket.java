@@ -15,7 +15,7 @@ import java.nio.ByteBuffer;
 public class OutgoingOpenBookPacket implements OutgoingPacket {
 
     private final Hand hand;
-    public static final int ID = 0x2A;
+    public static final int ID = 0x2C;
 
     public OutgoingOpenBookPacket(OutgoingOpenBookPacketBuilder builder) {
         this.hand = builder.getHand();

@@ -24,7 +24,7 @@ import java.util.Set;
 public class OutgoingRegisterRecipePacket implements OutgoingPacket {
 
     private final Set<Recipe> recipes = new HashSet<>();
-    public static final int ID = 0x67;
+    public static final int ID = 0x6A;
 
     public OutgoingRegisterRecipePacket(@NotNull OutgoingRegisterRecipePacketBuilder builder) {
         this.recipes.addAll(builder.getRecipes());

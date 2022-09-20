@@ -13,7 +13,7 @@ public class IncomingUseItemPacket implements IncomingPacket {
 
     private final Hand hand;
     private final int sequence;
-    public static final int ID = 0x31;
+    public static final int ID = 0x32;
 
     public IncomingUseItemPacket(IncomingUseItemPacketBuilder builder) {
         this.hand = builder.getHand();

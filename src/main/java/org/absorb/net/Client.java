@@ -15,7 +15,7 @@ import org.absorb.inventory.Inventory;
 import org.absorb.inventory.entity.client.ClientInventory;
 import org.absorb.message.MessagePosition;
 import org.absorb.net.packet.PacketState;
-import org.absorb.net.packet.play.outgoing.client.channel.chat.OutgoingChatMessagePacketBuilder;
+import org.absorb.net.packet.play.outgoing.client.channel.chat.message.OutgoingChatMessagePacketBuilder;
 import org.absorb.net.packet.play.outgoing.client.disconnect.OutgoingCloseConnectionPacketBuilder;
 import org.absorb.net.packet.play.outgoing.world.chunk.data.OutgoingChunkUpdatePacketBuilder;
 import org.absorb.threaded.SimpleDataPoint;

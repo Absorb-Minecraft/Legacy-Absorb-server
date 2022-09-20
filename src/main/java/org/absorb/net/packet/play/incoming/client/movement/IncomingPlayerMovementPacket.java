@@ -11,14 +11,13 @@ import org.spongepowered.math.vector.Vector3d;
 
 public class IncomingPlayerMovementPacket implements IncomingPacket {
 
-    public static final int ID = 0x12;
-
     private final double x;
     private final double y;
     private final double z;
     private final float yaw;
     private final float pitch;
     private final boolean isOnGround;
+    public static final int ID = 0x15;
 
     public IncomingPlayerMovementPacket(@NotNull IncomingPlayerMovementPacketBuilder packet) {
         this.x = packet.getX();
@@ -74,6 +73,12 @@ public class IncomingPlayerMovementPacket implements IncomingPacket {
 
     @Override
     public @NotNull PacketBuilder<? extends Packet> toBuilder() {
-        return new IncomingPlayerMovementPacketBuilder().setPitch(this.pitch).setYaw(this.yaw).setX(this.x).setY(this.y).setZ(this.z).setOnGround(this.isOnGround);
+        return new IncomingPlayerMovementPacketBuilder()
+                .setPitch(this.pitch)
+                .setYaw(this.yaw)
+                .setX(this.x)
+                .setY(this.y)
+                .setZ(this.z)
+                .setOnGround(this.isOnGround);
     }
 }

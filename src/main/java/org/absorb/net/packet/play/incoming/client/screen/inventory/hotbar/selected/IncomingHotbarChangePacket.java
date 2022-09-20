@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class IncomingHotbarChangePacket implements IncomingPacket {
 
     private final short newPosition;
-    public static final int ID = 0x27;
+    public static final int ID = 0x1A;
 
     public IncomingHotbarChangePacket(IncomingHotbarChangePacketBuilder builder) {
         this.newPosition = builder.getNewPosition();

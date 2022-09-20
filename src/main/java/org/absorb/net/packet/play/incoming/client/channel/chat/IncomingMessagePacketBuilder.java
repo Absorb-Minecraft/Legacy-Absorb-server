@@ -10,6 +10,7 @@ import org.absorb.utils.Builder;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class IncomingMessagePacketBuilder implements IncomingPacketBuilder<IncomingMessagePacket> {
 
@@ -67,6 +68,7 @@ public class IncomingMessagePacketBuilder implements IncomingPacketBuilder<Incom
 
     @Override
     public @NotNull PacketBuilder<IncomingMessagePacket> from(@NotNull Client client, @NotNull ByteBuffer packetBytes) {
+        System.out.println("Incoming Message");
         NetEntryData<String> message = NetSerializers.STRING.read(0, packetBytes);
         NetEntryData<Long> timestamp = NetSerializers.LONG.read(message.endingPosition(), packetBytes);
         NetEntryData<Long> salt = NetSerializers.LONG.read(timestamp.endingPosition(), packetBytes);
@@ -81,6 +83,15 @@ public class IncomingMessagePacketBuilder implements IncomingPacketBuilder<Incom
         this.salt = salt.value();
         this.sign = sign.value();
         this.preview = preview.value();
+
+        System.out.println("Message: " + this.message);
+        System.out.println("Timestamp: " + this.timestamp);
+        System.out.println("Salt: " + this.salt);
+        System.out.println("Sign Length: " + this.sign.length);
+        System.out.println("Sign: " + Arrays.toString(this.sign));
+        System.out.println("Sign Preview: " + this.preview);
+
+        System.out.println("End of data");
         return this;
     }
 

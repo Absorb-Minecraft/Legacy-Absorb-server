@@ -10,11 +10,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class IncomingRotationPacket implements IncomingPacket {
 
-    public static final int ID = 0x15;
-
-    private float yaw;
-    private float pitch;
-    private boolean isOnGround;
+    private final float yaw;
+    private final float pitch;
+    private final boolean isOnGround;
+    public static final int ID = 0x16;
 
     public IncomingRotationPacket(IncomingRotationPacketBuilder builder) {
         this.isOnGround = builder.isOnGround();
