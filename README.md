@@ -18,7 +18,7 @@ you is a link to a survey whereby it's completely optional to fill it out
 
 ## Current Target
 
-- Minecraft: 1.19.0
+- Minecraft: 1.19.2
 - Java 16
 
 ## Download
