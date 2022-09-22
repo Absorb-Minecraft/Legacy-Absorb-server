@@ -7,6 +7,7 @@ import org.absorb.net.data.NetSerializers;
 import org.absorb.net.data.NetUtils;
 import org.absorb.net.packet.OutgoingPacket;
 import org.absorb.net.packet.PacketState;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.jackson.FieldValueSeparatorStyle;
@@ -75,7 +76,7 @@ public class StatusResponsePacket implements OutgoingPacket {
     }
 
     @Override
-    public StatusResponsePacketBuilder toBuilder() {
+    public @NotNull StatusResponsePacketBuilder toBuilder() {
         return new StatusResponsePacketBuilder();
     }
 

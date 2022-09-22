@@ -13,7 +13,7 @@ public class CommandProcessor implements NetProcess<IncomingCommandPacket> {
     @Override
     public void onProcess(Client connection, IncomingCommandPacket packet) throws IOException {
         try {
-            AbsorbManagers.getCommandManager().execute(connection, packet.getCommand().substring(1));
+            AbsorbManagers.getCommandManager().execute(connection, packet.getCommand());
         } catch (Throwable e) {
             new OutgoingSystemChatMessagePacketBuilder()
                     .setMessage(Component.text("Command Failed: " + e.getMessage()))

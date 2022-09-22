@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class NetManager {
 
@@ -71,6 +72,10 @@ public class NetManager {
 
     public void register(Client info) throws IOException {
         this.info.put(info.getAddress(), info);
+    }
+
+    public Collection<IncomingPacketBuilder<? extends IncomingPacket>> getAllIncomingPacketBuilders() {
+        return this.packetBuilders.values().parallelStream().map(Supplier::get).collect(Collectors.toUnmodifiableSet());
     }
 
     public Optional<IncomingPacketBuilder<? extends IncomingPacket>> getIncomingPacketBuilder(int networkId,

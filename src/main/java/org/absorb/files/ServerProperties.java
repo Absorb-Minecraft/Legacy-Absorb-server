@@ -4,6 +4,7 @@ import org.absorb.files.json.DefaultNode;
 import org.absorb.files.json.SimpleDefaultNode;
 import org.absorb.files.json.SimpleNode;
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -39,6 +40,13 @@ public class ServerProperties {
         }
         node.set(value.getHostAddress());
     }, "Network", "IPAddress");
+
+    private final SimpleDefaultNode<Boolean> chatPreview = SimpleDefaultNode.asBoolean(
+            "Enables server wide chat preview. When an user starts to type a message, they "
+                    + "will see what it looks like before it is sent",
+            true,
+            "Chat",
+            "Preview");
 
     private final DefaultNode<Integer> port = SimpleDefaultNode.asInt(
             "This must be above the number 0 and a whole number. The port number allows you to run multiple "
@@ -126,6 +134,27 @@ public class ServerProperties {
             return this.ipAddress.getValue(this.rootNode);
         } catch (SerializationException e) {
             return Optional.empty();
+        }
+    }
+
+    public boolean isChatPreviewEnabled() {
+        return this.chatPreview.getValueOrElse(this.rootNode);
+    }
+
+    public void setChatPreviewEnabled(Boolean value) {
+        try {
+            if (value == null) {
+                this.chatPreview.setDefault(this.rootNode);
+                return;
+            }
+            this.chatPreview.setValue(this.rootNode, value);
+        } catch (SerializationException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            this.loader.save(this.rootNode);
+        } catch (ConfigurateException e) {
+            throw new RuntimeException(e);
         }
     }
 

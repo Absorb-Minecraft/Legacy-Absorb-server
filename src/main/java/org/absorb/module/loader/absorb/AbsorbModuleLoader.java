@@ -265,5 +265,7 @@ public class AbsorbModuleLoader implements FileModuleLoader<AbsorbModule> {
         jar.close();
 
         AbsorbManagers.getEventManager().callAsynced(new ConstructModuleEvent(module, this));
+
+        AbsorbManagers.getModuleManager().registerModule(module);
     }
 }

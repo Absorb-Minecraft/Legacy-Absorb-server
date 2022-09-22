@@ -16,6 +16,6 @@ public class StatusRequestProcess implements NetProcess<IncomingStatusRequestPac
     public void onProcess(Client info, IncomingStatusRequestPacket packet) throws IOException {
         ClientPingEvent event = new ClientPingEventBuilder().setClient(info).build();
         event = AbsorbManagers.getEventManager().callAwaiting(event);
-        new StatusResponsePacketBuilder().from(event).build().writeToAsync(info);
+        new StatusResponsePacketBuilder().from(event).setPreviewChat(true).build().writeToAsync(info);
     }
 }
