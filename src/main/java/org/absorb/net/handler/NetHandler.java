@@ -61,9 +61,10 @@ public class NetHandler {
                     int b = is.read();
                     if (b == -1) {
                         if (this.data.length != 0) {
-                            this.addByte(0);
+                            //this.addByte(0);
+                        } else {
+                            continue;
                         }
-                        continue;
                     }
                     this.netInfo.setLastPacketSentTime(LocalDateTime.now());
                     this.addByte(b);
@@ -135,7 +136,7 @@ public class NetHandler {
             this.data = newData;
         }
 
-        private boolean processPacket() throws IOException {
+        private boolean processPacket() {
             ByteBuffer data = ByteBuffer.wrap(this.data);
             NetEntryData<Integer> lengthEntry = NetSerializers.VAR_INTEGER.read(0, data);
             NetEntryData<Integer> packetId = NetSerializers.VAR_INTEGER.read(lengthEntry.endingPosition(), data);
@@ -148,6 +149,8 @@ public class NetHandler {
                         "User found to have sent a unknown packet, potentially cheating. Kicking to be safe(Id: "
                                 + packetId.value() + "(" + Integer.toHexString(packetId.value()) + ") State: "
                                 + this.netInfo.getState().name() + ")");
+                System.err.println("Length: " + lengthEntry.value());
+                System.err.println("Bytes: " + Arrays.toString(this.data));
                 //this.netInfo.getSocket().close();
                 return false;
             }
@@ -163,6 +166,8 @@ public class NetHandler {
                         "Incoming Net Builder: " + builder.map(b -> b.getClass().getSimpleName()).orElse("Unknown"));
                 System.err.println("Packet Id: " + builder.map(b -> Integer.toHexString(b.getId())).orElse("Unknown"));
                 System.err.println("Packet State: " + builder.map(b -> b.getState().name()).orElse("Unknown"));
+                System.err.println("Length: " + lengthEntry.value());
+                System.err.println("Bytes: " + Arrays.toString(this.data));
                 e.printStackTrace();
                 return false;
             }

@@ -1,6 +1,8 @@
 package org.absorb.command;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.absorb.AbsorbManagers;
 import org.absorb.Main;
@@ -10,41 +12,84 @@ import org.absorb.command.node.CommandNodeBuilder;
 import org.absorb.command.node.LiteralCommandNode;
 import org.absorb.command.node.executor.node.result.CommandNodeResult;
 import org.absorb.command.node.executor.node.result.ValueNodeResult;
+import org.absorb.command.node.parser.BooleanCommandParser;
 import org.absorb.command.node.parser.StringCommandParser;
 import org.absorb.command.node.parser.properties.StringTypeProperty;
-import org.absorb.entity.living.human.Hand;
 import org.absorb.module.Module;
-import org.absorb.net.PlayingState;
-import org.absorb.net.packet.play.outgoing.client.screen.open.OutgoingOpenBookPacketBuilder;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public interface Commands {
-
-    Supplier<LiteralCommandNode> TEMP = () -> new CommandNodeBuilder<LiteralCommandNode>()
-            .setName("temp")
-            .setExecutable(context -> AbsorbManagers
-                    .getNetManager()
-                    .getClients()
-                    .parallelStream()
-                    .filter(client -> client.getPlayingState() == PlayingState.PLAYING)
-                    .forEach(client -> {
-                        System.out.println("temp run for client: " + client.getUsername());
-                        new OutgoingOpenBookPacketBuilder().setHand(Hand.RIGHT).build().writeToAsync(client);
-                    }))
-            .setParent(AbsorbManagers.getCommandManager().getRootCommand())
-            .build();
-
+    
     Supplier<LiteralCommandNode> ABSORB = () -> {
         LiteralCommandNode absorbLiteral = new CommandNodeBuilder<LiteralCommandNode>()
                 .setName("absorb")
                 .setParent(AbsorbManagers.getCommandManager().getRootCommand())
                 .build();
+        LiteralCommandNode modules = new CommandNodeBuilder<LiteralCommandNode>()
+                .setName("modules")
+                .setParent(absorbLiteral)
+                .build();
+        new CommandNodeBuilder<LiteralCommandNode>().setName("view").setParent(modules).setExecutable((context) -> {
+            List<TextComponent> textComponent = AbsorbManagers
+                    .getModuleManager()
+                    .getModules()
+                    .parallelStream()
+                    .map(module -> Component
+                            .text(module.getDisplayName() == null ? module.getKeyName() : module.getDisplayName())
+                            .color(NamedTextColor.GREEN)
+                            .append(Component
+                                            .text(" (" + module.getVersion().asString() + ")")
+                                            .color(NamedTextColor.AQUA)))
+                    .toList();
+            Component modulesText = Component.join(JoinConfiguration.builder().separator(Component.text(", ")).build(),
+                                                   textComponent);
+            context.getSender().sendMessage(Component.text("|---|Modules (" + textComponent.size() + ") |---|"));
+            context.getSender().sendMessage(modulesText);
+        }).build();
+
+
+        LiteralCommandNode properties = new CommandNodeBuilder<LiteralCommandNode>()
+                .setName("properties")
+                .setParent(absorbLiteral)
+                .build();
+        LiteralCommandNode chatProperties = new CommandNodeBuilder<LiteralCommandNode>()
+                .setName("chat")
+                .setParent(properties)
+                .build();
+        LiteralCommandNode chatPreviewProperty = new CommandNodeBuilder<LiteralCommandNode>()
+                .setName("preview")
+                .setParent(chatProperties)
+                .build();
+        LiteralCommandNode chatPreviewSetProperty = new CommandNodeBuilder<LiteralCommandNode>()
+                .setName("set")
+                .setParent(chatPreviewProperty)
+                .build();
+        new CommandNodeBuilder<ArgumentCommandNode<Boolean>>()
+                .setParser(new BooleanCommandParser())
+                .setName("[enabled]")
+                .setParent(chatPreviewSetProperty)
+                .setExecutable(context -> {
+                    CommandNodeResult argument = context.getResults().last();
+                    if (!(argument instanceof ValueNodeResult<?> argumentResult)) {
+                        throw new RuntimeException("Something wrong happened");
+                    }
+                    boolean value = (boolean) argumentResult.getValue().getValue();
+                    AbsorbManagers.getProperties().setChatPreviewEnabled(value);
+                    context
+                            .getSender()
+                            .sendMessage(Component.text("Changed chat preview to " + AbsorbManagers
+                                    .getProperties()
+                                    .isChatPreviewEnabled()));
+                })
+                .build();
+
         new CommandNodeBuilder<LiteralCommandNode>().setName("info").setParent(absorbLiteral).setExecutable(context -> {
             CommandSender sender = context.getSender();
             sender.sendMessage(Component
@@ -72,7 +117,7 @@ public interface Commands {
                 .setParent(stopLiteral)
                 .setExecutable(context -> {
                     CommandNodeResult node = context.getResults().last();
-                    if (!(node instanceof ValueNodeResult argumentResult)) {
+                    if (!(node instanceof ValueNodeResult<?> argumentResult)) {
                         throw new RuntimeException("Something wrong happened");
                     }
 
