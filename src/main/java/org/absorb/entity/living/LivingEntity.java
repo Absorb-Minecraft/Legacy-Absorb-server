@@ -2,36 +2,63 @@ package org.absorb.entity.living;
 
 
 import org.absorb.entity.Entity;
+import org.absorb.node.write.viewer.number.ViewerDoubleNodeData;
+import org.absorb.node.write.viewer.number.ViewerFloatNodeData;
+import org.absorb.node.write.viewer.number.ViewerIntegerNodeData;
 
 public interface LivingEntity extends Entity {
 
-    float getWalkingSpeed();
+	ViewerFloatNodeData walkingSpeed();
 
-    void setWalkingSpeed(float speed);
+	ViewerFloatNodeData flyingSpeed();
 
-    float getFlyingSpeed();
+	ViewerIntegerNodeData arrowsInside();
 
-    void setFlyingSpeed(float speed);
+	ViewerDoubleNodeData health();
 
-    int getArrowsInside();
+	default float getWalkingSpeed() {
+		return this.walkingSpeed().getValue();
+	}
 
-    void setArrowsInside(int arrows);
+	default void setWalkingSpeed(float speed) {
+		this.walkingSpeed().setValue(speed);
+	}
 
-    double getHealth();
+	default float getFlyingSpeed() {
+		return this.flyingSpeed().getValue();
+	}
 
-    void setHealth(double health);
+	default void setFlyingSpeed(float speed) {
+		this.flyingSpeed().setValue(speed);
+	}
 
-    default double damage(double damage) {
-        double newHealth = this.getHealth() - damage;
-        this.setHealth(newHealth);
-        return newHealth;
-    }
+	default int getArrowsInside() {
+		return this.arrowsInside().getValue();
+	}
 
-    default void kill() {
-        this.setHealth(0);
-    }
+	default void setArrowsInside(int arrows) {
+		this.arrowsInside().setValue(arrows);
+	}
 
-    default boolean isDead() {
-        return this.getHealth() == 0;
-    }
+	default double getHealth() {
+		return this.health().getValue();
+	}
+
+	default void setHealth(double health) {
+		this.health().setValue(health);
+	}
+
+	default double damage(double damage) {
+		double newHealth = this.getHealth() - damage;
+		this.setHealth(newHealth);
+		return newHealth;
+	}
+
+	default void kill() {
+		this.setHealth(0);
+	}
+
+	default boolean isDead() {
+		return this.getHealth() == 0;
+	}
 }

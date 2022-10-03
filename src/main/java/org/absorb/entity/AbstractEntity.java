@@ -1,95 +1,68 @@
 package org.absorb.entity;
 
 import net.kyori.adventure.text.Component;
+import org.absorb.node.CollectionNodeData;
+import org.absorb.node.write.viewer.NotNullableViewerNodeData;
+import org.absorb.node.write.viewer.NullableViewerNodeData;
+import org.absorb.node.write.viewer.ViewerCollectionNodeData;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.concurrent.LinkedTransferQueue;
 
 public abstract class AbstractEntity implements Entity {
 
-    private final @NotNull EntityType<?> type;
-    private final Collection<EntityEffect<?>> effects = new LinkedTransferQueue<>();
-    private boolean hasSpawned;
-    private boolean isOnFire;
-    private boolean isGlowing;
-    private @Nullable Component customName;
-    private boolean isFlying;
-    private boolean hasGravity;
+	private final @NotNull EntityType<?> type;
+	private final CollectionNodeData<EntityEffect<?>, Collection<EntityEffect<?>>> effects =
+			new ViewerCollectionNodeData<>(LinkedTransferQueue::new);
+	private final NotNullableViewerNodeData<Boolean> hasSpawned = new NotNullableViewerNodeData<>(false);
+	private final NotNullableViewerNodeData<Boolean> isOnFire = new NotNullableViewerNodeData<>(false);
+	private final NotNullableViewerNodeData<Boolean> isGlowing = new NotNullableViewerNodeData<>(false);
+	private final NullableViewerNodeData<Component> customName = new NullableViewerNodeData<>();
+	private final NotNullableViewerNodeData<Boolean> isFlying = new NotNullableViewerNodeData<>(false);
+	private final NotNullableViewerNodeData<Boolean> hasGravity = new NotNullableViewerNodeData<>(true);
 
-    public AbstractEntity(@NotNull EntityType<?> type) {
-        this.type = type;
-    }
+	public AbstractEntity(@NotNull EntityType<?> type) {
+		this.type = type;
+	}
 
-    @Override
-    public Collection<EntityEffect<?>> getEffects() {
-        return this.effects;
-    }
+	@Override
+	public CollectionNodeData<EntityEffect<?>, Collection<EntityEffect<?>>> effects() {
+		return this.effects;
+	}
 
-    @Override
-    public void addEffect(EntityEffect<?> effect) {
-        this.effects.add(effect);
-    }
+	@Override
+	public NotNullableViewerNodeData<Boolean> spawned() {
+		return this.hasSpawned;
+	}
 
-    @Override
-    public boolean hasSpawned() {
-        return this.hasSpawned;
-    }
+	@Override
+	public NotNullableViewerNodeData<Boolean> gravity() {
+		return this.hasGravity;
+	}
 
-    @Override
-    public void setGravity(boolean gravity) {
-        this.hasGravity = gravity;
-    }
+	@Override
+	public NotNullableViewerNodeData<Boolean> flying() {
+		return this.isFlying;
+	}
 
-    @Override
-    public boolean hasGravity() {
-        return this.hasGravity;
-    }
+	@Override
+	public NullableViewerNodeData<Component> customName() {
+		return this.customName;
+	}
 
-    @Override
-    public boolean isFlying() {
-        return this.isFlying;
-    }
+	@Override
+	public NotNullableViewerNodeData<Boolean> onFire() {
+		return this.isOnFire;
+	}
 
-    @Override
-    public void setFlying(boolean isFlying) {
-        this.isFlying = isFlying;
-    }
+	@Override
+	public NotNullableViewerNodeData<Boolean> glowing() {
+		return this.isGlowing;
+	}
 
-    @Override
-    public @NotNull EntityType<?> getType() {
-        return this.type;
-    }
-
-    @Override
-    public Optional<Component> getCustomName() {
-        return Optional.ofNullable(this.customName);
-    }
-
-    @Override
-    public void setCustomName(@Nullable Component component) {
-        this.customName = component;
-    }
-
-    @Override
-    public boolean isOnFire() {
-        return this.isOnFire;
-    }
-
-    @Override
-    public void setOnFire(boolean check) {
-        this.isOnFire = check;
-    }
-
-    @Override
-    public boolean isGlowing() {
-        return this.isGlowing;
-    }
-
-    @Override
-    public void setGlowing(boolean glowing) {
-        this.isGlowing = glowing;
-    }
+	@Override
+	public @NotNull EntityType<? extends Entity> getType() {
+		return this.type;
+	}
 }

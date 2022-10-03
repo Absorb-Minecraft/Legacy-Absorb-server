@@ -2,6 +2,9 @@ package org.absorb.entity;
 
 import net.kyori.adventure.text.Component;
 import org.absorb.net.packet.play.outgoing.entity.metadata.types.EntityMetadataType;
+import org.absorb.node.CollectionNodeData;
+import org.absorb.node.write.viewer.NullableViewerNodeData;
+import org.absorb.node.write.viewer.NotNullableViewerNodeData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,38 +13,78 @@ import java.util.Optional;
 
 public interface Entity {
 
-    Collection<EntityEffect<?>> getEffects();
+	CollectionNodeData<EntityEffect<?>, Collection<EntityEffect<?>>> effects();
 
-    void addEffect(EntityEffect<?> effect);
+	NotNullableViewerNodeData<Boolean> spawned();
 
-    boolean hasSpawned();
+	NotNullableViewerNodeData<Boolean> gravity();
 
-    void setGravity(boolean gravity);
+	NotNullableViewerNodeData<Boolean> flying();
 
-    boolean hasGravity();
+	NullableViewerNodeData<Component> customName();
 
-    boolean isFlying();
+	NotNullableViewerNodeData<Boolean> onFire();
 
-    void setFlying(boolean isFlying);
+	NotNullableViewerNodeData<Boolean> glowing();
 
-    @NotNull EntityType<? extends Entity> getType();
+	default Collection<EntityEffect<?>> getEffects() {
+		return this.effects().getValue();
+	}
 
-    Optional<Component> getCustomName();
+	default void addEffect(EntityEffect<?> effect) {
+		this.effects().add(effect);
+	}
 
-    void setCustomName(@Nullable Component component);
+	default boolean hasSpawned() {
+		return this.spawned().getValue();
+	}
 
-    boolean isOnFire();
+	default void setGravity(boolean gravity) {
+		this.gravity().setValue(gravity);
+	}
 
-    void setOnFire(boolean check);
+	default boolean hasGravity() {
+		return this.gravity().getValue();
+	}
 
-    boolean isGlowing();
+	default boolean isFlying() {
+		return this.flying().getValue();
+	}
 
-    void setGlowing(boolean glowing);
+	default void setFlying(boolean isFlying) {
+		this.flying().setValue(isFlying);
+	}
 
-    Collection<EntityMetadataType<?, ?>> getMetadataTypes();
+	@NotNull EntityType<? extends Entity> getType();
 
-    default void removeCustomName() {
-        this.setCustomName(null);
-    }
+	default Optional<Component> getCustomName() {
+		return Optional.ofNullable(this.customName().getValue());
+	}
+
+	default void setCustomName(@Nullable Component component) {
+		this.customName().setValue(component);
+	}
+
+	default boolean isOnFire() {
+		return this.onFire().getValue();
+	}
+
+	default void setOnFire(boolean check) {
+		this.onFire().setValue(check);
+	}
+
+	default boolean isGlowing() {
+		return this.glowing().getValue();
+	}
+
+	default void setGlowing(boolean glowing) {
+		this.glowing().setValue(glowing);
+	}
+
+	Collection<EntityMetadataType<?, ?>> getMetadataTypes();
+
+	default void removeCustomName() {
+		this.setCustomName(null);
+	}
 
 }

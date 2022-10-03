@@ -2,56 +2,39 @@ package org.absorb.entity.living;
 
 import org.absorb.entity.AbstractEntity;
 import org.absorb.entity.EntityType;
+import org.absorb.node.write.viewer.number.ViewerDoubleNodeData;
+import org.absorb.node.write.viewer.number.ViewerFloatNodeData;
+import org.absorb.node.write.viewer.number.ViewerIntegerNodeData;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractLivingEntity extends AbstractEntity implements LivingEntity {
 
-    private float walkingSpeed;
-    private float flyingSpeed;
-    private int arrowsInside;
-    private double health;
+	private final ViewerFloatNodeData walkingSpeed = new ViewerFloatNodeData();
+	private final ViewerFloatNodeData flyingSpeed = new ViewerFloatNodeData();
+	private final ViewerIntegerNodeData arrowsInside = new ViewerIntegerNodeData();
+	private final ViewerDoubleNodeData health = new ViewerDoubleNodeData();
 
-    public AbstractLivingEntity(@NotNull EntityType<? extends LivingEntity> type) {
-        super(type);
-    }
+	public AbstractLivingEntity(@NotNull EntityType<? extends LivingEntity> type) {
+		super(type);
+	}
 
-    @Override
-    public float getWalkingSpeed() {
-        return this.walkingSpeed;
-    }
+	@Override
+	public ViewerFloatNodeData walkingSpeed() {
+		return this.walkingSpeed;
+	}
 
-    @Override
-    public void setWalkingSpeed(float speed) {
-        this.walkingSpeed = speed;
-    }
+	@Override
+	public ViewerFloatNodeData flyingSpeed() {
+		return this.flyingSpeed;
+	}
 
-    @Override
-    public float getFlyingSpeed() {
-        return this.flyingSpeed;
-    }
+	@Override
+	public ViewerIntegerNodeData arrowsInside() {
+		return this.arrowsInside;
+	}
 
-    @Override
-    public void setFlyingSpeed(float speed) {
-        this.flyingSpeed = speed;
-    }
-
-    @Override
-    public int getArrowsInside() {
-        return this.arrowsInside;
-    }
-
-    @Override
-    public void setArrowsInside(int arrows) {
-        this.arrowsInside = arrows;
-    }
-
-    @Override
-    public double getHealth() {
-        return this.health;
-    }
-
-    @Override
-    public void setHealth(double health) {
-        this.health = health;
-    }
+	@Override
+	public ViewerDoubleNodeData health() {
+		return this.health;
+	}
 }
