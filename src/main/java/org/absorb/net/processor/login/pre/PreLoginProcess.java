@@ -33,64 +33,63 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class PreLoginProcess implements NetProcess<IncomingLoginStartPacket> {
-    @Override
-    public void onProcess(Client info, IncomingLoginStartPacket packet) throws IOException {
-        info.setUsername(packet.getUsername());
-        String name = packet.getUsername();
-        if (name.isBlank()) {
-            info.disconnect(Component.text("Invalid username"));
-            return;
-        }
-        UUID uuid = UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
-        info.setUuid(uuid);
+	@Override
+	public void onProcess(Client info, IncomingLoginStartPacket packet) throws IOException {
+		info.setUsername(packet.getUsername());
+		String name = packet.getUsername();
+		if (name.isBlank()) {
+			info.disconnect(Component.text("Invalid username"));
+			return;
+		}
+		UUID uuid = UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
+		info.setUuid(uuid);
 
-        World world = AbsorbManagers.getWorldManager().defaultWorld();
-        Vector3d spawnAt = new Vector3d(0, 0, 0);
-        world.generateChunkAtBlock(spawnAt.floorX(), spawnAt.floorZ());
+		World world = AbsorbManagers.getWorldManager().defaultWorld();
+		Vector3d spawnAt = new Vector3d(0, 0, 0);
+		world.generateChunkAtBlock(spawnAt.floorX(), spawnAt.floorZ());
 
-        Human playerEntity = new Human();
-        playerEntity.addEffect(HumanEffects.PERMISSION_LEVEL_ONE);
-        WorldEntity worldHuman = world.spawnEntity(playerEntity, spawnAt);
-        info.setEntity(worldHuman);
+		Human playerEntity = new Human();
+		playerEntity.addEffect(HumanEffects.PERMISSION_LEVEL_ONE);
+		WorldEntity worldHuman = world.spawnEntity(playerEntity, spawnAt);
+		info.setEntity(worldHuman);
 
-        info.setState(PacketState.PLAY);
-        info.setPlayingState(PlayingState.LOGIN_PRE_DATA);
-        new OutgoingLoginSuccessfulPacketBuilder().setName(name).setUuid(uuid).build().writeTo(info);
+		info.setState(PacketState.PLAY);
+		info.setPlayingState(PlayingState.LOGIN_PRE_DATA);
+		new OutgoingLoginSuccessfulPacketBuilder().setName(name).setUuid(uuid).build().writeTo(info);
 
-        try {
-            Thread.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return;
-        }
+		try {
+			Thread.sleep(1);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			return;
+		}
 
-        new OutgoingJoinPacketBuilder()
-                .setCurrentWorld(world)
-                .setFlatWorld(true)
-                .setDebugWorld(true)
-                .setRespawnScreen(true)
-                .setGameMode(Gamemodes.CREATIVE)
-                .setChatTypes(List.of(ChatTypes.CHAT))
-                .setWorldTypes(AbsorbManagers
-                                       .getRegistryManager()
-                                       .getWorldTypes()
-                                       .stream()
-                                       .map(Supplier::get)
-                                       .map(PlayerWorldTypeView::new)
-                                       .collect(Collectors.toUnmodifiableSet()))
-                .setBiomes(AbsorbManagers
-                                   .getRegistryManager()
-                                   .getBiomes()
-                                   .stream()
-                                   .map(Supplier::get)
-                                   .collect(Collectors.toUnmodifiableSet()))
-                .build()
-                .writeTo(info);
+		new OutgoingJoinPacketBuilder()
+				.setCurrentWorld(world)
+				.setFlatWorld(true)
+				.setRespawnScreen(true)
+				.setGameMode(Gamemodes.CREATIVE)
+				.setChatTypes(List.of(ChatTypes.CHAT))
+				.setWorldTypes(AbsorbManagers
+						.getRegistryManager()
+						.getWorldTypes()
+						.stream()
+						.map(Supplier::get)
+						.map(PlayerWorldTypeView::new)
+						.collect(Collectors.toUnmodifiableSet()))
+				.setBiomes(AbsorbManagers
+						.getRegistryManager()
+						.getBiomes()
+						.stream()
+						.map(Supplier::get)
+						.collect(Collectors.toUnmodifiableSet()))
+				.build()
+				.writeTo(info);
 
-        new OutgoingDeclaredCommandsPacketBuilder()
-                .walkAllCommands(AbsorbManagers.getCommandManager().getRootCommand())
-                .build()
-                .writeToAsync(info);
+		new OutgoingDeclaredCommandsPacketBuilder()
+				.walkAllCommands(AbsorbManagers.getCommandManager().getRootCommand())
+				.build()
+				.writeToAsync(info);
 
         /*new OutgoingAbilityPacketBuilder()
                 .setFlyingAllowed(true)
@@ -102,13 +101,13 @@ public class PreLoginProcess implements NetProcess<IncomingLoginStartPacket> {
                 .build()
                 .writeTo(info);*/
 
-        new OutgoingServerDifficultyPacketBuilder()
-                .setDifficulty(world.getWorldData().getDifficulty())
-                .setLocked(true)
-                .build()
-                .writeTo(info);
+		new OutgoingServerDifficultyPacketBuilder()
+				.setDifficulty(world.getWorldData().getDifficulty())
+				.setLocked(true)
+				.build()
+				.writeTo(info);
 
-        //new OutgoingSwapHotbarPacketBuilder().setNewSlot((byte) 3).build().writeTo(info);
+		//new OutgoingSwapHotbarPacketBuilder().setNewSlot((byte) 3).build().writeTo(info);
 
         /*new OutgoingRegisterRecipePacketBuilder()
                 .addRecipes(AbsorbManagers
@@ -140,36 +139,36 @@ public class PreLoginProcess implements NetProcess<IncomingLoginStartPacket> {
 
         /*new OutgoingSwapHotbarPacketBuilder().setNewSlot(connection.getInventory().getHotbar().getSelected()).build
         ().writeTo(connection);*/
-        int id = info.newTeleportId();
-        info.registerTeleportId(id);
-        new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).setTeleportId(id).build().writeTo(info);
+		int id = info.newTeleportId();
+		info.registerTeleportId(id);
+		new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).setTeleportId(id).build().writeTo(info);
 
-        Set<PlayerTab> tabs = AbsorbManagers
-                .getNetManager()
-                .getClients()
-                .parallelStream()
-                .filter(client -> !client.isHiddenToList())
-                .map(Client::createTab)
-                .collect(Collectors.toSet());
+		Set<PlayerTab> tabs = AbsorbManagers
+				.getNetManager()
+				.getClients()
+				.parallelStream()
+				.filter(client -> !client.isHiddenToList())
+				.map(Client::createTab)
+				.collect(Collectors.toSet());
 
-        new OutgoingPlayerTabUpdateAddPlayerPacketBuilder().addTabs(tabs).build().writeTo(info);
+		new OutgoingPlayerTabUpdateAddPlayerPacketBuilder().addTabs(tabs).build().writeTo(info);
 
-        new OutgoingSpawnPositionPacketBuilder()
-                .setAngle(0)
-                .setLocation(worldHuman.getWorld().getWorldData().getCompassPoint())
-                .build()
-                .writeTo(info);
+		new OutgoingSpawnPositionPacketBuilder()
+				.setAngle(0)
+				.setLocation(worldHuman.getWorld().getWorldData().getCompassPoint())
+				.build()
+				.writeTo(info);
 
-        new Thread(info::updateChunks).start();
+		new Thread(info::updateChunks).start();
 
-        //new OutgoingUpdateViewPacketBuilder().setChunk(chunk).build().writeToAsync(info);
+		//new OutgoingUpdateViewPacketBuilder().setChunk(chunk).build().writeToAsync(info);
 
 
-        //new OutgoingAbilityPacketBuilder().fromClient(info).build().writeTo(info);
+		//new OutgoingAbilityPacketBuilder().fromClient(info).build().writeTo(info);
 
-        id = info.newTeleportId();
-        info.registerTeleportId(id);
-        new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).setTeleportId(id).build().writeTo(info);
+		id = info.newTeleportId();
+		info.registerTeleportId(id);
+		new OutgoingPlayerMovementPacketBuilder().setPosition(spawnAt).setTeleportId(id).build().writeTo(info);
 
-    }
+	}
 }

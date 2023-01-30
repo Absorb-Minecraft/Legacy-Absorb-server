@@ -1,4 +1,4 @@
-package org.absorb.block.pallet;
+package org.absorb.block.palette.block;
 
 import org.absorb.block.locatable.BlockData;
 import org.absorb.net.data.NetSerializers;
@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DirectPallet implements BlockPallet {
+public class DirectPalette implements BlockPalette {
 
 
     @Override

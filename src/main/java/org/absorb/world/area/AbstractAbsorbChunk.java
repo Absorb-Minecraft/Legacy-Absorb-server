@@ -14,60 +14,76 @@ import java.util.function.Predicate;
 
 public class AbstractAbsorbChunk implements AbsorbChunk {
 
-    private final @NotNull Vector2i position;
-    private final @NotNull SortedSet<ChunkPart> parts = new TreeSet<>(Comparator.comparing(ChunkPart::getLevel));
-    private final @NotNull World world;
+	private final @NotNull Vector2i position;
+	private final @NotNull SortedSet<ChunkPart> parts = new TreeSet<>(Comparator.comparing(ChunkPart::getLevel));
+	private final @NotNull World world;
 
-    public AbstractAbsorbChunk(@NotNull World world, @NotNull Vector2i position) {
-        this.position = position;
-        this.world = world;
-    }
+	public AbstractAbsorbChunk(@NotNull World world, @NotNull Vector2i position) {
+		this.position = position;
+		this.world = world;
+	}
 
-    @Override
-    public @NotNull Vector2i getPosition() {
-        return this.position;
-    }
+	@Override
+	public int hashCode() {
+		return this.world.hashCode() + this.position.hashCode();
+	}
 
-    @Override
-    public @NotNull SortedSet<ChunkPart> getParts() {
-        return this.parts;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof AbsorbChunk chunk)) {
+			return false;
+		}
+		if (!(chunk.getWorld().equals(this.world))) {
+			return false;
+		}
+		return chunk.getPosition().equals(this.position);
+	}
 
-    @Override
-    public ChunkPart generatePartWithLevel(int level) {
-        ChunkPart part = new ChunkPart(this, level);
-        this.parts.add(part);
-        new Thread(() -> part.setGeneratedChunk(this.world.getWorldData().getType().generateChunk(part))).start();
-        return part;
-    }
+	@Override
+	public @NotNull Vector2i getPosition() {
+		return this.position;
+	}
 
-    @Override
-    public ChunkPart generatePartWithHeight(int height) {
-        int level = (this.world.getMaxBlock().y() - height) / ChunkPart.CHUNK_PART_HEIGHT;
-        return this.generatePartWithLevel(level);
-    }
+	@Override
+	public @NotNull SortedSet<ChunkPart> getParts() {
+		return this.parts;
+	}
 
-    @Override
-    public @NotNull Vector3i getHighestPoint(int x, int z, Predicate<LocatableBlock> check) {
-        int y = this.parts.stream().mapToInt(part -> part.getHighestPoint(x, z, check).y()).max().orElse(0);
-        return new Vector3i(x, y, z);
-    }
+	@Override
+	public ChunkPart generatePartWithLevel(int level) {
+		ChunkPart part = new ChunkPart(this, level);
+		this.parts.add(part);
+		new Thread(() -> part.setGeneratedChunk(this.world.getWorldData().getType().generateChunk(part))).start();
+		return part;
+	}
 
-    @Override
-    public @NotNull World getWorld() {
-        return this.world;
-    }
+	@Override
+	public ChunkPart generatePartWithHeight(int height) {
+		int level = (this.world.getMaxBlock().y() - height) / ChunkPart.CHUNK_PART_HEIGHT;
+		return this.generatePartWithLevel(level);
+	}
 
-    @Override
-    public @NotNull Area getArea() {
-        int minX = this.position.x() << 4;
-        int minZ = this.position.y() << 4;
-        int minY = this.world.getMinBlock().y();
+	@Override
+	public @NotNull Vector3i getHighestPoint(int x, int z, Predicate<LocatableBlock> check) {
+		int y = this.parts.stream().mapToInt(part -> part.getHighestPoint(x, z, check).y()).max().orElse(0);
+		return new Vector3i(x, y, z);
+	}
 
-        int maxX = minX + ChunkPart.CHUNK_WIDTH;
-        int maxZ = minZ + ChunkPart.CHUNK_LENGTH;
-        int maxY = this.world.getMaxBlock().y();
+	@Override
+	public @NotNull World getWorld() {
+		return this.world;
+	}
 
-        return new Area(new Vector3d(minX, minY, minZ), new Vector3d(maxX, maxY, maxZ), this.world);
-    }
+	@Override
+	public @NotNull Area getArea() {
+		int minX = this.position.x() << 4;
+		int minZ = this.position.y() << 4;
+		int minY = this.world.getMinBlock().y();
+
+		int maxX = minX + ChunkPart.CHUNK_WIDTH;
+		int maxZ = minZ + ChunkPart.CHUNK_LENGTH;
+		int maxY = this.world.getMaxBlock().y();
+
+		return new Area(new Vector3d(minX, minY, minZ), new Vector3d(maxX, maxY, maxZ), this.world);
+	}
 }

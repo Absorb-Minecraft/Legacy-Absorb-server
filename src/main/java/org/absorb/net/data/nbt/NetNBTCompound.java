@@ -14,41 +14,45 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class NetNBTCompound implements NetSerializer<NBTCompound> {
-    @Override
-    public NetEntryData<NBTCompound> read(int position, ByteBuffer bytes) {
-        byte[] bytesArray = bytes.array();
-        bytesArray = Arrays.copyOfRange(bytesArray, position, bytesArray.length);
-        MarkedByteArrayInputStream markedIS = new MarkedByteArrayInputStream(bytesArray);
-        NBTInputStream is = new NBTInputStream(markedIS);
-        NBTCompound compound;
-        try {
-            compound = is.readFully();
-        } catch (NBTParseException e) {
-            try {
-                int tagId = is.read();
-                throw new IllegalStateException("Cannot read TagType with ID of " + tagId, e);
-            } catch (IOException ex) {
-                throw new IllegalStateException(e);
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-        try {
-            markedIS.close();
-        } catch (IOException ignored) {
+	@Override
+	public NetEntryData<NBTCompound> read(int position, ByteBuffer bytes) {
+		byte[] bytesArray = bytes.array();
+		bytesArray = Arrays.copyOfRange(bytesArray, position, bytesArray.length);
+		MarkedByteArrayInputStream markedIS = new MarkedByteArrayInputStream(bytesArray);
+		NBTInputStream is = new NBTInputStream(markedIS);
+		NBTCompound compound;
+		try {
+			compound = is.readFully();
+		} catch (NBTParseException e) {
+			try {
+				int tagId = is.read();
+				throw new IllegalStateException("Cannot read TagType with ID of " + tagId, e);
+			} catch (IOException ex) {
+				throw new IllegalStateException(e);
+			}
+		} catch (IOException e) {
+			throw new IllegalStateException("Failed to read NBT "
+					+ markedIS.getCounter()
+					+ " bytes in. "
+					+ markedIS.getReadBytes().toString()
+					+ markedIS, e);
+		}
+		try {
+			markedIS.close();
+		} catch (IOException ignored) {
 
-        }
-        return new NetEntryData<>(position, (int) (position + markedIS.getCounter()), compound);
-    }
+		}
+		return new NetEntryData<>(position, (int) (position + markedIS.getCounter()), compound);
+	}
 
-    @Override
-    public ByteBuffer write(NBTCompound value) {
-        try {
-            ByteArrayOutputStream baOs = new ByteArrayOutputStream();
-            new NBTOutputStream(baOs, false).writeFully(value);
-            return ByteBuffer.wrap(baOs.toByteArray());
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-    }
+	@Override
+	public ByteBuffer write(NBTCompound value) {
+		try {
+			ByteArrayOutputStream baOs = new ByteArrayOutputStream();
+			new NBTOutputStream(baOs, false).writeFully(value);
+			return ByteBuffer.wrap(baOs.toByteArray());
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+	}
 }

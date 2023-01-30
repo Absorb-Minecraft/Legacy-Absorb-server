@@ -21,128 +21,141 @@ import java.util.concurrent.LinkedTransferQueue;
 
 public class World {
 
-    private final WorldData worldData;
-    private final Vector3i blockMin;
-    private final Vector3i blockMax;
-    private final LinkedTransferQueue<AbsorbChunk> chunks = new LinkedTransferQueue<>();
+	private final WorldData worldData;
+	private final Vector3i blockMin;
+	private final Vector3i blockMax;
+	private final LinkedTransferQueue<AbsorbChunk> chunks = new LinkedTransferQueue<>();
 
-    public World(WorldBuilder builder) {
-        if (builder.getWorldData() == null) {
-            throw new IllegalStateException("No WorldData provided");
-        }
-        this.worldData = builder.getWorldData();
-        this.blockMax = builder.getBlockMax();
-        this.blockMin = builder.getBlockMin();
-    }
+	public World(WorldBuilder builder) {
+		if (builder.getWorldData() == null) {
+			throw new IllegalStateException("No WorldData provided");
+		}
+		this.worldData = builder.getWorldData();
+		this.blockMax = builder.getBlockMax();
+		this.blockMin = builder.getBlockMin();
+	}
 
-    public Location getLocation(double x, double y, double z) {
-        return new Location(this, x, y, z);
-    }
+	public Location getLocation(double x, double y, double z) {
+		return new Location(this, x, y, z);
+	}
 
-    public WorldData getWorldData() {
-        return this.worldData;
-    }
+	public WorldData getWorldData() {
+		return this.worldData;
+	}
 
-    public WorldEntity spawnEntity(@NotNull Entity entity, @NotNull Vector3d spawnAt) {
-        WorldEntity worldEntity = new WorldEntityBuilder()
-                .setEntity(entity)
-                .setWorld(this)
-                .setPosition(spawnAt)
-                .setInstanceId(this.getEntities().size() + 1)
-                .build();
-        AbsorbChunk chunk = this.chunks
-                .parallelStream()
-                .filter(chunkStream -> chunkStream.getArea().includes(spawnAt))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Chunk has not loaded"));
-        ChunkPart part = chunk.getPartWithBlockHeight((int) spawnAt.y());
-        part.registerEntity(worldEntity);
-        return worldEntity;
-    }
+	public WorldEntity spawnEntity(@NotNull Entity entity, @NotNull Vector3d spawnAt) {
+		WorldEntity worldEntity = new WorldEntityBuilder()
+				.setEntity(entity)
+				.setWorld(this)
+				.setPosition(spawnAt)
+				.setInstanceId(this.getEntities().size() + 1)
+				.build();
+		AbsorbChunk chunk = this.chunks
+				.parallelStream()
+				.filter(chunkStream -> chunkStream.getArea().includes(spawnAt))
+				.findFirst()
+				.orElseThrow(() -> new IllegalStateException("Chunk has not loaded"));
+		ChunkPart part = chunk.getPartWithBlockHeight((int) spawnAt.y());
+		part.registerEntity(worldEntity);
+		return worldEntity;
+	}
 
-    public long getSeed() {
-        return this.worldData.getSeed();
-    }
+	public long getSeed() {
+		return this.worldData.getSeed();
+	}
 
-    public AbsorbKey getKey() {
-        return this.worldData.getKey();
-    }
+	public AbsorbKey getKey() {
+		return this.worldData.getKey();
+	}
 
-    public Vector3i getMinBlock() {
-        return this.blockMin;
-    }
+	public Vector3i getMinBlock() {
+		return this.blockMin;
+	}
 
-    public Vector3i getMaxBlock() {
-        return this.blockMax;
-    }
+	public Vector3i getMaxBlock() {
+		return this.blockMax;
+	}
 
-    public Collection<AbsorbChunk> getLoadedChunks() {
-        return Collections.unmodifiableCollection(this.chunks);
-    }
+	public Collection<AbsorbChunk> getLoadedChunks() {
+		return Collections.unmodifiableCollection(this.chunks);
+	}
 
-    public Optional<AbsorbChunk> getLoadedChunk(Vector2i position) {
-        return this.getLoadedChunk(position.x(), position.y());
-    }
+	public Optional<AbsorbChunk> getLoadedChunk(Vector2i position) {
+		return this.getLoadedChunk(position.x(), position.y());
+	}
 
-    public Optional<AbsorbChunk> getLoadedChunk(int x, int z) {
-        return this.chunks
-                .stream()
-                .filter(chunk -> chunk.getPosition().x() == x)
-                .filter(chunk -> chunk.getPosition().y() == z)
-                .findAny();
-    }
+	public Optional<AbsorbChunk> getLoadedChunk(int x, int z) {
+		return this.chunks
+				.stream()
+				.filter(chunk -> chunk.getPosition().x() == x)
+				.filter(chunk -> chunk.getPosition().y() == z)
+				.findAny();
+	}
 
-    public Optional<AbsorbChunk> loadGeneratedChunkAtBlock(int x, int z) {
-        int chunkX = x >> 4;
-        int chunkZ = z >> 4;
-        return this.loadGeneratedChunk(chunkX, chunkZ);
-    }
+	public Optional<AbsorbChunk> loadGeneratedChunkAtBlock(int x, int z) {
+		int chunkX = x >> 4;
+		int chunkZ = z >> 4;
+		return this.loadGeneratedChunk(chunkX, chunkZ);
+	}
 
-    public Optional<AbsorbChunk> loadGeneratedChunk(int x, int z) {
-        Optional<AbsorbChunk> opLoaded = this.getLoadedChunk(x, z);
-        if (opLoaded.isPresent()) {
-            return opLoaded;
-        }
-        //TODO check loading
+	public Optional<AbsorbChunk> loadGeneratedChunk(int x, int z) {
+		Optional<AbsorbChunk> opLoaded = this.getLoadedChunk(x, z);
+		if (opLoaded.isPresent()) {
+			return opLoaded;
+		}
+		//TODO check loading
 
-        return Optional.empty();
-    }
+		return Optional.empty();
+	}
 
-    public AbsorbChunk generateChunkAtBlock(int x, int z) {
-        int chunkX = x >> 4;
-        int chunkZ = z >> 4;
-        return this.generateChunk(chunkX, chunkZ);
-    }
+	public AbsorbChunk generateChunkAtBlock(int x, int z) {
+		int chunkX = x >> 4;
+		int chunkZ = z >> 4;
+		return this.generateChunk(chunkX, chunkZ);
+	}
 
-    public AbsorbChunk generateChunk(int x, int z) {
-        Optional<AbsorbChunk> opChunk = this.loadGeneratedChunk(x, z);
-        if (opChunk.isPresent()) {
-            return opChunk.get();
-        }
-        //TODO
-        AbsorbChunk chunk = new AbstractAbsorbChunk(this, new Vector2i(x, z));
-        this.chunks.add(chunk);
-        chunk.generateParts();
-        return chunk;
-    }
+	public AbsorbChunk generateChunk(int x, int z) {
+		Optional<AbsorbChunk> opChunk = this.loadGeneratedChunk(x, z);
+		if (opChunk.isPresent()) {
+			return opChunk.get();
+		}
+		//TODO
+		AbsorbChunk chunk = new AbstractAbsorbChunk(this, new Vector2i(x, z));
+		this.chunks.add(chunk);
+		chunk.generateParts();
+		return chunk;
+	}
 
-    public int getBlockHeight() {
-        return this.getMaxBlock().y() - this.getMinBlock().y();
-    }
+	public int getBlockHeight() {
+		return this.getMaxBlock().y() - this.getMinBlock().y();
+	}
 
-    public int getChunkLevelHeight() {
-        int blocks = this.getBlockHeight();
-        return blocks / ChunkPart.CHUNK_PART_HEIGHT;
-    }
+	public int getChunkLevelHeight() {
+		int blocks = this.getBlockHeight();
+		return blocks / ChunkPart.CHUNK_PART_HEIGHT;
+	}
 
-    public Collection<WorldEntity> getEntities() {
-        return new ConnectedCollection<>(this.chunks
-                                                 .parallelStream()
-                                                 .map(AbsorbChunk::getEntities)
-                                                 .toArray(Collection[]::new));
-    }
+	public Collection<WorldEntity> getEntities() {
+		return new ConnectedCollection<>(this.chunks
+				.parallelStream()
+				.map(AbsorbChunk::getEntities)
+				.toArray(Collection[]::new));
+	}
 
-    public AbsorbChunk generateChunk(Vector2i chunkPos) {
-        return this.generateChunk(chunkPos.x(), chunkPos.y());
-    }
+	@Override
+	public int hashCode() {
+		return this.getKey().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof World world)) {
+			return false;
+		}
+		return world.getKey().equals(this.getKey());
+	}
+
+	public AbsorbChunk generateChunk(Vector2i chunkPos) {
+		return this.generateChunk(chunkPos.x(), chunkPos.y());
+	}
 }
